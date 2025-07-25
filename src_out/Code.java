@@ -10,7 +10,7 @@ public class Code {
         System.out.print('h');
         System.out.print("ey");
         function ("hello");
-        int what = 10;
+        double what = 10;
         String nullable = null;
         nullable = ((nullable) != null) ? (nullable) : ("null");
         what = Math.pow(what, 2);
@@ -36,7 +36,7 @@ public class Code {
         return ;
     }
 }
-private class Point {
+class Point {
     int x = 0;
     int y = 0;
     public Point() {

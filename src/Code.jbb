@@ -1,5 +1,5 @@
-include java.io.*
-include java.util.*
+use java.io.*
+use java.util.*
 
 # main:
     some1000_a = (1.0**1.0 * 2 + 5 - 1)
@@ -7,7 +7,7 @@ include java.util.*
     print 'h';
     print 'ey';
     function("hello")
-    int what = 10
+    double what = 10
     string nullable = null
     nullable ??= 'null'
     what **= 2
@@ -30,7 +30,7 @@ int max(int a, int b):
 # dosomething:
     ret
 
-private class Point
+class Point
 
 // These are part of a class now
 int x = 0

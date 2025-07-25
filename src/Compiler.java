@@ -40,7 +40,7 @@ public class Compiler {
             }
 
             while (indent < lastIndent) {
-                out += " ".repeat(lastIndent - indent) + "}\n";
+                out += " ".repeat(lastIndent) + "}\n";
                 lastIndent -= 4;
             }
 

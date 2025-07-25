@@ -19,18 +19,19 @@ public class JavaBB {
             new File(outDir).mkdir();
 
         // Compile files one by one
-        // String[] files = new File(compDir).list(new FilenameFilter() {
-        //     public boolean accept(File dir, String name) {
-        //         return name.endsWith(".java");
-        //     }
-        // });
+        String[] files = new File(compDir).list(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jbb");
+            }
+        });
 
-        String[] files = new File(compDir).list();
+        // String[] files = new File(compDir).list();
 
         for (int i = 0; i < files.length; ++i) {
             String fileContent = "";
             String fromPath = compDir + "/" + files[i];
-            String toPath = outDir + "/" + files[i];
+            String toPath = outDir + "/" + files[i].split("\\.")[0] + ".java";
+            String className = files[i].split("\\.")[0];
 
             // Read input file
             try (Scanner scanner = new Scanner(new File(fromPath))) {
@@ -38,7 +39,7 @@ public class JavaBB {
             } catch (FileNotFoundException e) {}
 
             // Compile this file
-            String compiled = Compiler.compile(fileContent);
+            String compiled = Compiler.compile(className, fileContent);
 
             // Write to output file
             try (PrintWriter writer = new PrintWriter(toPath)) {

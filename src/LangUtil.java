@@ -11,11 +11,14 @@ public class LangUtil {
     }
 
     public static <T> String d(ArrayList<T> s) {
+        if (s.size() == 0)
+            return "[]";
+
         String out = "[";
 
         for (int i = 0; i < s.size(); ++i)
-            out += s.get(i) + ", ";
+            out += s.get(i) + " ";
 
-        return out.substring(0, out.length() - 2) + "]";
+        return out.substring(0, out.length() - 1) + "]";
     }
 }

@@ -209,9 +209,13 @@ public class Compiler {
             out += constructClassString(className, outClasses.get(className), outClassAccess.get(className));
 
         // Construct other classes
-        for (String c : outClasses.keySet())
-            if (!c.equals(className))
+        for (String c : outClasses.keySet()) {
+            // The null class is used to write code without a class
+            if (c.equals("null"))
+                out += outClasses.get(c);
+            else if (!c.equals(className))
                 out += constructClassString(c, outClasses.get(c), outClassAccess.get(c));
+        }
 
         return startTemplate + "\n" + out + endTemplate;
     }
@@ -297,8 +301,8 @@ public class Compiler {
             out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")";
         }
 
-        // Multiplicative operators
-        else if ((f = findAnyToken(tok, List.of("*", "/", "%"))) != -1) {
+        // Binary operators (Java handles precedence)
+        else if ((f = findAnyToken(tok, List.of("+", "-", "*", "/", "%"))) != -1) {
             String lhs = compileExpr(Util.select(tok, 0, f));
             String rhs = compileExpr(Util.select(tok, f + 1));
             out += lhs + " " + tok.get(f).value + " " + rhs;

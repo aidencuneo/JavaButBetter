@@ -60,6 +60,12 @@ public class Tokeniser {
                 break;
         }
 
+        // Add indent as the first token
+        tok.add(new Token(Token.Type.INDENT, indent));
+
+        if (i == line.length())
+            return tok;
+
         // State
         String current = "";
         CharType type = charType(line.charAt(i));
@@ -74,9 +80,6 @@ public class Tokeniser {
         int rb = 0;
         int sb = 0;
         int cb = 0;
-
-        // Add indent as the first token
-        tok.add(new Token(Token.Type.INDENT, indent));
 
         // Start tokenising
         for (; i < line.length(); ++i) {

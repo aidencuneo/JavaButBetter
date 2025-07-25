@@ -11,7 +11,7 @@ include java.util.*
     string nullable = null
     nullable ??= 'null'
     what **= 2
-    if what += 1
+    if (what += 1) == 5
         dosomething()
 int max(int a, int b):
     ret a > b ? a : b

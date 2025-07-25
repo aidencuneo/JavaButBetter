@@ -1,0 +1,50 @@
+use java.io.*
+use java.util.*
+
+# main(string args[]):
+    // Get input and output directories
+    compDir = 'src'
+    
+    if args.length
+        compDir = args[0]
+
+    outDir = compDir + '_out'
+
+    if args.length > 1
+        outDir = args[1]
+
+    // Create directory if it doesn't exist
+    if !new File(outDir).exists() // Also try 'not'
+        new File(outDir).mkdir()
+
+    // Compile files one by one
+    files = new File(compDir).list(new FilenameFilter() {
+        + boolean accept(File dir, string name):
+            ret name.endsWith('.java')
+    })
+
+    // files = new File(compDir).list()
+
+    for i = 0 when i < files.length then ++i
+        fileContent = ''
+        fromPath = compDir + '/' + files[i]
+        toPath = outDir + '/' + files[i].split('\\.')[0] + '.java'
+        className = files[i].split('\\.')[0]
+
+        // Read input file
+        try scanner = new Scanner(new File(fromPath))
+            fileContent = scanner.useDelimiter('\\Z').next()
+        catch (FileNotFoundException e)
+            pass
+
+        // Compile this file
+        compiled = Compiler.compileFile(className, fileContent)
+
+        // Write to output file
+        try writer = new PrintWriter(toPath)
+            new File(toPath).createNewFile()
+            writer.println(compiled)
+        catch (IOException e)
+            pass
+
+    println 'Done.'

@@ -14,7 +14,7 @@ public class Code {
         String nullable = null;
         nullable = ((nullable) != null) ? (nullable) : ("null");
         what = Math.pow(what, 2);
-        if ((what += 1)) {
+        if (((what += 1) == 5)) {
             dosomething ();
         }
     }

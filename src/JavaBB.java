@@ -21,7 +21,7 @@ public class JavaBB {
         // Compile files one by one
         String[] files = new File(compDir).list(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return name.endsWith(".jbb");
+                return name.endsWith(".java");
             }
         });
 

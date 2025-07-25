@@ -4,52 +4,44 @@ import java.io.*;
 import java.util.*;
 
 public class JavaBB {
-    {
-        public static void main (String args[]) {; {
-            String compDir = "src";
-            if ((args . length > 0)) {
-                var compDir = args [0];
+    public static void main(String args []) {
+        var compDir = "src";
+        if (args . length) {
+            var compDir = args [0];
     }
-            String outDir = compDir + "_out";
-            if ((args . length > 1)) {
-                var outDir = args [1];
+        var outDir = compDir + "_out";
+        if (args . length > 1) {
+            var outDir = args [1];
     }
-            if ((! new File (outDir) . exists ())) {
-                new File (outDir) . mkdir ();
+        if (! new File (outDir) . exists ()) {
+            new File (outDir) . mkdir ();
     }
-            var  = new File (compDir) . list (new FilenameFilter() {; {
-                public boolean accept (File dir, String name) {; {
-                    return name . endsWith (".java");
+        var files = new File (compDir) . list (new FilenameFilter() {; {
+            public boolean accept(File dir , String name) {
+                return name . endsWith ('.java');
+        }
     }
-                };
+        } ); {
+            var fileContent = '';
+            var fromPath = compDir + '/' + files [i];
+            var toPath = outDir + '/' + files [i] . split ('\\.') [0] + ".java";
+            var className = files [i] . split ('\\.') [0];
+            try scanner = new Scanner (new File(fromPath)); {
+                var fileContent = scanner . useDelimiter ('\\Z') . next ();
     }
-            } );
-            
-       }
-   }
-     i < files . length;
-     ++ i ) {; { { {
- }
-                String fileContent = "";
-                String fromPath = compDir + "/" + files [i];
-                String toPath = outDir + "/" + files [i] . split ("\\.") [0] + ".java";
-                String className = files [i] . split ("\\.") [0];
-                try (Scanner scanner = new Scanner(new File(fromPath))) {; {
-                    var fileContent = scanner . useDelimiter ("\\Z") . next ();
+            catch (FileNotFoundException e); {
+                pass;
     }
-                } catch (FileNotFoundException e) { };
-                String compiled = Compiler . compileFile (className, fileContent);
-                try (PrintWriter writer = new PrintWriter(toPath)) {; {
-                    new File (toPath) . createNewFile ();
-                    writer . println (compiled);
+            var compiled = Compiler . compileFile (className, fileContent);
+            try writer = new PrintWriter (toPath); {
+                new File (toPath) . createNewFile ();
+                writer . println (compiled);
     }
-                } catch (IOException e) { };
+            catch (IOException e); {
+                pass;
+        }
     }
-            };
-            System . out . println ("Done.");
+        System.out.println("Done.");
     }
-        };
-    }
-    };
 }
 

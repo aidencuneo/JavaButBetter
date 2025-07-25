@@ -28,4 +28,8 @@ public class MethodAccess {
 
         return "";
     }
+
+    public String toString() {
+        return accessModToString(accessMod) + (isStatic ? " static" : "");
+    }
 }

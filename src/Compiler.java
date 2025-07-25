@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Compiler {
-    public static String compile(String className, String code) {
+    public static String compileFile(String className, String code) {
         ArrayList<String> lines = Tokeniser.splitFile(code);
 
         String startTemplate = "import java.io.*;\nimport java.util.*;\n";
@@ -82,10 +82,46 @@ public class Compiler {
                 // Methods
                 else {
                     // access?, static?, returntype|void, name, expr?, scope
-                    MethodAccess methodAccess = getMethodAccess(tok);
+                    // This points to the next token to process from the end
+                    int end = tok.size() - 2;
 
-                    for (int j = 0; j < tok.size() - 1; ++j)
-                        out += tok.get(j).value + " ";
+                    // Check for an expression before scope token
+                    String args = "()";
+
+                    if (end >= 0 && tok.get(end).type == Token.Type.EXPR) {
+                        // TODO: Compile expression
+                        args = tok.get(end).value;
+
+                        // Look to the next token for the name
+                        --end;
+                    }
+
+                    // Get method name
+                    String methodName = "";
+
+                    if (end >= 0 && tok.get(end).type == Token.Type.ID) {
+                        methodName = tok.get(end).value;
+                        --end;
+                    } else {
+                        // Error! Method name not given
+                    }
+
+                    // Get return type
+                    String returnType = "void";
+
+                    if (end >= 0 && tok.get(end).type == Token.Type.ID) {
+                        returnType = tok.get(end).value;
+                        --end;
+                    }
+
+                    // Get method access
+                    MethodAccess methodAccess = getMethodAccess(tok, end + 1);
+
+                    // Default access modifier for methods is public
+                    if (methodAccess.accessMod == AccessMod.DEFAULT)
+                        methodAccess.accessMod = AccessMod.PUBLIC;
+
+                    out += methodAccess + " " + returnType + " " + methodName + args;
                 }
                 // tok.remove(tok.size() - 1);
             }
@@ -116,6 +152,16 @@ public class Compiler {
             }
 
             // Keywords
+            else if (startTok == Token.Type.RETURN) {
+                out += "return ";
+
+                for (int j = 1; j < tok.size(); ++j)
+                    out += tok.get(j).value + " ";
+
+                out += ";";
+            }
+
+            // ID keywords
             else if (startTok == Token.Type.ID && (
                 tok.get(0).value.equals("print") || tok.get(0).value.equals("println")
             )) {
@@ -130,6 +176,7 @@ public class Compiler {
                 }
             }
 
+            // Placeholder - adds tokens as they are
             else {
                 for (int j = 0; j < tok.size(); ++j)
                     out += tok.get(j).value + " ";
@@ -157,12 +204,21 @@ public class Compiler {
         return startTemplate + "\n" + out + endTemplate;
     }
 
+    public static String compileExpr(String className, ArrayList<Token> tok) {
+        String out = "";
+
+        for (int j = 0; j < tok.size(); ++j)
+            out += tok.get(j).value + " ";
+
+        return out.trim();
+    }
+
     public static String constructClassString(String className, String code, AccessMod accessMod) {
         String accessModStr = MethodAccess.accessModToString(accessMod);
         String separator = (accessModStr.length() > 0 ? " " : "");
 
         String out = accessModStr + separator + "class " + className + " {\n";
-        out += code;
+        out += "    " + code.trim();
         out += "\n}\n";
 
         return out;
@@ -184,30 +240,26 @@ public class Compiler {
         return types;
     }
 
-    public static MethodAccess getMethodAccess(ArrayList<Token> tok) {
+    public static MethodAccess getMethodAccess(ArrayList<Token> tok, int end) {
         AccessMod accessMod = AccessMod.DEFAULT;
         boolean isStatic = false;
 
         // Fetch access modifier and static from line
-        for (int j = 0; j < tok.size(); ++j) {
+        for (int j = 0; j < end; ++j) {
             Token.Type t = tok.get(j).type;
             String v = tok.get(j).value;
 
-            // Attempt to get access modifier from every token
-            accessMod = MethodAccess.accessModFromToken(tok.get(j));
-            if (accessMod != AccessMod.DEFAULT)
-                break;
+            // Attempt to get access modifier from every token (if not found already)
+            if (accessMod == AccessMod.DEFAULT)
+                accessMod = MethodAccess.accessModFromToken(tok.get(j));
 
-            if (v.equals("+")) {
+            if (v.equals("+"))
                 accessMod = AccessMod.PUBLIC;
-                break;
-            } else if (v.equals("-")) {
+            else if (v.equals("-"))
                 accessMod = AccessMod.PRIVATE;
-                break;
-            } else if (v.equals("*")) {
+            else if (v.equals("*"))
                 accessMod = AccessMod.PROTECTED;
-                break;
-            } else if (v.equals("static") || v.equals("#"))
+            else if (v.equals("static") || v.equals("#"))
                 isStatic = true;
         }
 

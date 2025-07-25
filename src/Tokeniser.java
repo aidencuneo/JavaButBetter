@@ -86,7 +86,7 @@ public class Tokeniser {
             // System.out.println(c + ", " + type);
 
             // Break
-            if ((type != lastType && type != CharType.W) && !(
+            if ((type != lastType && type != CharType.W || type == CharType.S) && !(
                 sq || dq || bt || rb > 0 || sb > 0 || cb > 0
             // ) && !(
             //     // Join together operators: -= += *= /= == >= <= .=
@@ -109,8 +109,8 @@ public class Tokeniser {
                 lastChar == '.' && type == CharType.D // Join decimals (second part)
             ) && !(
                 lastChar == '_' && c == '_' // Join together all `_` tokens
-            ) && !current.isEmpty()) {
-                tok.add(Token.fromString(current));
+            ) && !current.isBlank()) {
+                tok.add(Token.fromString(current.trim()));
                 current = "";
             }
 
@@ -130,13 +130,15 @@ public class Tokeniser {
                 --sb;
             else if (c == '/' && !(sq || dq || bt)) {
                 if (++comment >= 2) {
-                    current = "";
+                    // Remove last token, since it will be a '/'
+                    tok.remove(tok.size() - 1);
+                    // current = "";
                     // current = current.substring(0, current.length() - 2);
                     break;
                 }
             }
 
-            if (type != CharType.W && comment <= 1) {
+            if (comment <= 1) {
                 if (comment > 0 && c != '/')
                     comment = 0;
 

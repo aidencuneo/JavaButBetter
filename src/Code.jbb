@@ -3,7 +3,7 @@ include java.util.*
 
 public class Code
 
-main:
+#main:
     some1000_a = 1.0 + 1.0
     println "hello"
     print 'h';
@@ -15,7 +15,7 @@ main:
 int max(int a, int b):
     ret a > b ? a : b
 
-public static what:
++#what:
     i = 0
     ++i
     i += 1

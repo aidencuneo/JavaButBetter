@@ -56,6 +56,7 @@ public class Token {
         Type t;
         char f = v.charAt(0);
         char l = v.charAt(v.length() - 1);
+        // System.out.println(f + ", " + l);
 
         if (v.length() == 0)
             t = Type.BLANK;

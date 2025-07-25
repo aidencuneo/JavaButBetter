@@ -39,7 +39,7 @@ public class JavaBB {
             } catch (FileNotFoundException e) {}
 
             // Compile this file
-            String compiled = Compiler.compile(className, fileContent);
+            String compiled = Compiler.compileFile(className, fileContent);
 
             // Write to output file
             try (PrintWriter writer = new PrintWriter(toPath)) {

@@ -9,6 +9,8 @@ public class Code {
      print "ey" ;
      function ("hello") ;
      int what = 10 ;
+     if what += 1 ;
+         dosomething () ;
  public static what : ;
      i = 0 ;
      ++ i ;

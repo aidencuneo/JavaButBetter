@@ -1,3 +1,7 @@
+
+import java.lang.reflect.Array;
+import java.util.List;
+
 public class Token {
     public enum TokenType {
         BLANK,
@@ -106,6 +110,15 @@ public class Token {
             t = TokenType.ID;
         else if (isNum(v))
             t = TokenType.NUM;
+        else if (List.of(
+            "+", "-", "*", "/", "%",
+            "not", "and", "or", "xor", "&", "|", "&&", "||", ">", "<", ">=", "<=", "==", "!=").contains(v)
+        )
+            t = TokenType.BIN_OPER;
+        else if (List.of(
+            "!", "~", "not").contains(v)
+        )
+            t = TokenType.UNARY_OPER;
         else
             t = TokenType.SYMBOL;
 

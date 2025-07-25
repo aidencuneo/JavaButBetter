@@ -30,4 +30,11 @@ public class Compiler {
 
         return startTemplate + out + endTemplate;
     }
+
+    public static int findToken(ArrayList<Token> tok, Token.TokenType type) {
+        for (int i = 0; i < tok.size(); ++i)
+            if (tok.get(i).type == type)
+                return i;
+        return -1;
+    }
 }

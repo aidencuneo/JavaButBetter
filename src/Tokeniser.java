@@ -155,13 +155,4 @@ public class Tokeniser {
 
         return tok;
     }
-
-    public static ArrayList<Token> contextualise(ArrayList<Token> tok) {
-        ArrayList<Token> out = new ArrayList<>();
-        int i;
-
-        if ((i = findToken(tok, TokenType.SCOPE)) != -1) {
-
-        }
-    }
 }

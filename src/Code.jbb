@@ -1,5 +1,10 @@
+include java.io.*
+include java.util.*
+
+public class Code
+
 main:
-    some1000_a = 0
+    some1000_a = 1.0 + 1.0
     println "hello"
     print 'h';
     print "ey";
@@ -17,3 +22,11 @@ public static what:
 
 somefunc():
     string h = 'what'
+    h .= substring(1)
+
+
+class Point
+
+// These are part of a class now
+x = 0
+y = 0

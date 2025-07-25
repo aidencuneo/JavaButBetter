@@ -3,7 +3,7 @@ import java.lang.reflect.Array;
 import java.util.List;
 
 public class Token {
-    public enum TokenType {
+    public enum Type {
         BLANK,
         INDENT,
         ID,
@@ -34,93 +34,99 @@ public class Token {
         CATCH,
         ACCESS_MOD,
         STATIC,
+        IMPORT,
+        CLASS,
     }
 
-    public TokenType type;
+    public Type type;
     public String value;
 
-    public Token(TokenType type, String value) {
+    public Token(Type type, String value) {
         this.type = type;
         this.value = value;
     }
 
     public static Token fromString(String v) {
         if (v.isEmpty())
-            return new Token(TokenType.BLANK, v);
+            return new Token(Type.BLANK, v);
 
-        TokenType t;
+        Type t;
         char f = v.charAt(0);
         char l = v.charAt(v.length() - 1);
 
         if (v.length() == 0)
-            t = TokenType.BLANK;
+            t = Type.BLANK;
         else if (v.length() > 0 && v.isBlank())
-            t = TokenType.INDENT;
+            t = Type.INDENT;
         else if (v.equals(":"))
-            t = TokenType.SCOPE;
+            t = Type.SCOPE;
         else if (f == '"' && l == '"')
-            t = TokenType.STRING;
+            t = Type.STRING;
         else if (f == '\'' && l == '\'')
-            t = TokenType.CHAR; // TODO: Unless length of literal is not one
+            t = Type.CHAR; // TODO: Unless length of literal is not one
         else if (f == '(' && l == ')')
-            t = TokenType.EXPR;
+            t = Type.EXPR;
         else if (v.equals("="))
-            t = TokenType.ASSIGN;
+            t = Type.ASSIGN;
         else if (v.endsWith("="))
-            t = TokenType.COMP_ASSIGN;
+            t = Type.COMP_ASSIGN;
         else if (v.equals("."))
-            t = TokenType.DOT;
+            t = Type.DOT;
         else if (v.equals("++"))
-            t = TokenType.INCREMENT;
+            t = Type.INCREMENT;
         else if (v.equals("--"))
-            t = TokenType.DECREMENT;
+            t = Type.DECREMENT;
         else if (v.equals("ret") || v.equals("return"))
-            t = TokenType.RETURN;
+            t = Type.RETURN;
         else if (v.equals("break"))
-            t = TokenType.BREAK;
+            t = Type.BREAK;
         else if (v.equals("continue") || v.equals("next"))
-            t = TokenType.CONTINUE;
+            t = Type.CONTINUE;
         else if (v.equals("if"))
-            t = TokenType.IF;
+            t = Type.IF;
         else if (v.equals("elif"))
-            t = TokenType.ELIF;
+            t = Type.ELIF;
         else if (v.equals("else"))
-            t = TokenType.ELSE;
+            t = Type.ELSE;
         else if (v.equals("while"))
-            t = TokenType.WHILE;
+            t = Type.WHILE;
         else if (v.equals("until"))
-            t = TokenType.UNTIL;
+            t = Type.UNTIL;
         else if (v.equals("for"))
-            t = TokenType.FOR;
+            t = Type.FOR;
         else if (v.equals("in"))
-            t = TokenType.IN;
+            t = Type.IN;
         else if (v.equals("try"))
-            t = TokenType.TRY;
+            t = Type.TRY;
         else if (v.equals("catch"))
-            t = TokenType.CATCH;
+            t = Type.CATCH;
         else if (v.equals("public") || v.equals("private") || v.equals("protected") || v.equals("internal"))
-            t = TokenType.ACCESS_MOD;
+            t = Type.ACCESS_MOD;
         else if (v.equals("static"))
-            t = TokenType.STATIC;
+            t = Type.STATIC;
+        else if (v.equals("import") || v.equals("include") || v.equals("require") || v.equals("use"))
+            t = Type.IMPORT;
+        else if (v.equals("class"))
+            t = Type.CLASS;
         else if (v.equals("string")) {
             // string transforms into String
             v = "String";
-            t = TokenType.ID;
+            t = Type.ID;
         } else if (isAlpha(v))
-            t = TokenType.ID;
+            t = Type.ID;
         else if (isNum(v))
-            t = TokenType.NUM;
+            t = Type.NUM;
         else if (List.of(
             "+", "-", "*", "/", "%",
             "not", "and", "or", "xor", "&", "|", "&&", "||", ">", "<", ">=", "<=", "==", "!=").contains(v)
         )
-            t = TokenType.BIN_OPER;
+            t = Type.BIN_OPER;
         else if (List.of(
             "!", "~", "not").contains(v)
         )
-            t = TokenType.UNARY_OPER;
+            t = Type.UNARY_OPER;
         else
-            t = TokenType.SYMBOL;
+            t = Type.SYMBOL;
 
         return new Token(t, v);
     }
@@ -130,7 +136,7 @@ public class Token {
     }
 
     public static boolean isNum(String s) {
-        return s.matches("^[0-9]*$");
+        return s.matches("^[0-9]*\\.?[0-9]*$");
     }
 
     public String toString() {

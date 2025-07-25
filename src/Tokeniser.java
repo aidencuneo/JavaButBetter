@@ -76,7 +76,7 @@ public class Tokeniser {
         int cb = 0;
 
         // Add indent as the first token
-        tok.add(new Token(Token.TokenType.INDENT, indent));
+        tok.add(new Token(Token.Type.INDENT, indent));
 
         // Start tokenising
         for (; i < line.length(); ++i) {
@@ -88,31 +88,27 @@ public class Tokeniser {
             // Break
             if ((type != lastType && type != CharType.W) && !(
                 sq || dq || bt || rb > 0 || sb > 0 || cb > 0
-            ) && !(
-                // Join together operators: -= += *= /= == >= <= .=
-                ("+-*/=><!.".contains("" + lastChar)) && c == '='
+            // ) && !(
+            //     // Join together operators: -= += *= /= == >= <= .=
+            //     ("+-*/=><!.".contains("" + lastChar)) && c == '='
             // ) && !(
             //     lastType == CharType.A && c == '.' // Join together names like `word.upper` (second part is below)
             // ) && !(
-            //     type == CharType.A && lastChar == '.' // Second part to the line above.
+            //     type == CharType.A && lastChar == '.' // Second part to the line above
             ) && !(
                 lastChar == '_' && type == CharType.A // Join together names like `string_one` (second part is below)
             ) && !(
-                lastType == CharType.A && c == '_' // Second part to the line above.
+                lastType == CharType.A && c == '_' // Second part to the line above
             ) && !(
-                lastType == CharType.A && type == CharType.D // Join alphabetical and numerical characters.
+                lastType == CharType.A && type == CharType.D // Join alphabetical and numerical characters
             ) && !(
-                type == CharType.A && lastType == CharType.D // Second part to the line above.
+                type == CharType.A && lastType == CharType.D // Second part to the line above
             ) && !(
-                lastChar == '_' && c == '_' // Join together all `_` tokens.
+                lastType == CharType.D && c == '.' // Join decimals (first part)
             ) && !(
-                lastChar == '.' && c == '.' // Join together all `.` tokens.
+                lastChar == '.' && type == CharType.D // Join decimals (second part)
             ) && !(
-                lastChar == '*' && c == '*' // Join together all `*` tokens.
-            ) && !(
-                lastChar == '<' && c == '<' // Join together all '<' tokens.
-            ) && !(
-                lastChar == '>' && c == '>' // Join together all '>' tokens.
+                lastChar == '_' && c == '_' // Join together all `_` tokens
             ) && !current.isEmpty()) {
                 tok.add(Token.fromString(current));
                 current = "";

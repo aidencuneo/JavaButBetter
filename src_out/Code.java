@@ -3,40 +3,31 @@ import java.util.*;
 import java.io.*;
 import java.util.*;
 
-public class Code {
-null    }
+public class Point {
     
     var x = 0 ;
     var y = 0 ;
 
 }public class Code {
-null    
-    
-    
-    main 
- {
+main {
         var some1000_a = 1.0 + 1.0 ;
-        println "hello" 
-        print 'h' 
-        print "ey" 
-        function ("hello") 
+        System.out.println("hello" )
+        System.out.print('h' )
+        System.out.print('ey' )
+        
         int what = 10 ;
-        if what += 1 
- {
-            dosomething () 
+        if what += 1 {
+            
         }
     }
-    public static what 
- {
+    public static what {
         var i = 0 ;
         ++ i 
-        i += 1 
+        
         this0. _has . a_a 
         ret null 
-    }
-    somefunc (): 
- {
+    } {
         String h = 'what' ;
-        h .= substring (1) 
+        
 
 }

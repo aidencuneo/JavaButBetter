@@ -7,7 +7,7 @@ main:
     some1000_a = 1.0 + 1.0
     println "hello"
     print 'h';
-    print "ey";
+    print 'ey';
     function("hello")
     int what = 10
     if what += 1

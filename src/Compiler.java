@@ -14,7 +14,7 @@ public class Compiler {
         int lastIndent = 0;
 
         for (int i = 0; i < lines.size(); ++i) {
-            String out = "";
+            String out = outClasses.getOrDefault(currentClass, "");
 
             ArrayList<Token> tok = Tokeniser.tokLine(lines.get(i));
             int indent = tok.get(0).value.length();
@@ -53,10 +53,10 @@ public class Compiler {
             }
 
             // Classes
-            else if ((f = findToken(tok, Token.Type.CLASS)) != -1) {
+            else if ((f = findToken(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()) {
                 // Set current class
-                if (f + 1 < tok.size())
-                    currentClass = tok.get(f + 1).value;
+                currentClass = tok.get(f + 1).value;
+                out = outClasses.getOrDefault(currentClass, "");
 
                 // out = out.trim();
                 // out += "\n}\n\n";
@@ -104,13 +104,26 @@ public class Compiler {
                 out += ";";
             }
 
+            // Keywords
+            else if (startTok == Token.Type.ID) {
+                // print, println
+                if (tok.get(0).value.equals("print") || tok.get(0).value.equals("println")) {
+                    out += "System.out." + tok.get(0).value + "(";
+
+                    for (int j = 1; j < tok.size(); ++j)
+                        out += tok.get(j).value + " ";
+
+                    out += ")";
+                }
+            }
+
             else {
                 for (int j = 0; j < tok.size(); ++j)
                     out += tok.get(j).value + " ";
             }
 
             out += "\n";
-            outClasses.put(currentClass, outClasses.get(currentClass) + out);
+            outClasses.put(currentClass, out);
             lastIndent = indent;
 
             System.out.println(Util.d(tok));
@@ -120,7 +133,8 @@ public class Compiler {
         String out = "";
 
         for (String s : outClasses.keySet()) {
-            out += "public class " + className + " {\n";
+            out += "public class " + s + " {\n";
+            System.out.println(outClasses.get(s));
             out += outClasses.get(s);
             out += "\n}";
         }

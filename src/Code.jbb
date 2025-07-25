@@ -2,7 +2,7 @@ include java.io.*
 include java.util.*
 
 # main:
-    (some1000_a = 1.0 + 1.0)
+    some1000_a = (1.0**1.0 * 2 + 5 - 1)
     println "hello" + ", " + 10 + ' days remaining'
     print 'h';
     print 'ey';
@@ -10,7 +10,6 @@ include java.util.*
     int what = 10
     string nullable = null
     nullable ??= 'null'
-    nullable ?? 'null'
     what **= 2
     if what += 1
         dosomething()
@@ -24,10 +23,12 @@ int max(int a, int b):
     s = "" + i; // Comment?
     ret null
 
-function():
-    string h = 'what'
+# function(string s):
+    string h = 'what' + s
     h .= substring(1)
 
+# dosomething:
+    ret
 
 private class Point
 

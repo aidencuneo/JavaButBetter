@@ -78,6 +78,34 @@ public class Compiler {
                 // out += "{";
             }
 
+            // Control flow
+            else if (startTok == Token.Type.IF
+                || startTok == Token.Type.ELIF
+                || startTok == Token.Type.ELSE
+                || startTok == Token.Type.WHILE
+                || startTok == Token.Type.UNTIL
+            ) {
+                if (startTok == Token.Type.IF)
+                    out += "if (";
+                else if (startTok == Token.Type.ELIF)
+                    out += "else if (";
+                else if (startTok == Token.Type.ELSE)
+                    out += "else (";
+                else if (startTok == Token.Type.WHILE)
+                    out += "while (";
+                else if (startTok == Token.Type.UNTIL)
+                    out += "while (!(";
+
+                out += compileExpr(Util.select(tok, 1)) + ")";
+
+                if (startTok == Token.Type.UNTIL)
+                    out += ")";
+            }
+
+            // For loops
+            else if (startTok == Token.Type.FOR) {
+            }
+
             // Scoped statements - loops, methods, classes, etc.
             else if (endTok == Token.Type.SCOPE) {
                 if (false) {}
@@ -192,10 +220,9 @@ public class Compiler {
         String out = "";
         int f = -1;
 
-        // Null coalescing
-        if ((f = findToken(tok, "??")) != -1) {
-            
-        }
+        // Empty expression
+        if (tok.isEmpty())
+            return out;
 
         // Assignments
         if ((f = findTokenType(tok, Token.Type.ASSIGN)) != -1) {
@@ -261,6 +288,36 @@ public class Compiler {
                 out += ")";
         }
 
+        // Null coalescing
+        else if ((f = findToken(tok, "??")) != -1) {
+            // name ?? '' => ((name) != null) ? (name) : ("");
+            String lhs = compileExpr(Util.select(tok, 0, f));
+            String rhs = compileExpr(Util.select(tok, f + 1));
+            System.out.println("LHS: " + lhs + ", RHS: " + rhs);
+            out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")";
+        }
+
+        // Multiplicative operators
+        else if ((f = findAnyToken(tok, List.of("*", "/", "%"))) != -1) {
+            String lhs = compileExpr(Util.select(tok, 0, f));
+            String rhs = compileExpr(Util.select(tok, f + 1));
+            out += lhs + " " + tok.get(f).value + " " + rhs;
+        }
+
+        // Exponentiation
+        else if ((f = findToken(tok, "**")) != -1) {
+            String lhs = compileExpr(Util.select(tok, 0, f));
+            String rhs = compileExpr(Util.select(tok, f + 1));
+            out += "Math.pow(" + lhs + ", " + rhs + ")";
+        }
+
+        // Expressions (parentheses)
+        else if (tok.get(0).type == Token.Type.EXPR) {
+            String expr = tok.get(0).value;
+            expr = expr.substring(1, expr.length() - 1);
+            out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")";
+        }
+
         // Fallback - add tokens as they are
         else {
             for (int j = 0; j < tok.size(); ++j)
@@ -301,6 +358,13 @@ public class Compiler {
     public static int findToken(ArrayList<Token> tok, String value) {
         for (int i = 0; i < tok.size(); ++i)
             if (tok.get(i).value.equals(value))
+                return i;
+        return -1;
+    }
+
+    public static int findAnyToken(ArrayList<Token> tok, List<String> values) {
+        for (int i = 0; i < tok.size(); ++i)
+            if (values.contains(tok.get(i).value))
                 return i;
         return -1;
     }

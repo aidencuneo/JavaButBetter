@@ -5,17 +5,16 @@ import java.util.*;
 
 public class Code {
     public static void main() {
-        (some1000_a = 1.0 + 1.0);
+        var some1000_a = (Math.pow(1.0, 1.0) * 2 + 5 - 1);
         System.out.println("hello" + ", " + 10 + " days remaining");
         System.out.print('h');
         System.out.print("ey");
         function ("hello");
         int what = 10;
         String nullable = null;
-        nullable = nullable ?? "null";
-        nullable ?? "null";
-        what = what ** 2;
-        += 1; {
+        nullable = ((nullable) != null) ? (nullable) : ("null");
+        what = Math.pow(what, 2);
+        if ((what += 1)) {
             dosomething ();
         }
     }
@@ -29,9 +28,12 @@ public class Code {
         var s = "" + i;
         return null;
     }
-    public void function() {
-        String h = "what";
+    public static void function(String s) {
+        String h = "what" + s;
         h = h . substring (1);
+    }
+    public static void dosomething() {
+        return ;
     }
 }
 private class Point {

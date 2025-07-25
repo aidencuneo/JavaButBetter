@@ -88,9 +88,9 @@ public class Tokeniser {
             // Break
             if ((type != lastType && type != CharType.W || type == CharType.S) && !(
                 sq || dq || bt || rb > 0 || sb > 0 || cb > 0
-            // ) && !(
-            //     // Join together operators: -= += *= /= == >= <= .=
-            //     ("+-*/=><!.".contains("" + lastChar)) && c == '='
+            ) && !(
+                // Join together operators: -= += *= /= **= == >= <= .= ??=
+                ("+-*/=><!.?".contains("" + lastChar)) && c == '='
             // ) && !(
             //     lastType == CharType.A && c == '.' // Join together names like `word.upper` (second part is below)
             // ) && !(
@@ -109,6 +109,14 @@ public class Tokeniser {
                 lastChar == '.' && type == CharType.D // Join decimals (second part)
             ) && !(
                 lastChar == '_' && c == '_' // Join together all `_` tokens
+            ) && !(
+                lastChar == '+' && c == '+' // Join together all `+` tokens
+            ) && !(
+                lastChar == '-' && c == '-' // Join together all `-` tokens
+            ) && !(
+                lastChar == '*' && c == '*' // Join together all `*` tokens
+            ) && !(
+                lastChar == '?' && c == '?' // Join together all `?` tokens
             ) && !current.isBlank()) {
                 tok.add(Token.fromString(current.trim()));
                 current = "";

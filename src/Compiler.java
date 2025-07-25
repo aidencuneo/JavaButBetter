@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Compiler {
@@ -13,7 +14,6 @@ public class Compiler {
         HashMap<String, AccessMod> outClassAccess = new HashMap<>();
         outClassAccess.put(className, AccessMod.PUBLIC);
 
-        int scope = 0;
         int lastIndent = 0;
 
         for (int i = 0; i < lines.size(); ++i) {
@@ -25,7 +25,7 @@ public class Compiler {
 
             ArrayList<Token.Type> types = getTokenTypes(tok);
 
-            if (tok.size() == 0)
+            if (tok.isEmpty())
                 continue;
 
             Token.Type startTok = types.get(0);
@@ -56,8 +56,11 @@ public class Compiler {
             }
 
             // Classes
-            else if ((f = findToken(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()) {
-                // Set current class
+            else if ((f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()) {
+                // Set code for previous class before moving to new one
+                outClasses.put(currentClass, out);
+
+                // Change current class
                 currentClass = tok.get(f + 1).value;
                 out = outClasses.getOrDefault(currentClass, "");
                 AccessMod accessMod = AccessMod.DEFAULT;
@@ -89,8 +92,8 @@ public class Compiler {
                     String args = "()";
 
                     if (end >= 0 && tok.get(end).type == Token.Type.EXPR) {
-                        // TODO: Compile expression
-                        args = tok.get(end).value;
+                        // Compile method arguments
+                        args = compileMethodArgs(tok.get(end).value);
 
                         // Look to the next token for the name
                         --end;
@@ -121,43 +124,22 @@ public class Compiler {
                     if (methodAccess.accessMod == AccessMod.DEFAULT)
                         methodAccess.accessMod = AccessMod.PUBLIC;
 
-                    out += methodAccess + " " + returnType + " " + methodName + args;
+                    System.out.println(methodName + " -> " + currentClass);
+
+                    // If method name is the same as the class name,
+                    // it's a constructor, so don't include the return type
+                    if (methodName.equals(currentClass))
+                        out += methodAccess + " " + methodName + args;
+                    else
+                        out += methodAccess + " " + returnType + " " + methodName + args;
                 }
                 // tok.remove(tok.size() - 1);
-            }
-
-            // Assignments
-            else if ((f = findToken(tok, Token.Type.ASSIGN)) != -1) {
-                String vartype = "var";
-                String varname = "";
-
-                // type name = value
-                if (f == 2) {
-                    vartype = tok.get(0).value;
-                    varname = tok.get(1).value;
-                }
-
-                // name = value
-                else if (f == 1)
-                    varname = tok.get(0).value;
-
-                out += vartype + " " + varname + " = ";
-
-                // Add compiled value
-                for (int j = f + 1; j < tok.size(); ++j)
-                    out += tok.get(j).value + " ";
-
-                // Line ending
-                out += ";";
             }
 
             // Keywords
             else if (startTok == Token.Type.RETURN) {
                 out += "return ";
-
-                for (int j = 1; j < tok.size(); ++j)
-                    out += tok.get(j).value + " ";
-
+                out += compileExpr(Util.select(tok, 1));
                 out += ";";
             }
 
@@ -168,25 +150,27 @@ public class Compiler {
                 // print, println
                 if (tok.get(0).value.equals("print") || tok.get(0).value.equals("println")) {
                     out += "System.out." + tok.get(0).value + "(";
-
-                    for (int j = 1; j < tok.size(); ++j)
-                        out += tok.get(j).value + " ";
-
+                    out += compileExpr(Util.select(tok, 1));
                     out += ");";
                 }
             }
 
-            // Placeholder - adds tokens as they are
-            else {
-                for (int j = 0; j < tok.size(); ++j)
-                    out += tok.get(j).value + " ";
-            }
+            // Expressions
+            else
+                out += compileExpr(tok, false) + ";";
 
             out += "\n";
             outClasses.put(currentClass, out);
             lastIndent = indent;
 
             System.out.println(Util.d(tok));
+        }
+
+        // After the final line of a class, reset indentation
+        while (lastIndent > 0) {
+            String curOut = outClasses.getOrDefault(currentClass, "");
+            outClasses.put(currentClass, curOut + " ".repeat(lastIndent) + "}\n");
+            lastIndent -= 4;
         }
 
         // Construct classes
@@ -204,13 +188,103 @@ public class Compiler {
         return startTemplate + "\n" + out + endTemplate;
     }
 
-    public static String compileExpr(String className, ArrayList<Token> tok) {
+    public static String compileExpr(ArrayList<Token> tok, boolean nested) {
         String out = "";
+        int f = -1;
+
+        // Null coalescing
+        if ((f = findToken(tok, "??")) != -1) {
+            
+        }
+
+        // Assignments
+        if ((f = findTokenType(tok, Token.Type.ASSIGN)) != -1) {
+            String vartype = "var";
+            String varname = "";
+
+            // type name = value
+            if (f == 2) {
+                vartype = tok.get(0).value;
+                varname = tok.get(1).value;
+            }
+
+            // name = value
+            else if (f == 1)
+                varname = tok.get(0).value;
+
+            // Error!
+            else {}
+
+            if (nested)
+                out += "(" + varname + " = ";
+            else
+                out += vartype + " " + varname + " = ";
+
+            out += compileExpr(Util.select(tok, f + 1));
+
+            if (nested)
+                out += ")";
+        }
+
+        // Compound assignments
+        else if ((f = findTokenType(tok, Token.Type.COMP_ASSIGN)) != -1) {
+            String varname = "";
+            String oper = tok.get(f).value.substring(0, tok.get(f).value.length() - 1);
+
+            // name = value
+            if (f == 1)
+                varname = tok.get(0).value;
+
+            // Error!
+            else {}
+
+            if (nested)
+                out += "(";
+
+            ArrayList<Token> exprTok = Util.select(tok, f + 1);
+
+            // For custom operators, convert to 'name = (name oper value)'
+            if (List.of(".", "**", "??").contains(oper)) {
+                exprTok.add(0, Token.fromString(varname));
+                exprTok.add(1, Token.fromString(oper));
+                out += varname + " = ";
+            }
+
+            // Otherwise, use 'name oper= (value)'
+            else {
+                out += varname + " " + tok.get(f).value + " ";
+            }
+
+            out += compileExpr(exprTok);
+
+            if (nested)
+                out += ")";
+        }
+
+        // Fallback - add tokens as they are
+        else {
+            for (int j = 0; j < tok.size(); ++j)
+                out += tok.get(j).value + " ";
+        }
+
+        return out.trim();
+    }
+
+    public static String compileExpr(ArrayList<Token> tok) {
+        return compileExpr(tok, true);
+    }
+
+    public static String compileMethodArgs(String expr) {
+        if (expr.startsWith("(") && expr.endsWith(")"))
+            expr = expr.substring(1, expr.length() - 1);
+
+        String out = "";
+        ArrayList<Token> tok = Tokeniser.tokLine(expr);
 
         for (int j = 0; j < tok.size(); ++j)
             out += tok.get(j).value + " ";
 
-        return out.trim();
+        return "(" + out.trim() + ")";
     }
 
     public static String constructClassString(String className, String code, AccessMod accessMod) {
@@ -224,7 +298,14 @@ public class Compiler {
         return out;
     }
 
-    public static int findToken(ArrayList<Token> tok, Token.Type type) {
+    public static int findToken(ArrayList<Token> tok, String value) {
+        for (int i = 0; i < tok.size(); ++i)
+            if (tok.get(i).value.equals(value))
+                return i;
+        return -1;
+    }
+
+    public static int findTokenType(ArrayList<Token> tok, Token.Type type) {
         for (int i = 0; i < tok.size(); ++i)
             if (tok.get(i).type == type)
                 return i;

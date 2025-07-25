@@ -8,11 +8,11 @@ public class MethodAccess {
     }
 
     public static AccessMod accessModFromToken(Token tok) {
-        if (tok.value.equals("public"))
+        if (tok.value.equals("public") || tok.value.equals("+"))
             return AccessMod.PUBLIC;
-        if (tok.value.equals("private"))
+        if (tok.value.equals("private") || tok.value.equals("-"))
             return AccessMod.PRIVATE;
-        if (tok.value.equals("protected"))
+        if (tok.value.equals("protected") || tok.value.equals("*"))
             return AccessMod.PROTECTED;
 
         return AccessMod.DEFAULT;

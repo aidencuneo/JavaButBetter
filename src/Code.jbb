@@ -1,28 +1,30 @@
 include java.io.*
 include java.util.*
 
-public class Code
-
-#main:
-    some1000_a = 1.0 + 1.0
-    println "hello"
+# main:
+    (some1000_a = 1.0 + 1.0)
+    println "hello" + ", " + 10 + ' days remaining'
     print 'h';
     print 'ey';
     function("hello")
     int what = 10
+    string nullable = null
+    nullable ??= 'null'
+    nullable ?? 'null'
+    what **= 2
     if what += 1
         dosomething()
 int max(int a, int b):
     ret a > b ? a : b
 
-+#what:
++# string what:
     i = 0
     ++i
     i += 1
-    this0._has.a_a // Comment somewhere?
+    s = "" + i; // Comment?
     ret null
 
-somefunc():
+function():
     string h = 'what'
     h .= substring(1)
 
@@ -33,6 +35,6 @@ private class Point
 int x = 0
 int y = 0
 
-Point:
+Point: // This is a constructor
     newx = x
     newy = y

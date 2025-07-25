@@ -21,6 +21,7 @@ public class Token {
         UNARY_OPER,
         BIN_OPER,
         DOT,
+        COMMA,
         INCREMENT,
         DECREMENT,
         RETURN,
@@ -72,9 +73,16 @@ public class Token {
             t = Type.FALSE;
         else if (f == '"' && l == '"')
             t = Type.STRING;
-        else if (f == '\'' && l == '\'')
-            t = Type.CHAR; // TODO: Unless length of literal is not one
-        else if (f == '(' && l == ')')
+        else if (f == '\'' && l == '\'') {
+            String vNoQuotes = v.substring(1, v.length() - 1);
+            String realStr = StringParser.unescapeString(vNoQuotes);
+
+            if (realStr.length() > 1) {
+                t = Type.STRING;
+                v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"';
+            } else
+                t = Type.CHAR;
+        } else if (f == '(' && l == ')')
             t = Type.EXPR;
         else if (v.equals("="))
             t = Type.ASSIGN;
@@ -82,6 +90,8 @@ public class Token {
             t = Type.COMP_ASSIGN;
         else if (v.equals("."))
             t = Type.DOT;
+        else if (v.equals(","))
+            t = Type.COMMA;
         else if (v.equals("++"))
             t = Type.INCREMENT;
         else if (v.equals("--"))

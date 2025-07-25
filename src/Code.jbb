@@ -12,6 +12,8 @@ main:
     int what = 10
     if what += 1
         dosomething()
+int max(int a, int b):
+    ret a > b ? a : b
 
 public static what:
     i = 0
@@ -25,8 +27,12 @@ somefunc():
     h .= substring(1)
 
 
-class Point
+private class Point
 
 // These are part of a class now
-x = 0
-y = 0
+int x = 0
+int y = 0
+
+Point:
+    newx = x
+    newy = y

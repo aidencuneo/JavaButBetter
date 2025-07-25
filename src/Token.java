@@ -10,6 +10,9 @@ public class Token {
         SCOPE,
         SYMBOL,
         EXPR,
+        NULL,
+        TRUE,
+        FALSE,
         NUM,
         STRING,
         CHAR,
@@ -60,6 +63,12 @@ public class Token {
             t = Type.INDENT;
         else if (v.equals(":"))
             t = Type.SCOPE;
+        else if (v.equals("null"))
+            t = Type.NULL;
+        else if (v.equals("true"))
+            t = Type.TRUE;
+        else if (v.equals("false"))
+            t = Type.FALSE;
         else if (f == '"' && l == '"')
             t = Type.STRING;
         else if (f == '\'' && l == '\'')

@@ -1,7 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.io.*;
-import java.util.*;
 
 public class Code {
     public static void main() {
@@ -33,7 +31,7 @@ public class Code {
         h = h . substring (1);
     }
     public static void dosomething() {
-        return ;
+        pass;
     }
 }
 class Point {

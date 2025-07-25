@@ -1,6 +1,3 @@
-use java.io.*
-use java.util.*
-
 # main:
     some1000_a = (1.0**1.0 * 2 + 5 - 1)
     println "hello" + ", " + 10 + ' days remaining'
@@ -11,7 +8,7 @@ use java.util.*
     string nullable = null
     nullable ??= 'null'
     what **= 2
-    if (what += 1) == 5
+    if (what += 1) == 5 // Also try if what += 1
         dosomething()
 int max(int a, int b):
     ret a > b ? a : b
@@ -28,7 +25,7 @@ int max(int a, int b):
     h .= substring(1)
 
 # dosomething:
-    ret
+    pass
 
 class Point
 

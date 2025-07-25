@@ -15,13 +15,7 @@ public class JavaBB {
         }
         if (! new File (outDir) . exists ()) {
             new File (outDir) . mkdir ();
-        }
-        var files = new File (compDir) . list (new FilenameFilter(); {
-            public boolean accept(File dir , String name) {
-                return name . endsWith ('.java');
-            }
-        }
-        ); {
+        } {
             var fileContent = '';
             var fromPath = compDir + '/' + files [i];
             var toPath = outDir + '/' + files [i] . split ('\\.') [0] + ".java";

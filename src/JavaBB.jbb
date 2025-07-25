@@ -18,10 +18,7 @@ use java.util.*
         new File(outDir).mkdir()
 
     // Compile files one by one
-    files = new File(compDir).list(new FilenameFilter()
-        + boolean accept(File dir, string name):
-            ret name.endsWith('.java')
-    )
+    //files = new File(compDir).list((File dir, string name) -> name.endsWith('.jbb'))
 
     // files = new File(compDir).list()
 

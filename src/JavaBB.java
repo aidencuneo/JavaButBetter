@@ -19,11 +19,7 @@ public class JavaBB {
             new File(outDir).mkdir();
 
         // Compile files one by one
-        String[] files = new File(compDir).list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jbb");
-            }
-        });
+        String[] files = new File(compDir).list((File dir, String name) -> name.endsWith(".jbb"));
 
         // String[] files = new File(compDir).list();
 

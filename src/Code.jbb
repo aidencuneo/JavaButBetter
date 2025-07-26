@@ -1,25 +1,29 @@
 # main:
-    some1000_a = (1.0**1.0 * 2 + 5 - 1)
+    let some1000_a = (1.0**1.0 * 2 + 5 - 1)
     println "hello" + ", " + 10 + ' days remaining'
-    print 'h';
-    print 'ey';
-    function("hello")
-    double what = 10
-    string nullable = null
-    nullable ??= 'null'
-    what **= 2
-    if (what += 1) == 5 // Also try if what += 1
-        dosomething()
-    until what == 10
-        ++what
+    function('hello')
+
+    let n = 0.0
+    n = 10.0 if some1000_a
+
+    println 'nice' if List.of(1, 2, 'hi')
+    println 'yeah' if List.of(1)
+
+    let i = 3
+    let j = 3
+    let k = 3
+
+    while k
+        println i-- + ', ' + j-- + ', ' + k--
+
 int max(int a, int b):
     ret a > b ? a : b
 
 +# string what:
-    i = 0
+    let i = 0
     ++i
     i += 1
-    s = "" + i; // Comment?
+    let s = "" + i; // Comment?
     ret null
 
 # function(string s):
@@ -27,7 +31,7 @@ int max(int a, int b):
     h .= substring(1)
 
 # dosomething:
-    ...
+    println 'Something done'
 
 class Point
 
@@ -36,5 +40,5 @@ int x = 0
 int y = 0
 
 Point: // This is a constructor
-    newx = x
-    newy = y
+    let newx = x
+    let newy = y

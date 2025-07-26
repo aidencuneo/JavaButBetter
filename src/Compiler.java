@@ -1,19 +1,27 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Compiler {
+    static String mainClassName = "";
+    static String currentClass = "";
+    static String startTemplate = "";
+    static String endTemplate = "";
+    static HashMap<String, String> outClasses = new HashMap<>();
+    static HashMap<String, AccessMod> outClassAccess = new HashMap<>();
+
     public static CompResult compileFile(String className, String code) {
+        // Allow all methods to use these variables
+        mainClassName = className;
+        currentClass = className;
+        startTemplate = "import java.io.*;\nimport java.util.*;\n";
+        endTemplate = "";
+
+        // Reset class data
+        outClasses = new HashMap<>();
+        outClassAccess = new HashMap<>();
+        outClassAccess.put(mainClassName, AccessMod.PUBLIC);
+        
         ArrayList<String> lines = Tokeniser.splitFile(code);
-
-        String startTemplate = "import java.io.*;\nimport java.util.*;\n";
-        String endTemplate = "";
-
-        String currentClass = className;
-        HashMap<String, String> outClasses = new HashMap<>();
-        HashMap<String, AccessMod> outClassAccess = new HashMap<>();
-        outClassAccess.put(className, AccessMod.PUBLIC);
-
         int lastIndent = 0;
 
         for (int i = 0; i < lines.size(); ++i) {
@@ -23,14 +31,8 @@ public class Compiler {
             int indent = tok.get(0).value.length();
             tok.remove(0);
 
-            ArrayList<Token.Type> types = getTokenTypes(tok);
-
             if (tok.isEmpty())
                 continue;
-
-            Token.Type startTok = types.get(0);
-            Token.Type endTok = Util.get(types, -1);
-            int f = -1;
 
             // Indentation controls braces
             while (indent > lastIndent) {
@@ -47,172 +49,13 @@ public class Compiler {
             // Add indentation for every line
             out += " ".repeat(indent + 4);
 
-            // Imports
-            if (startTok == Token.Type.IMPORT) {
-                String importStr = "import ";
-                for (int j = 1; j < tok.size(); ++j)
-                    importStr += tok.get(j).value;
-                startTemplate += importStr + ";\n";
-            }
-
-            // Classes
-            else if ((f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()) {
-                // Set code for previous class before moving to new one
-                outClasses.put(currentClass, out);
-
-                // Change current class
-                currentClass = tok.get(f + 1).value;
-                out = outClasses.getOrDefault(currentClass, "");
-                AccessMod accessMod = AccessMod.DEFAULT;
-
-                // out = out.trim();
-                // out += "\n}\n\n";
-
-                // Get access modifier from tokens before 'class'
-                for (int j = 0; j < f && accessMod == AccessMod.DEFAULT; ++j)
-                    accessMod = MethodAccess.accessModFromToken(tok.get(j));
-
-                // Set access modifier for this class
-                outClassAccess.put(currentClass, accessMod);
-
-                // out += "{";
-            }
-
-            // Control flow
-            else if (startTok == Token.Type.IF
-                || startTok == Token.Type.ELIF
-                || startTok == Token.Type.ELSE
-                || startTok == Token.Type.WHILE
-                || startTok == Token.Type.UNTIL
-            ) {
-                if (startTok == Token.Type.IF)
-                    out += "if (";
-                else if (startTok == Token.Type.ELIF)
-                    out += "else if (";
-                else if (startTok == Token.Type.ELSE)
-                    out += "else (";
-                else if (startTok == Token.Type.WHILE)
-                    out += "while (";
-                else if (startTok == Token.Type.UNTIL)
-                    out += "while (!(";
-
-                out += "LangUtil.isTruthy(";
-                out += compileExpr(Util.select(tok, 1));
-                out += "))";
-
-                if (startTok == Token.Type.UNTIL)
-                    out += ")";
-            }
-
-            // For loops
-            else if (startTok == Token.Type.FOR) {
-            }
-
-            // Scoped statements - loops, methods, classes, etc.
-            else if (endTok == Token.Type.SCOPE) {
-                if (false) {}
-
-                // Methods
-                else {
-                    // access?, static?, returntype|void, name, expr?, scope
-                    // This points to the next token to process from the end
-                    int end = tok.size() - 2;
-
-                    // Check for an expression before scope token
-                    String args = "()";
-
-                    if (end >= 0 && tok.get(end).type == Token.Type.EXPR) {
-                        // Compile method arguments
-                        args = compileMethodArgs(tok.get(end).value);
-
-                        // Look to the next token for the name
-                        --end;
-                    }
-
-                    // Get method name
-                    String methodName = "";
-
-                    if (end >= 0 && tok.get(end).type == Token.Type.ID) {
-                        methodName = tok.get(end).value;
-                        --end;
-                    } else {
-                        // Error! Method name not given
-                    }
-
-                    // Get return type
-                    String returnType = "void";
-
-                    if (end >= 0 && tok.get(end).type == Token.Type.ID) {
-                        returnType = tok.get(end).value;
-                        --end;
-                    }
-
-                    // Get type arguments
-                    String typeArgs = "";
-
-                    for (int j = 0; j <= end; ++j) {
-                        Token t = tok.get(j);
-
-                        if (t.type == Token.Type.EXPR) {
-                            typeArgs = t.value.substring(1, t.value.length() - 1);
-                            break;
-                        }
-                    }
-
-                    // Get method access
-                    MethodAccess methodAccess = getMethodAccess(tok, end + 1);
-
-                    // Default access modifier for methods is public
-                    if (methodAccess.accessMod == AccessMod.DEFAULT)
-                        methodAccess.accessMod = AccessMod.PUBLIC;
-
-                    System.out.println(methodName + " -> " + currentClass);
-
-                    // If method name is the same as the class name,
-                    // it's a constructor, so don't include the return type
-                    if (methodName.equals(currentClass))
-                        out += methodAccess + " " + methodName + args;
-                    else
-                        out += methodAccess + " " + returnType + " " + methodName + args;
-                }
-                // tok.remove(tok.size() - 1);
-            }
-
-            // Keywords
-            else if (startTok == Token.Type.RETURN) {
-                out += "return ";
-                out += compileExpr(Util.select(tok, 1));
-                out += ";";
-            }
-
-            else if (startTok == Token.Type.BREAK)
-                out += "break;";
-
-            else if (startTok == Token.Type.CONTINUE)
-                out += "continue;";
-
-            else if (startTok == Token.Type.PASS) {
-                // Do nothing
-            }
-
-            // ID keywords
-            else if (startTok == Token.Type.ID && (
-                tok.get(0).value.equals("print") || tok.get(0).value.equals("println")
-            )) {
-                // print, println
-                if (tok.get(0).value.equals("print") || tok.get(0).value.equals("println")) {
-                    out += "System.out." + tok.get(0).value + "(";
-                    out += compileExpr(Util.select(tok, 1));
-                    out += ");";
-                }
-            }
-
-            // Expressions
-            else
-                out += compileExpr(tok, false) + ";";
-
+            // Add compiled statement
+            out = compileStatement(tok, out);
             out += "\n";
+
+            // Push to current class
             outClasses.put(currentClass, out);
+
             lastIndent = indent;
 
             System.out.println(Util.d(tok));
@@ -229,6 +72,225 @@ public class Compiler {
         return new CompResult(outClasses, outClassAccess, startTemplate, endTemplate);
     }
 
+    public static String compileStatement(ArrayList<Token> tok, String out) {
+        if (tok.isEmpty())
+            return "";
+
+        ArrayList<Token.Type> types = getTokenTypes(tok);
+        Token.Type startTok = types.get(0);
+        Token.Type endTok = Util.get(types, -1);
+        int f = -1;
+
+        System.out.println(currentClass);
+
+        // Imports
+        if (startTok == Token.Type.IMPORT) {
+            String importStr = "import ";
+            for (int j = 1; j < tok.size(); ++j)
+                importStr += tok.get(j).value;
+            startTemplate += importStr + ";\n";
+        }
+
+        // Options
+        else if (startTok == Token.Type.OPTION) {
+            if (tok.size() < 2) {
+                // Error!
+                return "";
+            }
+
+            if (tok.size() < 3) {
+                // Error!
+                return "";
+            }
+
+            String optionName = tok.get(1).value;
+            String optionValue = tok.get(2).value;
+            Options.setOption(optionName, optionValue);
+        }
+
+        // Classes
+        else if ((f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()) {
+            // Set code for previous class before moving to new one
+            outClasses.put(currentClass, out);
+
+            // Change current class
+            currentClass = tok.get(f + 1).value;
+            out = outClasses.getOrDefault(currentClass, "");
+            AccessMod accessMod = AccessMod.DEFAULT;
+
+            // out = out.trim();
+            // out += "\n}\n\n";
+
+            // Get access modifier from tokens before 'class'
+            for (int j = 0; j < f && accessMod == AccessMod.DEFAULT; ++j)
+                accessMod = MethodAccess.accessModFromToken(tok.get(j));
+
+            // Set access modifier for this class
+            outClassAccess.put(currentClass, accessMod);
+
+            // out += "{";
+        }
+
+        // Control flow
+        else if (startTok == Token.Type.IF
+            || startTok == Token.Type.ELIF
+            || startTok == Token.Type.ELSE
+            || startTok == Token.Type.WHILE
+            || startTok == Token.Type.UNTIL
+        ) {
+            switch (startTok) {
+                case IF -> out += "if (";
+                case ELIF -> out += "else if (";
+                case ELSE -> out += "else (";
+                case WHILE -> out += "while (";
+                case UNTIL -> out += "while (!(";
+                default -> {}
+            }
+
+            out += "LangUtil.isTruthy(";
+            out += compileExpr(Util.select(tok, 1));
+            out += "))";
+
+            if (startTok == Token.Type.UNTIL)
+                out += ")";
+        }
+
+        // Statement control flow
+        else if ((f = findTokenTypeRev(tok, Token.Type.IF)) != -1) {
+            out += "if (LangUtil.isTruthy(";
+            String cond = compileExpr(Util.select(tok, f + 1));
+            out += cond.isEmpty() ? "true" : cond;
+            out += ")) { ";
+            out = compileStatement(Util.select(tok, 0, f), out);
+            out += " }";
+        }
+
+        else if ((f = findTokenTypeRev(tok, Token.Type.WHILE)) != -1) {
+            out += "while (LangUtil.isTruthy(";
+            String cond = compileExpr(Util.select(tok, f + 1));
+            out += cond.isEmpty() ? "true" : cond;
+            out += ")) { ";
+            out = compileStatement(Util.select(tok, 0, f), out);
+            out += " }";
+        }
+
+        else if ((f = findTokenTypeRev(tok, Token.Type.UNTIL)) != -1) {
+            out += "while (!LangUtil.isTruthy(";
+            String cond = compileExpr(Util.select(tok, f + 1));
+            out += cond.isEmpty() ? "false" : cond;
+            out += ")) { ";
+            out = compileStatement(Util.select(tok, 0, f), out);
+            out += " }";
+        }
+
+        // For loops
+        else if (startTok == Token.Type.FOR) {
+        }
+
+        // Scoped statements - loops, methods, classes, etc.
+        else if (endTok == Token.Type.SCOPE) {
+            if (false) {}
+
+            // Methods
+            else {
+                // access?, static?, returntype|void, name, expr?, scope
+                // This points to the next token to process from the end
+                int end = tok.size() - 2;
+
+                // Check for an expression before scope token
+                String args = "()";
+
+                if (end >= 0 && tok.get(end).type == Token.Type.EXPR) {
+                    // Compile method arguments
+                    args = compileMethodArgs(tok.get(end).value);
+
+                    // Look to the next token for the name
+                    --end;
+                }
+
+                // Get method name
+                String methodName = "";
+
+                if (end >= 0 && tok.get(end).type == Token.Type.ID) {
+                    methodName = tok.get(end).value;
+                    --end;
+                } else {
+                    // Error! Method name not given
+                }
+
+                // Get type arguments
+                String typeArgs = "";
+
+                if (end >= 0 && tok.get(end).type == Token.Type.EXPR) {
+                    String v = tok.get(end).value;
+                    typeArgs = "<" + v.substring(1, v.length() - 1) + "> ";
+                    --end;
+                }
+
+                // Get return type
+                String returnType = "void";
+
+                if (end >= 0 && tok.get(end).type == Token.Type.ID) {
+                    returnType = tok.get(end).value;
+                    --end;
+                }
+
+                // Get method access
+                MethodAccess methodAccess = getMethodAccess(tok, end + 1);
+
+                // Default access modifier for methods is public
+                if (methodAccess.accessMod == AccessMod.DEFAULT)
+                    methodAccess.accessMod = AccessMod.PUBLIC;
+
+                // If method name is 'main', args must be (String[] args)
+                if (methodName.equals("main"))
+                    args = "(String[] args)";
+
+                // If method name is the same as the class name,
+                // it's a constructor, so don't include the return type
+                if (methodName.equals(currentClass))
+                    out += methodAccess + " " + methodName + args;
+                else
+                    out += methodAccess + " " + typeArgs + returnType + " " + methodName + args;
+            }
+        }
+
+        // Keywords
+        else if (startTok == Token.Type.RETURN) {
+            out += "return ";
+            out += compileExpr(Util.select(tok, 1));
+            out += ";";
+        }
+
+        else if (startTok == Token.Type.BREAK)
+            out += "break;";
+
+        else if (startTok == Token.Type.CONTINUE)
+            out += "continue;";
+
+        else if (startTok == Token.Type.PASS) {
+            // Do nothing
+        }
+
+        // ID keywords
+        else if (startTok == Token.Type.ID && (
+            tok.get(0).value.equals("print") || tok.get(0).value.equals("println")
+        )) {
+            // print, println
+            if (tok.get(0).value.equals("print") || tok.get(0).value.equals("println")) {
+                out += "System.out." + tok.get(0).value + "(";
+                out += compileExpr(Util.select(tok, 1));
+                out += ");";
+            }
+        }
+
+        // Expressions
+        else
+            out += compileExpr(tok, false) + ";";
+
+        return out;
+    }
+
     public static String compileExpr(ArrayList<Token> tok, boolean nested) {
         String out = "";
         int f = -1;
@@ -239,7 +301,7 @@ public class Compiler {
 
         // Assignments
         if ((f = findTokenType(tok, Token.Type.ASSIGN)) != -1) {
-            String vartype = "var";
+            String vartype = "";
             String varname = "";
 
             // type name = value
@@ -255,8 +317,14 @@ public class Compiler {
             // Error!
             else {}
 
+            if (vartype.equals("let"))
+                vartype = "var";
+
             if (nested)
-                out += "(" + varname + " = ";
+                out += "(";
+
+            if (vartype.isEmpty())
+                out += varname + " = ";
             else
                 out += vartype + " " + varname + " = ";
 
@@ -410,6 +478,13 @@ public class Compiler {
 
     public static int findTokenType(ArrayList<Token> tok, Token.Type type) {
         for (int i = 0; i < tok.size(); ++i)
+            if (tok.get(i).type == type)
+                return i;
+        return -1;
+    }
+
+    public static int findTokenTypeRev(ArrayList<Token> tok, Token.Type type) {
+        for (int i = tok.size() - 1; i >= 0; --i)
             if (tok.get(i).type == type)
                 return i;
         return -1;

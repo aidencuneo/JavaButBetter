@@ -10,6 +10,7 @@ public class Token {
         SCOPE,
         SYMBOL,
         EXPR,
+        OPTION,
         NULL,
         TRUE,
         FALSE,
@@ -66,6 +67,8 @@ public class Token {
             t = Type.INDENT;
         else if (v.equals(":"))
             t = Type.SCOPE;
+        else if (v.equals("option"))
+            t = Type.OPTION;
         else if (v.equals("null"))
             t = Type.NULL;
         else if (v.equals("true"))
@@ -121,7 +124,7 @@ public class Token {
             t = Type.IN;
         else if (v.equals("try"))
             t = Type.TRY;
-        else if (v.equals("catch"))
+        else if (v.equals("catch") || v.equals("except"))
             t = Type.CATCH;
         else if (v.equals("public") || v.equals("private") || v.equals("protected") || v.equals("internal"))
             t = Type.ACCESS_MOD;
@@ -141,9 +144,11 @@ public class Token {
             t = Type.ID;
         } else if (isAlpha(v))
             t = Type.ID;
-        else if (isNum(v))
+        else if (isNum(v)) {
+            if (v.contains(".") && !(v.endsWith("f") || v.endsWith("d")))
+                v += Options.defaultDecimal;
             t = Type.NUM;
-        else if (List.of(
+        } else if (List.of(
             "+", "-", "*", "/", "%",
             "not", "and", "or", "xor", "&", "|", "&&", "||", ">", "<", ">=", "<=", "==", "!=").contains(v)
         )
@@ -163,7 +168,7 @@ public class Token {
     }
 
     public static boolean isNum(String s) {
-        return s.matches("^[0-9]*\\.?[0-9]*$");
+        return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$");
     }
 
     public String toString() {

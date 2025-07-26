@@ -139,12 +139,14 @@ public class Compiler {
         // Control flow
         else if (startTok == Token.Type.IF
             || startTok == Token.Type.ELIF
+            || startTok == Token.Type.ELSE
             || startTok == Token.Type.WHILE
             || startTok == Token.Type.UNTIL
         ) {
             switch (startTok) {
                 case IF -> out += "if (";
                 case ELIF -> out += "else if (";
+                case ELSE -> out += "else (";
                 case WHILE -> out += "while (";
                 case UNTIL -> out += "while (!(";
                 default -> {}
@@ -157,9 +159,6 @@ public class Compiler {
             if (startTok == Token.Type.UNTIL)
                 out += ")";
         }
-
-        else if (startTok == Token.Type.ELSE)
-            out += "else";
 
         // For-in loops
         else if (startTok == Token.Type.FOR && (f = findTokenType(tok, Token.Type.IN)) != -1) {

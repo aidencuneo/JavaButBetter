@@ -1,52 +1,15 @@
-static main:
-    let some1000_a = (1.0**1.0 * 2 + 5 - 1)
-    println "hello" + ", " + 10 //+ ' days remaining'
-    //' f('hello')
+static string escapeDoubleQuotes(string str):
+    ret str.replace("\"", "\\\"")
 
-    let n = 0.0
-    n = 0.0;n = 10.0 if some1000_a
-    n = 0.0; n = 10.0 if some1000_a
-    n = 0.0;  n = 10.0 if some1000_a
-    n = 0.0;   n = 10.0 if some1000_a
-    n = 0.0;    n = 10.0 if some1000_a
+// static main:
+//     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
+//     println "hello" + ", " + 10
+//     println 'nice' if List.of(1, 2, 'hi')
+//     println 'yeah' if List.of(1)
 
-    println 'nice' if List.of(1, 2, 'hi')
-    println 'yeah' if List.of(1)
+//     println i for i in 10
+//     print 0 + c + ' ' for c in "hello\n"
 
-    println i for i in 10
-    print 0 + c + ' ' for c in 'hello\n'
-
-int max(int a, int b):
-    ret a if a > b
-    ret b
-
-static string what:
-    let i = 0
-    ++i
-    i += 1
-    let s = "" + i; // Comment?
-    ret null
-
-static f(string s):
-    string h = 'what' + s
-    h .= substring(1)
-
-static dosomething:
-    println 'Something done'
-
-class Point
-
-// These are part of a class now
-int x = 0
-int y = 0
-
-Point: // This is a constructor
-    let newx = x
-    let newy = y
-
-class null
-
-inline `enum Colour`
-    RED,
-    GREEN,
-    BLUE,
+// int max(int a, int b):
+//     ret a if a > b
+//     ret b

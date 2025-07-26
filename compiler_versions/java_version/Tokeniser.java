@@ -29,8 +29,9 @@ public class Tokeniser {
         CharType lastType;
         char lastChar = 0;
         int comment = 0;
-
+        
         // Context
+        boolean backslash = false;
         boolean sq = false;
         boolean dq = false;
         boolean bt = false;
@@ -75,11 +76,13 @@ public class Tokeniser {
             }
 
             if (comment >= 2);
-            else if (c == '\'' && !(dq || rb > 0 || sb > 0 || cb > 0))
+            else if (c == '\\' && (sq || dq || bt))
+                backslash = !backslash;
+            else if (c == '\'' && !(dq || rb > 0 || sb > 0 || cb > 0 || backslash))
                 sq = !sq;
-            else if (c == '"' && !(sq || bt || rb > 0 || sb > 0 || cb > 0))
+            else if (c == '"' && !(sq || bt || rb > 0 || sb > 0 || cb > 0 || backslash))
                 dq = !dq;
-            else if (c == '`' && !(sq || dq || rb > 0 || sb > 0 || cb > 0))
+            else if (c == '`' && !(sq || dq || rb > 0 || sb > 0 || cb > 0 || backslash))
                 bt = !bt;
             else if (c == '(' && !(sq || dq || bt || sb > 0 || cb > 0))
                 ++rb;
@@ -103,6 +106,10 @@ public class Tokeniser {
                 lastIndent = indent;
                 indent = 0;
             }
+
+            // Reset backslash
+            if (c != '\\')
+                backslash = false;
 
             lastChar = c;
         }

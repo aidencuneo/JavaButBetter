@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class JavaBB_java {
+public class JavaBB {
     public static void main(String args[]) {
         // Get input and output directories
         String compDir = "src";
@@ -85,7 +85,7 @@ public class JavaBB_java {
         lst.add(i);
     ret lst
 
-# List<T> (T) asIterable(List<T> v):
+# Iterable<T> (T) asIterable(Iterable<T> v):
     ret v
 
 # char[] asIterable(string s):

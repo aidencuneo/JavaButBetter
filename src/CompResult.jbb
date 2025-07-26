@@ -1,0 +1,40 @@
+public HashMap<string, string> classes
+public HashMap<string, AccessMod> classAccess
+public string startTemplate
+public string endTemplate
+
+CompResult(HashMap<string, string> classes, HashMap<string, AccessMod> classAccess, string startTemplate, string endTemplate):
+    this.classes = classes
+    this.classAccess = classAccess
+    this.startTemplate = startTemplate
+    this.endTemplate = endTemplate
+
+string constructClassString(string className):
+    let code = classes.getOrDefault(className, "")
+    let accessMod = classAccess.getOrDefault(className, AccessMod.DEFAULT)
+
+    let accessModStr = MethodAccess.accessModToString(accessMod)
+    let separator = (accessModStr.length() > 0 ? " " : "")
+
+    let out = accessModStr + separator + "class " + className + " {\n"
+    out += '    ' + code.trim()
+    out += '\n}\n'
+    ret out
+
+string getCompiledCode(string mainClassName):
+    // Construct classes
+    let out = ''
+
+    // File class goes first
+    if (classes.containsKey(mainClassName))
+        out += constructClassString(mainClassName)
+
+    // Construct other classes
+    for c in classes.keySet()
+        // The null class is used to write code without a class
+        if c.equals('null')
+            out += classes.get(c)
+        elif !c.equals(mainClassName)
+            out += constructClassString(c)
+
+    ret startTemplate + '\n' + out + endTemplate

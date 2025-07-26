@@ -42,9 +42,7 @@ public class LangUtil {
     public static <T> List < T > asIterable(List < T > v) {
         return v;
     }
-    public static char [] asIterable(String s) { {
-        }
-         return s.toCharArray ();
-     }
- }
-
+    public static char [] asIterable(String s) {
+        return s.toCharArray ();
+    }
+}

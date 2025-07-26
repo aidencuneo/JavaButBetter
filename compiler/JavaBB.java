@@ -2,41 +2,53 @@ import java.io.*;
 import java.util.*;
 
 public class JavaBB {
-    public static void main(String[] args) {
-        System.out.println("""
-        This is a long one
-        Yeah
-    """);
-        var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
-        var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
-        if (LangUtil.isTruthy(! new File (outDir).exists ())) {
-            new File (outDir).mkdir ();
+    public static void main(String args[]) {
+        // Get input and output directories
+        String compDir = "src";
+        
+        if (args.length > 0)
+            compDir = args[0];
+
+        String outDir = compDir + "_out";
+
+        if (args.length > 1)
+            outDir = args[1];
+
+        // Create directory if it doesn't exist
+        if (!new File(outDir).exists())
+            new File(outDir).mkdir();
+
+        // Compile files one by one
+        String[] files = new File(compDir).list((File dir, String name) -> name.endsWith(".jbb"));
+
+        // String[] files = new File(compDir).list();
+
+        for (int i = 0; i < files.length; ++i) {
+            String fileContent = "";
+            String fromPath = compDir + "/" + files[i];
+            String toPath = outDir + "/" + files[i].split("\\.")[0] + ".java";
+            String className = files[i].split("\\.")[0];
+
+            // Read input file
+            try (Scanner scanner = new Scanner(new File(fromPath))) {
+                fileContent = scanner.useDelimiter("\\Z").next();
+            } catch (FileNotFoundException e) {}
+
+            // Compile this file
+            CompResult res = Compiler.compileFile(className, fileContent);
+            String compiled = res.getCompiledCode(className);
+
+            // Write to output file
+            try (PrintWriter writer = new PrintWriter(toPath)) {
+                new File(toPath).createNewFile();
+                writer.println(compiled);
+            } catch (IOException e) {}
         }
-        var files = new File (compDir).list ((File dir , String name)-> name.endsWith (".jbb"));
-        for (var i : LangUtil.asIterable(files.length)) {
-            var fileContent = "";
-            var fromPath = compDir + '/' + files [i];
-            var toPath = outDir + '/' + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
-            try (var scanner = new Scanner (new File (fromPath))) {
-                fileContent = scanner.useDelimiter ("\\Z").next ();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
-            var res = Compiler.compileFile (className , fileContent);
-            var compiled = res.getCompiledCode (className);
-            try (var writer = new PrintWriter (toPath)) {
-                new File (toPath).createNewFile ();
-                writer.println (compiled);
-            }
-            catch (IOException e) {
-                
-            }
-        }
-        var res = Compiler.compileFile ("LangUtil" , """
+
+        // System.exit(0);
+
+        // Compile LangUtil
+        CompResult res = Compiler.compileFile("LangUtil", """
 # print(Object s):
     System.out.print('' + s)
 
@@ -67,27 +79,25 @@ public class JavaBB {
 # T[] (T) asIterable(T[] v):
     ret v
 
-# List asIterable(int n):
-    let lst = new ArrayList<Integer>()
-    inline `for (int i = 0 i < n ++i)`
-        lst.add(i)
+# List<Integer> asIterable(int n):
+    let lst = new ArrayList<Integer>();
+    inline `for (int i = 0; i < n; ++i)`
+        lst.add(i);
     ret lst
 
-# List asIterable(List v):
+# Iterable<T> (T) asIterable(Iterable<T> v):
     ret v
 
 # char[] asIterable(string s):
     ret s.toCharArray()
-    """.trim ());
-        var langUtilCode = res.getCompiledCode ("LangUtil");
-        try (var writer = new PrintWriter (outDir + "/LangUtil.java")) {
-            new File (outDir + "/LangUtil.java").createNewFile ();
-            writer.println (langUtilCode);
-        }
-        catch (IOException e) {
-            
-        }
-        System.out.println(("Done."));
+        """.trim());
+        String langUtilCode = res.getCompiledCode("LangUtil");
+
+        try (PrintWriter writer = new PrintWriter(outDir + "/LangUtil.java")) {
+            new File(outDir + "/LangUtil.java").createNewFile();
+            writer.println(langUtilCode);
+        } catch (IOException e) {}
+
+        System.out.println("Done.");
     }
 }
-

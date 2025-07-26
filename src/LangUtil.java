@@ -39,12 +39,11 @@ public class LangUtil {
         }
         return lst;
     }
-    public static <T> List < T > asIterable(List < T > v) {
+    public static <T> Iterable < T > asIterable(Iterable < T > v) {
         return v;
     }
-    public static char [] asIterable(String s) { {
-        }
-         return s.toCharArray ();
-     }
- }
+    public static char [] asIterable(String s) {
+        return s.toCharArray ();
+    }
+}
 

@@ -22,19 +22,19 @@ public class LangUtil {
         return (v != 0);
     }
     public static boolean isTruthy(String v) {
-        return ! v.isEmpty();
+        return !LangUtil.isTruthy(v.isEmpty());
     }
     public static <T> boolean isTruthy(T [] v) {
         return v.length > 0;
     }
     public static boolean isTruthy(List v) {
-        return ! v.isEmpty();
+        return !LangUtil.isTruthy(v.isEmpty());
     }
     public static <T> T [] asIterable(T [] v) {
         return v;
     }
     public static List < Integer > asIterable(int n) {
-        var lst = new ArrayList < Integer >();
+        var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
             lst.add(i);
         }

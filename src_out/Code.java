@@ -13,14 +13,18 @@ public class Code {
         if (LangUtil.isTruthy(List.of(1))) { System.out.println("yeah"); }
         for (var i : LangUtil.asIterable(10)) { System.out.println(i); }
         for (var c : LangUtil.asIterable("hello\n")) { System.out.print(0 + c + " "); }
-        var n = 20;
-        for (var i : LangUtil.asIterable(n)) {
-            System.out.println(i);
-            System.out.println(i * 2);
-        }
+        var num = 17;
+        System.out.println(num ^ 3);
+        System.out.println(num ^ 3 ^ 3);
+        System.out.println(num ^ 3 ^ 3 ^ 3);
+        System.out.println(13 ^ 3 ^ 5 ^ 6);
     }
     public String _get_name() {
         return name.toUpperCase();
+    }
+    public static String go() {
+        System.out.println("WHAT!!!!!!!!");
+        return "value";
     }
 }
 

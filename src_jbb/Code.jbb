@@ -12,19 +12,21 @@ static main:
     println i for i in 10
     print 0 + c + ' ' for c in "hello\n"
 
-    // inline(for (int i = 0; i < 10; ++i))
+    let num = 17
+    println num ^ 3
+    println num ^ 3 ^ 3
+    println num ^ 3 ^ 3 ^ 3
+    println 13 ^ 3 ^ 5 ^ 6
 
-    // try {
-    //     Code c = new Code();
-    //     c.getClass().getMethod("_get_name").invoke(c);
-    // } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {}
-
-    // let a = LangUtil.getValue(Code.class, 'name')
-    // let b = LangUtil.getValue(Code.class, 'name2 ')
-    // println a + ', ' + b
+    // 5 and go()
+    // println "YEAH!" if not a or b
 
 public string _get_name:
     return name.toUpperCase()
+
+# string go:
+    println "WHAT!!!!!!!!"
+    return "value"
 
 // class Operators
 

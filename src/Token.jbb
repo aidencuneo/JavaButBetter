@@ -1,0 +1,187 @@
+
+import java.lang.reflect.Array
+
+inline `public enum Type`
+    BLANK,
+    INDENT,
+    ID,
+    SCOPE,
+    SYMBOL,
+    EXPR,
+    OPTION,
+    NULL,
+    TRUE,
+    FALSE,
+    NUM,
+    STRING,
+    CHAR,
+    ASSIGN,
+    COMP_ASSIGN,
+    UNARY_OPER,
+    BIN_OPER,
+    DOT,
+    COMMA,
+    HASH,
+    LAMBDA, // =>
+    ARROW,  // ->
+    INCREMENT,
+    DECREMENT,
+    INLINE,
+    RETURN,
+    BREAK,
+    CONTINUE,
+    PASS,
+    IF,
+    ELIF,
+    ELSE,
+    WHILE,
+    UNTIL,
+    FOR,
+    IN,
+    TRY,
+    CATCH,
+    ACCESS_MOD,
+    STATIC,
+    IMPORT,
+    CLASS,
+
+public Type type
+public string value
+
+Token(Type type, string value):
+    this.type = type
+    this.value = value
+
+static Token fromString(string v):
+    if v.isEmpty()
+        return new Token(Type.BLANK, v)
+
+    Type t
+    let f = v.charAt(0)
+    let l = v.charAt(v.length() - 1)
+    // System.out.println(f + ", " + l)
+
+    if v.length() == 0
+        t = Type.BLANK
+    elif v.length() > 0 && v.isBlank()
+        t = Type.INDENT
+    elif v.equals(":")
+        t = Type.SCOPE
+    elif v.equals("option")
+        t = Type.OPTION
+    elif v.equals("null")
+        t = Type.NULL
+    elif v.equals("true")
+        t = Type.TRUE
+    elif v.equals("false")
+        t = Type.FALSE
+    elif f == '"' && l == '"'
+        t = Type.STRING
+    elif v.startsWith("'''") && v.endsWith("'''")
+        String vNoQuotes = v.substring(3, v.length() - 3)
+        String realStr = StringParser.unescapeString(vNoQuotes)
+
+        if realStr.length() != 1
+            t = Type.STRING
+            v = "\"\"\"" + StringParser.escapeDoubleQuotes(vNoQuotes) + "\"\"\""
+        else
+            t = Type.CHAR
+    elif f == '\'' && l == '\''
+        String vNoQuotes = v.substring(1, v.length() - 1)
+        String realStr = StringParser.unescapeString(vNoQuotes)
+
+        if realStr.length() != 1
+            t = Type.STRING
+            v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"'
+        else
+            t = Type.CHAR
+    elif f == '(' && l == ')'
+        t = Type.EXPR
+    elif v.equals("=")
+        t = Type.ASSIGN
+    elif v.endsWith("=")
+        t = Type.COMP_ASSIGN
+    elif v.equals(".")
+        t = Type.DOT
+    elif v.equals(",")
+        t = Type.COMMA
+    elif v.equals("#")
+        t = Type.HASH
+    elif v.equals("=>")
+        t = Type.LAMBDA
+    elif v.equals("->")
+        t = Type.ARROW
+    elif v.equals("++")
+        t = Type.INCREMENT
+    elif v.equals("--")
+        t = Type.DECREMENT
+    elif v.equals("inline")
+        t = Type.INLINE
+    elif v.equals("ret") || v.equals("return")
+        t = Type.RETURN
+    elif v.equals("break")
+        t = Type.BREAK
+    elif v.equals("continue") || v.equals("next")
+        t = Type.CONTINUE
+    elif v.equals("pass") || v.equals("...")
+        t = Type.PASS
+    elif v.equals("if")
+        t = Type.IF
+    elif v.equals("elif")
+        t = Type.ELIF
+    elif v.equals("else")
+        t = Type.ELSE
+    elif v.equals("while")
+        t = Type.WHILE
+    elif v.equals("until")
+        t = Type.UNTIL
+    elif v.equals("for")
+        t = Type.FOR
+    elif v.equals("in")
+        t = Type.IN
+    elif v.equals("try")
+        t = Type.TRY
+    elif v.equals("catch") || v.equals("except")
+        t = Type.CATCH
+    elif v.equals("public") || v.equals("private") || v.equals("protected") || v.equals("internal")
+        t = Type.ACCESS_MOD
+    elif v.equals("static")
+        t = Type.STATIC
+    elif v.equals("import") || v.equals("include") || v.equals("require") || v.equals("use")
+        t = Type.IMPORT
+    elif v.equals("class")
+        t = Type.CLASS
+    elif v.equals("string")
+        // string transforms into String
+        v = "String"
+        t = Type.ID
+    elif v.equals("bool")
+        // bool transforms into boolean
+        v = "boolean"
+        t = Type.ID
+    elif isAlpha(v)
+        t = Type.ID
+    elif isNum(v)
+        if v.contains(".") && !(v.endsWith("f") || v.endsWith("d"))
+            v += Options.defaultDecimal
+        t = Type.NUM
+    elif List.of(
+        "+", "-", "*", "/", "%",
+        "not", "and", "or", "xor", "&", "|", "&&", "||", ">", "<", ">=", "<=", "==", "!=").contains(v)
+        t = Type.BIN_OPER
+    elif List.of(
+        "!", "~", "not").contains(v)
+        t = Type.UNARY_OPER
+    else
+        t = Type.SYMBOL
+
+    return new Token(t, v)
+
+static bool isAlpha(string s):
+    return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+static bool isNum(string s):
+    return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$")
+
+string toString:
+    return type + ":" + value

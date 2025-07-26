@@ -196,6 +196,10 @@ public class Tokeniser {
             ) && !(
                 lastChar == '*' && c == '*' // Join together all '*' tokens
             ) && !(
+                lastChar == '&' && c == '&' // Join together all '&' tokens
+            ) && !(
+                lastChar == '|' && c == '|' // Join together all '|' tokens
+            ) && !(
                 lastChar == '?' && c == '?' // Join together all '?' tokens
             ) && !(
                 lastChar == '.' && c == '.' // Join together all '.' tokens

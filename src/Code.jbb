@@ -1,20 +1,15 @@
 # main:
     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
-    println "hello" + ", " + 10 + ' days remaining'
-    function('hello')
+    println "hello" + ", " + 10 + //' days remaining'
+    //' function('hello')
 
-    let n = 0.0
-    n = 10.0 if some1000_a
+    let n = 0.0;  n = 10.0 if some1000_a
 
     println 'nice' if List.of(1, 2, 'hi')
     println 'yeah' if List.of(1)
 
-    let i = 3
-    let j = 3
-    let k = 3
-
-    while k
-        println i-- + ', ' + j-- + ', ' + k--
+    for i in 10
+        println i
 
 int max(int a, int b):
     ret a > b ? a : b

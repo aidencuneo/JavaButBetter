@@ -45,6 +45,8 @@ public class JavaBB {
             } catch (IOException e) {}
         }
 
+        System.exit(0);
+
         // Compile LangUtil
         CompResult res = Compiler.compileFile("LangUtil", """
 # print(Object s):
@@ -73,6 +75,15 @@ public class JavaBB {
 
 # bool isTruthy(List v):
     ret !v.isEmpty()
+
+# T[] (T) asIterable(T[] v):
+    ret v
+
+# List (T) asIterable(int n):
+    let lst = new ArrayList<Integer>();
+    inline `for (int i = 0; i < n; ++i)`
+        lst.add(i);
+    ret lst
         """.trim());
         String langUtilCode = res.getCompiledCode("LangUtil");
 

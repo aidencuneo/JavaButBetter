@@ -23,8 +23,12 @@ public class Token {
         BIN_OPER,
         DOT,
         COMMA,
+        HASH,
+        LAMBDA, // =>
+        ARROW,  // ->
         INCREMENT,
         DECREMENT,
+        INLINE,
         RETURN,
         BREAK,
         CONTINUE,
@@ -96,10 +100,18 @@ public class Token {
             t = Type.DOT;
         else if (v.equals(","))
             t = Type.COMMA;
+        else if (v.equals("#"))
+            t = Type.HASH;
+        else if (v.equals("=>"))
+            t = Type.LAMBDA;
+        else if (v.equals("->"))
+            t = Type.ARROW;
         else if (v.equals("++"))
             t = Type.INCREMENT;
         else if (v.equals("--"))
             t = Type.DECREMENT;
+        else if (v.equals("inline"))
+            t = Type.INLINE;
         else if (v.equals("ret") || v.equals("return"))
             t = Type.RETURN;
         else if (v.equals("break"))

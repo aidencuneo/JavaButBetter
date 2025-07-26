@@ -25,6 +25,7 @@ public class Compiler {
         int lastIndent = 0;
 
         for (int i = 0; i < lines.size(); ++i) {
+            System.out.println(i + ": " + lines.get(i));
             String out = outClasses.getOrDefault(currentClass, "");
 
             ArrayList<Token> tok = Tokeniser.tokLine(lines.get(i));
@@ -58,7 +59,7 @@ public class Compiler {
 
             lastIndent = indent;
 
-            System.out.println(Util.d(tok));
+            // System.out.println(Util.d(tok));
         }
 
         // After the final line of a class, reset indentation
@@ -80,8 +81,6 @@ public class Compiler {
         Token.Type startTok = types.get(0);
         Token.Type endTok = Util.get(types, -1);
         int f = -1;
-
-        System.out.println(currentClass);
 
         // Imports
         if (startTok == Token.Type.IMPORT) {
@@ -183,11 +182,58 @@ public class Compiler {
             out += " }";
         }
 
-        // For loops
-        else if (startTok == Token.Type.FOR) {
+        // For-in loops
+        else if (startTok == Token.Type.FOR && (f = findTokenType(tok, Token.Type.IN)) != -1) {
+            out += "for (";
+            String varname = tok.get(1).value;
+            out += "var " + varname + " : LangUtil.asIterable(";
+            out += compileExpr(Util.select(tok, f + 1));
+            out += ")) ";
         }
 
-        // Scoped statements - loops, methods, classes, etc.
+        // Try
+        else if (startTok == Token.Type.TRY) {
+            out += "try ";
+
+            String resources = compileExpr(Util.select(tok, 1), false);
+            if (!resources.isEmpty())
+                out += "(" + resources + ") ";
+        }
+
+        // Catch
+        else if (startTok == Token.Type.CATCH) {
+            out += "catch ";
+
+            if (tok.size() > 2) {
+                // Error!
+                return "";
+            } else if (tok.size() > 1) {
+                Token t = tok.get(1);
+
+                if (t.type != Token.Type.EXPR) {
+                    // Error!
+                    return "";
+                }
+
+                String args = compileMethodArgs(t.value);
+                if (!args.isEmpty())
+                    out += args + " ";
+            }
+        }
+
+        // Inline code
+        else if (startTok == Token.Type.INLINE) {
+            if (tok.size() < 2) {
+                // Error!
+                return "";
+            }
+
+            String code = tok.get(1).value;
+            code = code.substring(1, code.length() - 1); // Strip backticks away
+            out += code;
+        }
+
+        // Scoped statements - methods only (?)
         else if (endTok == Token.Type.SCOPE) {
             if (false) {}
 
@@ -228,12 +274,19 @@ public class Compiler {
                 }
 
                 // Get return type
-                String returnType = "void";
+                String returnType = "";
 
-                if (end >= 0 && tok.get(end).type == Token.Type.ID) {
-                    returnType = tok.get(end).value;
-                    --end;
+                for (int j = 0; j <= end; ++j) {
+                    Token t = tok.get(j);
+
+                    if (t.type == Token.Type.ID || t.type == Token.Type.SYMBOL)
+                        returnType += t.value + " ";
                 }
+
+                returnType = returnType.trim();
+
+                if (returnType.isEmpty())
+                    returnType = "void";
 
                 // Get method access
                 MethodAccess methodAccess = getMethodAccess(tok, end + 1);
@@ -374,7 +427,7 @@ public class Compiler {
             // name ?? '' => ((name) != null) ? (name) : ("");
             String lhs = compileExpr(Util.select(tok, 0, f));
             String rhs = compileExpr(Util.select(tok, f + 1));
-            System.out.println("LHS: " + lhs + ", RHS: " + rhs);
+            // System.out.println("LHS: " + lhs + ", RHS: " + rhs);
             out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")";
         }
 
@@ -415,7 +468,6 @@ public class Compiler {
 
                 // Compile expressions
                 if (t.type == Token.Type.EXPR) {
-                    System.out.println("Happened");
                     String raw = t.value.substring(1, t.value.length() - 1);
                     ArrayList<Token> tokens = Tokeniser.tokLine(raw);
                     out += "(" + compileExpr(tokens) + ")";
@@ -426,7 +478,7 @@ public class Compiler {
             }
         }
 
-        System.out.println("Just did expr: " + Util.d(tok));
+        // System.out.println("Just did expr: " + Util.d(tok));
 
         return out.trim();
     }
@@ -512,14 +564,13 @@ public class Compiler {
             if (accessMod == AccessMod.DEFAULT)
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
 
-            if (v.equals("+"))
-                accessMod = AccessMod.PUBLIC;
-            else if (v.equals("-"))
-                accessMod = AccessMod.PRIVATE;
-            else if (v.equals("*"))
-                accessMod = AccessMod.PROTECTED;
-            else if (v.equals("static") || v.equals("#"))
-                isStatic = true;
+            switch (v) {
+                case "+" -> accessMod = AccessMod.PUBLIC;
+                case "-" -> accessMod = AccessMod.PRIVATE;
+                case "*" -> accessMod = AccessMod.PROTECTED;
+                case "static", "#" -> isStatic = true;
+                default -> {}
+            }
         }
 
         return new MethodAccess(accessMod, isStatic);

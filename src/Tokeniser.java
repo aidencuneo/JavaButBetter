@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Tokeniser {
     public enum CharType {
-        A, D, S, W,
+        A, D, S, W
     }
 
     public static CharType charType(char c) {
@@ -19,22 +19,85 @@ public class Tokeniser {
 
     public static ArrayList<String> splitFile(String file) {
         ArrayList<String> lines = new ArrayList<>();
-        String current = "";
 
+        if (file.isEmpty())
+            return lines;
+
+        // State
+        String current = "";
+        CharType type = charType(file.charAt(0));
+        CharType lastType;
+        char lastChar = 0;
+        int comment = 0;
+
+        // Context
+        boolean sq = false;
+        boolean dq = false;
+        boolean bt = false;
+        int rb = 0;
+        int sb = 0;
+        int cb = 0;
+
+        // Start tokenising
         for (int i = 0; i < file.length(); ++i) {
             char c = file.charAt(i);
+            lastType = type;
+            type = charType(c);
 
-            if (c == '\n' || c == ';') {
-                if (current.length() > 0)
+            if ((c == '\n' || c == ';') && !(
+                sq || dq || bt || rb > 0 || sb > 0 || cb > 0
+            )) {
+                if (!current.isEmpty())
                     lines.add(current);
 
                 current = "";
-            } else if (c != '\r') {
-                current += c;
+
+                // Replace indentation of next line with indentation of this line
+                if (c == ';') {}
             }
+
+            if (comment >= 2);
+            else if (c == '\'' && !(dq || rb > 0 || sb > 0 || cb > 0))
+                sq = !sq;
+            else if (c == '"' && !(sq || bt || rb > 0 || sb > 0 || cb > 0))
+                dq = !dq;
+            else if (c == '`' && !(sq || dq || rb > 0 || sb > 0 || cb > 0))
+                bt = !bt;
+            else if (c == '(' && !(sq || dq || bt || sb > 0 || cb > 0))
+                ++rb;
+            else if (c == ')' && !(sq || dq || bt || sb > 0 || cb > 0))
+                --rb;
+            else if (c == '[' && !(sq || dq || bt || rb > 0 || cb > 0))
+                ++sb;
+            else if (c == ']' && !(sq || dq || bt || rb > 0 || cb > 0))
+                --sb;
+            else if (c == '/' && !(sq || dq || bt)) {
+                if (++comment >= 2) {
+                    // Remove last character, since it will be a '/'
+                    current = current.substring(0, current.length() - 1);
+                    // lines.remove(lines.size() - 1);
+                    // current = current.substring(0, current.length() - 2);
+                    break;
+                }
+            }
+
+            // Reset comment at end of line
+            if (c == '\n')
+                comment = 0;
+
+            if (comment <= 1) {
+                if (comment > 0 && c != '/')
+                    comment = 0;
+
+                if (c != '\r')
+                    current += c;
+            }
+
+            lastChar = c;
         }
 
-        lines.add(current);
+        if (!current.isEmpty())
+            lines.add(current);
 
         return lines;
     }
@@ -110,6 +173,10 @@ public class Tokeniser {
                 lastType == CharType.D && c == '.' // Join decimals (first part)
             ) && !(
                 lastChar == '.' && type == CharType.D // Join decimals (second part)
+            ) && !(
+                lastChar == '-' && c == '>' // Join together '->'
+            ) && !(
+                lastChar == '=' && c == '>' // Join together '=>'
             ) && !(
                 lastChar == '_' && c == '_' // Join together all '_' tokens
             ) && !(

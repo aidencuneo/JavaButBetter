@@ -1,7 +1,7 @@
 use java.io.*
 use java.util.*
 
-# main(string args[]):
+# main:
     // Get input and output directories
     let compDir = 'src'
     
@@ -22,8 +22,7 @@ use java.util.*
 
     // files = new File(compDir).list()
 
-    if files
-    // for i = 0 when i < files.length then ++i
+    for i in files.length
         let fileContent = ''
         let fromPath = compDir + '/' + files[i]
         let toPath = outDir + '/' + files[i].split('\\.')[0] + '.java'

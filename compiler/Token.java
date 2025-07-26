@@ -1,5 +1,3 @@
-
-import java.lang.reflect.Array;
 import java.util.List;
 
 public class Token {
@@ -17,6 +15,7 @@ public class Token {
         NUM,
         STRING,
         CHAR,
+        TEMPLATE_STRING,
         ASSIGN,
         COMP_ASSIGN,
         UNARY_OPER,
@@ -46,6 +45,8 @@ public class Token {
         STATIC,
         IMPORT,
         CLASS,
+        ENUM,
+        ALIAS,
     }
 
     public Type type;
@@ -87,7 +88,7 @@ public class Token {
 
             if (realStr.length() != 1) {
                 t = Type.STRING;
-                v = "\"\"\"" + StringParser.escapeDoubleQuotes(vNoQuotes) + "\"\"\"";
+                v = "\"\"\"" + vNoQuotes + "\"\"\"";
             } else
                 t = Type.CHAR;
         } else if (f == '\'' && l == '\'') {
@@ -99,6 +100,8 @@ public class Token {
                 v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"';
             } else
                 t = Type.CHAR;
+        } else if (f == '`' && l == '`') {
+            t = Type.TEMPLATE_STRING;
         } else if (f == '(' && l == ')')
             t = Type.EXPR;
         else if (v.equals("="))
@@ -155,6 +158,10 @@ public class Token {
             t = Type.IMPORT;
         else if (v.equals("class"))
             t = Type.CLASS;
+        else if (v.equals("enum"))
+            t = Type.ENUM;
+        else if (v.equals("alias"))
+            t = Type.ALIAS;
         else if (v.equals("string")) {
             // string transforms into String
             v = "String";

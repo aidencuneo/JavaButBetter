@@ -65,7 +65,7 @@ public class Compiler {
 
             lastIndent = indent;
 
-            System.out.println(Util.d(tok));
+            // System.out.println(Util.d(tok));
         }
 
         // After the final line of a class, reset indentation
@@ -357,6 +357,31 @@ public class Compiler {
             }
         }
 
+        // Field declarations (two tokens minimum with no indentation)
+        else if (tok.size() >= 2 && !out.endsWith(" ".repeat(4 + 1))) {
+            int end = tok.size() - 1;
+            String value = "";
+
+            if ((f = findTokenType(tok, Token.Type.ASSIGN)) != -1) {
+                value = " = " + compileExpr(Util.select(tok, f + 1));
+                end = f - 1;
+            }
+
+            // Get variable name and type
+            String varname = tok.get(end).value;
+            --end;
+            String vartype = tok.get(end).value;
+
+            // Get method access
+            MethodAccess methodAccess = getMethodAccess(tok, end);
+
+            // Default access modifier for fields is public
+            if (methodAccess.accessMod == AccessMod.DEFAULT)
+                methodAccess.accessMod = AccessMod.PUBLIC;
+
+            out += methodAccess + " " + vartype + " " + varname + value + ";";
+        }
+
         // Expressions
         else
             out += compileExpr(tok, false) + (endTok == Token.Type.COMMA ? "" : ";");
@@ -367,6 +392,7 @@ public class Compiler {
     public static String compileExpr(ArrayList<Token> tok, boolean nested) {
         String out = "";
         int f = -1;
+        int f2 = -1;
 
         // Empty expression
         if (tok.isEmpty())
@@ -462,6 +488,17 @@ public class Compiler {
             out += lhs + " " + tok.get(f).value + " " + rhs;
         }
 
+        // Unary operators
+        else if (tok.size() > 1 && tok.get(0).type == Token.Type.UNARY_OPER) {
+            String oper = tok.get(0).value;
+            String expr = compileExpr(Util.select(tok, 1));
+
+            // not, !
+            if (oper.equals("not") || oper.equals("!"))
+                out += '!';
+            out += tok.get(0).value + expr;
+        }
+
         // Exponentiation
         else if ((f = findToken(tok, "**")) != -1) {
             String lhs = compileExpr(Util.select(tok, 0, f));
@@ -469,11 +506,41 @@ public class Compiler {
             out += "Math.pow(" + lhs + ", " + rhs + ")";
         }
 
+        // Postfix increment
+        else if (tok.size() > 1 && tok.get(tok.size() - 1).type == Token.Type.INCREMENT) {
+            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
+            out += name + "++";
+        }
+
+        // Postfix decrement
+        else if (tok.size() > 1 && tok.get(tok.size() - 1).type == Token.Type.DECREMENT) {
+            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
+            out += name + "--";
+        }
+
+        // // Dotted function calls
+        // else if ((f = findTokenTypeRev(tok, Token.Type.EXPR)) > 0 && (f2 = findTokenRev(tok, ".")) != -1) {
+        //     String lhs = compileExpr(Util.select(tok, 0, f2));
+        //     String rhs = compileExpr(Util.select(tok, f2 + 1, f));
+        //     Token t = tok.get(f);
+        //     String args = t.value.substring(1, t.value.length() - 1);
+        //     out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\").invoke(" + compileExpr(Tokeniser.tokLine(args)) + ")";
+        // }
+
+        // Function calls
+        else if (tok.get(tok.size() - 1).type == Token.Type.EXPR) {
+            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
+            Token t = tok.get(tok.size() - 1);
+            String args = t.value.substring(1, t.value.length() - 1);
+            out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")";
+        }
+
         // Dot operator
-        else if ((f = findTokenRev(tok, ".")) != -1) {
+        else if ((f = findTokenRev(tok, ".")) > 0) {
             String lhs = compileExpr(Util.select(tok, 0, f));
             String rhs = compileExpr(Util.select(tok, f + 1));
             out += lhs + "." + rhs;
+            // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")";
         }
 
         // Expressions (parentheses)
@@ -497,12 +564,20 @@ public class Compiler {
                     out += "(" + compileExpr(tokens) + ")";
                 }
 
+                // // Convert identifiers to get method calls
+                // else if (t.type == Token.Type.ID) {
+                //     out += "LangUtil.get(" + currentClass + ".class, \"" + t.value + "\")";
+                // }
+
                 else
                     out += tok.get(j).value + " ";
             }
         }
 
-        System.out.println("Just did expr: " + Util.d(tok));
+        // if (findTokenType(tok, Token.Type.STRING) != -1)
+        //     System.out.println("String: " + Util.d(tok));
+
+        // System.out.println("Just did expr: " + Util.d(tok));
 
         return out.trim();
     }
@@ -583,6 +658,7 @@ public class Compiler {
         for (int j = 0; j < end; ++j) {
             Token.Type t = tok.get(j).type;
             String v = tok.get(j).value;
+            System.out.println(j + ": " + v);
 
             // Attempt to get access modifier from every token (if not found already)
             if (accessMod == AccessMod.DEFAULT)

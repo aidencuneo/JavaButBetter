@@ -1,15 +1,49 @@
-static string escapeDoubleQuotes(string str):
-    ret str.replace("\"", "\\\"")
+int field = 10
+int age = 21
+string name = 'aiden'
+string name2 = 'value'
 
-// static main:
-//     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
-//     println "hello" + ", " + 10
-//     println 'nice' if List.of(1, 2, 'hi')
-//     println 'yeah' if List.of(1)
+static main:
+    let some1000_a = (1.0**1.0 * 2 + 5 - 1)
+    println "hello" + ", " + 10
+    println 'nice' if List.of(1, 2, 'hi')
+    println 'yeah' if List.of(1)
 
-//     println i for i in 10
-//     print 0 + c + ' ' for c in "hello\n"
+    println i for i in 10
+    print 0 + c + ' ' for c in "hello\n"
 
-// int max(int a, int b):
-//     ret a if a > b
-//     ret b
+    // inline(for (int i = 0; i < 10; ++i))
+
+    // try {
+    //     Code c = new Code();
+    //     c.getClass().getMethod("_get_name").invoke(c);
+    // } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {}
+
+    // let a = LangUtil.getValue(Code.class, 'name')
+    // let b = LangUtil.getValue(Code.class, 'name2 ')
+    // println a + ', ' + b
+
+public string _get_name:
+    return name.toUpperCase()
+
+// class Operators
+
+// T[] (T) + (T[] a, T b):
+//     ArrayList<T> res = new ArrayList<>(a)
+//     res.add(b)
+//     ret res
+
+// List<T> + (List<T> a, T b):
+//     res.add(b)
+//     ret res
+
+// class Extensions
+
+// int (T) length(T[] arr):
+//     ret arr.length
+
+// int (T) length(List<T> arr):
+//     ret arr.size()
+
+// int length(string s):
+//     ret s.length()

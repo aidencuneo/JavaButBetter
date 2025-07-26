@@ -49,6 +49,8 @@ public class JavaBB {
 
         // Compile LangUtil
         CompResult res = Compiler.compileFile("LangUtil", """
+import java.lang.reflect.*
+
 # print(Object s):
     System.out.print('' + s)
 
@@ -90,6 +92,26 @@ public class JavaBB {
 
 # char[] asIterable(string s):
     ret s.toCharArray()
+
+# Object get(Object obj, string varname):
+    let method_name = '_get_' + varname
+    let inst = obj
+
+    try
+        return inst.getClass().getDeclaredMethod(method_name).invoke(inst)
+    catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        ...
+
+    try
+        return inst.getClass().getDeclaredField(varname).get(inst)
+    catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e)
+        return null
+
+# Object dot(Object obj, string method):
+    try
+        return obj.getClass().getMethod(method)
+    catch (NoSuchMethodException e)
+        return null
         """.trim());
         String langUtilCode = res.getCompiledCode("LangUtil");
 
@@ -99,5 +121,8 @@ public class JavaBB {
         } catch (IOException e) {}
 
         System.out.println("Done.");
+        // dor(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.");
+        // var f = a.b.c.d.e("hello");
+        // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello");
     }
 }

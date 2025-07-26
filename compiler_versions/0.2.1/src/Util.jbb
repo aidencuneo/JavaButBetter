@@ -1,0 +1,39 @@
+static int indexConvert(int index, int size):
+    index += size if index < 0
+    return index
+
+static <T> T get(ArrayList<T> lst, int index):
+    try
+        index = indexConvert(index, lst.size())
+        return lst.get(index)
+    catch (IndexOutOfBoundsException e)
+        return null
+
+static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
+    try
+        start = indexConvert(start, lst.size())
+        end = indexConvert(end, lst.size())
+        return new ArrayList<>(lst.subList(start, end))
+    catch (IndexOutOfBoundsException e)
+        return null
+    
+static <T> ArrayList<T> select(ArrayList<T> lst, int start):
+    return select(lst, start, lst.size())
+
+static String select(String str, int start, int end):
+    try
+        start = indexConvert(start, str.length())
+        end = indexConvert(end, str.length())
+
+        return str.substring(start, end)
+    catch (IndexOutOfBoundsException e)
+        return null
+
+static String select(String str, int start):
+    return select(str, start, str.length())
+
+static <T> String d(ArrayList<T> s):
+    return "[]" if !s
+    let out = "["
+    out += e + " " for e in s
+    return out.substring(0, out.length() - 1) + "]"

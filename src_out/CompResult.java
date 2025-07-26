@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    public > classes;
-    public > classAccess;
+    HashMap<String, String> classes;
+    HashMap<String, AccessMod> classAccess;
     public String startTemplate;
     public String endTemplate;
     public CompResult(HashMap < String , String > classes , HashMap < String , AccessMod > classAccess , String startTemplate , String endTemplate) {

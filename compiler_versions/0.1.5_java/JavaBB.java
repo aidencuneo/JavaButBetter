@@ -2,41 +2,53 @@ import java.io.*;
 import java.util.*;
 
 public class JavaBB {
-    public static void main(String[] args) {
+    public static void main(String args[]) {
+        // Get input and output directories
         String compDir = "src";
-        if (LangUtil.isTruthy(args.length > 0)) {
-            compDir = args [0];
-        }
+        
+        if (args.length > 0)
+            compDir = args[0];
+
         String outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) {
-            outDir = args [1];
-        }
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
+
+        if (args.length > 1)
+            outDir = args[1];
+
+        // Create directory if it doesn't exist
+        if (!new File(outDir).exists())
             new File(outDir).mkdir();
-        }
-        String [] files = new File(compDir).list((File dir , String name)-> name.endsWith(".jbb"));
-        for (var i : LangUtil.asIterable(files.length)) {
+
+        // Compile files one by one
+        String[] files = new File(compDir).list((File dir, String name) -> name.endsWith(".jbb"));
+
+        // String[] files = new File(compDir).list();
+
+        for (int i = 0; i < files.length; ++i) {
             String fileContent = "";
-            String fromPath = compDir + "/" + files [i];
-            String toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
-            String className = files [i].split ("\\.")[0];
-            try (var scanner = new Scanner(new File(fromPath))) {
+            String fromPath = compDir + "/" + files[i];
+            String toPath = outDir + "/" + files[i].split("\\.")[0] + ".java";
+            String className = files[i].split("\\.")[0];
+
+            // Read input file
+            try (Scanner scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
-            CompResult res = Compiler.compileFile(className , fileContent);
+            } catch (FileNotFoundException e) {}
+
+            // Compile this file
+            CompResult res = Compiler.compileFile(className, fileContent);
             String compiled = res.getCompiledCode(className);
-            try (var writer = new PrintWriter(toPath)) {
+
+            // Write to output file
+            try (PrintWriter writer = new PrintWriter(toPath)) {
                 new File(toPath).createNewFile();
                 writer.println(compiled);
-            }
-            catch (IOException e) {
-                
-            }
+            } catch (IOException e) {}
         }
-        CompResult res = Compiler.compileFile("LangUtil" , """
+
+        // System.exit(0);
+
+        // Compile LangUtil
+        CompResult res = Compiler.compileFile("LangUtil", """
 import java.lang.reflect.*
 
 # print(Object s):
@@ -70,9 +82,9 @@ import java.lang.reflect.*
     ret v
 
 # List<Integer> asIterable(int n):
-    let lst = new ArrayList<Integer>()
+    let lst = new ArrayList<Integer>();
     inline `for (int i = 0; i < n; ++i)`
-        lst.add(i)
+        lst.add(i);
     ret lst
 
 # Iterable<T> (T) asIterable(Iterable<T> v):
@@ -101,16 +113,18 @@ import java.lang.reflect.*
     catch (NoSuchMethodException e)
         return null
 
-    """.trim());
+// Operators
+        """.trim());
         String langUtilCode = res.getCompiledCode("LangUtil");
-        try (var writer = new PrintWriter(outDir + "/LangUtil.java")) {
+
+        try (PrintWriter writer = new PrintWriter(outDir + "/LangUtil.java")) {
             new File(outDir + "/LangUtil.java").createNewFile();
             writer.println(langUtilCode);
-        }
-        catch (IOException e) {
-            
-        }
+        } catch (IOException e) {}
+
         System.out.println("Done.");
+        // dor(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.");
+        // var f = a.b.c.d.e("hello");
+        // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello");
     }
 }
-

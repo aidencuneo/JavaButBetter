@@ -1,25 +1,37 @@
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
 
 public class StringParser {
+    // public static String unescapeString(String str) {
+    //     try {
+    //         Properties prop = new Properties();
+    //         prop.load(new StringReader("x=" + str));
+    //         return prop.getProperty("x");
+    //     } catch (IOException e) {
+    //         return null;
+    //     }
+    // }
+
     public static String unescapeString(String str) {
-        var out = "";
+        String out = "";
+
         for (int i = 0; i < str.length(); ++i) {
-            var c = str.charAt(i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(c == '\\')) ? (i + 1 < str.length()) : (c == '\\'))) {
-                var next = str.charAt(i + 1);
-                ++ i;
-                if (LangUtil.isTruthy((LangUtil.isTruthy(next == 'u')) ? (i + 4 < str.length()) : (next == 'u'))) {
+            char ch = str.charAt(i);
+
+            if (ch == '\\' && i + 1 < str.length()) {
+                char next = str.charAt(i + 1);
+                ++i;
+
+                if (next == 'u' && i + 4 < str.length()) {
                     try {
-                        var code = Integer.parseInt(str.substring (i + 1 , i + 5), 16);
+                        int code = Integer.parseInt(str.substring(i + 1, i + 5), 16);
                         out += (char) code;
                         i += 4;
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         out += "\\u";
                     }
-                }
-                else {
+                } else {
                     switch (next) {
                         case 'b' -> out += '\b';
                         case 'f' -> out += '\f';
@@ -32,15 +44,14 @@ public class StringParser {
                         default -> out += next;
                     }
                 }
-            }
-            else {
-                out += c;
-            }
+            } else
+                out += ch;
         }
+
         return out;
     }
+
     public static String escapeDoubleQuotes(String str) {
-        return str.replace("\"" , "\\\"");
+        return str.replace("\"", "\\\"");
     }
 }
-

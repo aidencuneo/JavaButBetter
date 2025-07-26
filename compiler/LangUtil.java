@@ -13,13 +13,13 @@ public class LangUtil {
         return v;
     }
     public static boolean isTruthy(Object v) {
-        return (v != null);
+        return v != null;
     }
     public static boolean isTruthy(int v) {
-        return (v != 0);
+        return v != 0;
     }
     public static boolean isTruthy(double v) {
-        return (v != 0);
+        return v != 0;
     }
     public static boolean isTruthy(String v) {
         return !LangUtil.isTruthy(v.isEmpty());

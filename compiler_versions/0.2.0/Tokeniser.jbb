@@ -67,11 +67,11 @@ static ArrayList<string> splitFile(string file):
             ...
         elif c == '\\' && (sq || dq || bt)
             backslash = !backslash
-        elif c == '\'' && !(dq || bt || backslash)
+        elif c == '\'' && !(dq || rb > 0 || sb > 0 || cb > 0 || backslash)
             sq = !sq
-        elif c == '"' && !(sq || bt || backslash)
+        elif c == '"' && !(sq || bt || rb > 0 || sb > 0 || cb > 0 || backslash)
             dq = !dq
-        elif c == '`' && !(sq || dq || backslash)
+        elif c == '`' && !(sq || dq || rb > 0 || sb > 0 || cb > 0 || backslash)
             bt = !bt
         elif c == '(' && !(sq || dq || bt || sb > 0 || cb > 0)
             ++rb
@@ -149,7 +149,7 @@ static ArrayList<Token> tokLine(string line):
         type = charType(c)
 
         // Break
-        if ((type != lastType && type != CharType.W || type == CharType.S) && !(
+        if (type != lastType && type != CharType.W || type == CharType.S && !(
             sq || dq || bt || rb > 0 || sb > 0 || cb > 0
         ) && !(
             // Join together operators: -= += *= /= **= == >= <= .= ??=
@@ -200,11 +200,11 @@ static ArrayList<Token> tokLine(string line):
 
         if c == '\\' && (sq || dq || bt)
             backslash = !backslash
-        elif c == '\'' && !(dq || bt || backslash)
+        elif c == '\'' && !(dq || rb > 0 || sb > 0 || cb > 0 || backslash)
             sq = !sq
-        elif c == '"' && !(sq || bt || backslash)
+        elif c == '"' && !(sq || bt || rb > 0 || sb > 0 || cb > 0 || backslash)
             dq = !dq
-        elif c == '`' && !(sq || dq || backslash)
+        elif c == '`' && !(sq || dq || rb > 0 || sb > 0 || cb > 0 || backslash)
             bt = !bt
         elif c == '(' && !(sq || dq || bt || sb > 0 || cb > 0)
             ++rb

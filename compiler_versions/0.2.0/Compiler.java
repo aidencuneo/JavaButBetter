@@ -505,7 +505,7 @@ public class Compiler {
         for (var j : LangUtil.asIterable(end)) {
             Token . Type t = tok.get(j).type;
             String v = tok.get(j).value;
-            // System.out.println(j + ": " + v);
+            System.out.println(j + ": " + v);
             if (LangUtil.isTruthy(accessMod == AccessMod.DEFAULT)) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }

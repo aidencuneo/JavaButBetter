@@ -1,11 +1,17 @@
 static main:
-    let a = "String1"
-    let b = "String2"
-
-    if a.substring(0, a.size() - 1) == b
-        println "Hello, World!"
-    if a.substring(0, a.size() - 1) == b.substring(0, b.size() - 1)
-        println "No"
+    // if (startTok == Token.Type.IF
+    //     || startTok == Token.Type.ELIF
+    //     || startTok == Token.Type.ELSE
+    //     || startTok == Token.Type.WHILE
+    //     || startTok == Token.Type.UNTIL
+    // )
+    inline(switch (startTok))
+        inline(case IF -> out += "if (";)
+        inline(case ELIF -> out += "else if (";)
+        inline(case ELSE -> out += "else";)
+        inline(case WHILE -> out += "while (";)
+        inline(case UNTIL -> out += "while (!(";)
+        inline(default -> {})
 
 // int field = 10
 // int age = 21

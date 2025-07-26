@@ -1,0 +1,10 @@
+static string unescapeString(string str):
+    try
+        let prop = new Properties()
+        prop.load(new StringReader("x=" + str))
+        ret prop.getProperty("x")
+    catch (IOException e)
+        ret null
+
+static string escapeDoubleQuotes(string str):
+    ret str.replace("\"", "\\\"")

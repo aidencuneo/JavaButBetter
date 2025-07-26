@@ -3,40 +3,42 @@ import java.util.*;
 
 public class JavaBB {
     public static void main(String[] args) {
-        System.out.println("""
-        This is a long one
-        Yeah
-    """);
-        var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
-        var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
-        if (LangUtil.isTruthy(! new File (outDir).exists ())) {
-            new File (outDir).mkdir ();
+        String compDir = "src";
+        if (LangUtil.isTruthy(args.length > 0)) {
+            compDir = args [0];
         }
-        var files = new File (compDir).list ((File dir , String name)-> name.endsWith (".jbb"));
+        String outDir = compDir + "_out";
+        if (LangUtil.isTruthy(args.length > 1)) {
+            outDir = args [1];
+        }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
+            new File(outDir).mkdir();
+        }
+        String [] files = new File(compDir).list((File dir , String name)-> name.endsWith(".jbb"));
         for (var i : LangUtil.asIterable(files.length)) {
-            var fileContent = "";
-            var fromPath = compDir + '/' + files [i];
-            var toPath = outDir + '/' + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
-            try (var scanner = new Scanner (new File (fromPath))) {
-                fileContent = scanner.useDelimiter ("\\Z").next ();
+            String fileContent = "";
+            String fromPath = compDir + "/" + files [i];
+            String toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
+            String className = files [i].split ("\\.")[0];
+            try (var scanner = new Scanner(new File(fromPath))) {
+                fileContent = scanner.useDelimiter("\\Z").next();
             }
             catch (FileNotFoundException e) {
                 
             }
-            var res = Compiler.compileFile (className , fileContent);
-            var compiled = res.getCompiledCode (className);
-            try (var writer = new PrintWriter (toPath)) {
-                new File (toPath).createNewFile ();
-                writer.println (compiled);
+            CompResult res = Compiler.compileFile(className , fileContent);
+            String compiled = res.getCompiledCode(className);
+            try (var writer = new PrintWriter(toPath)) {
+                new File(toPath).createNewFile();
+                writer.println(compiled);
             }
             catch (IOException e) {
                 
             }
         }
-        var res = Compiler.compileFile ("LangUtil" , """
+        CompResult res = Compiler.compileFile("LangUtil" , """
+import java.lang.reflect.*
+
 # print(Object s):
     System.out.print('' + s)
 
@@ -67,27 +69,48 @@ public class JavaBB {
 # T[] (T) asIterable(T[] v):
     ret v
 
-# List asIterable(int n):
+# List<Integer> asIterable(int n):
     let lst = new ArrayList<Integer>()
-    inline `for (int i = 0 i < n ++i)`
+    inline `for (int i = 0; i < n; ++i)`
         lst.add(i)
     ret lst
 
-# List asIterable(List v):
+# Iterable<T> (T) asIterable(Iterable<T> v):
     ret v
 
 # char[] asIterable(string s):
     ret s.toCharArray()
-    """.trim ());
-        var langUtilCode = res.getCompiledCode ("LangUtil");
-        try (var writer = new PrintWriter (outDir + "/LangUtil.java")) {
-            new File (outDir + "/LangUtil.java").createNewFile ();
-            writer.println (langUtilCode);
+
+# Object get(Object obj, string varname):
+    let method_name = '_get_' + varname
+    let inst = obj
+
+    try
+        return inst.getClass().getDeclaredMethod(method_name).invoke(inst)
+    catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
+        ...
+
+    try
+        return inst.getClass().getDeclaredField(varname).get(inst)
+    catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e)
+        return null
+
+# Object dot(Object obj, string method):
+    try
+        return obj.getClass().getMethod(method)
+    catch (NoSuchMethodException e)
+        return null
+
+    """.trim());
+        String langUtilCode = res.getCompiledCode("LangUtil");
+        try (var writer = new PrintWriter(outDir + "/LangUtil.java")) {
+            new File(outDir + "/LangUtil.java").createNewFile();
+            writer.println(langUtilCode);
         }
         catch (IOException e) {
             
         }
-        System.out.println(("Done."));
+        System.out.println("Done.");
     }
 }
 

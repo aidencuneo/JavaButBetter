@@ -304,7 +304,12 @@ public class Compiler {
                 for (int j = 0; j <= end; ++j) {
                     Token t = tok.get(j);
 
-                    if (t.type == Token.Type.ID || t.type == Token.Type.SYMBOL || t.value.equals("<") || t.value.equals(">"))
+                    if (
+                        t.type == Token.Type.ID ||
+                        t.type == Token.Type.SYMBOL ||
+                        t.value.equals("<") ||
+                        t.value.equals(">") ||
+                        t.value.equals("."))
                         returnType += t.value + " ";
                 }
 
@@ -550,7 +555,7 @@ public class Compiler {
 
             String lhs = compileExpr(Util.select(tok, 0, f));
             String rhs = compileExpr(Util.select(tok, f + 1));
-            out += lhs + " " + tok.get(f).value + " " + rhs;
+            out += lhs + " " + oper + " " + rhs;
         }
 
         // Relational and type testing operators

@@ -1,7 +1,4 @@
-
-import java.lang.reflect.Array
-
-inline `public enum Type`
+inline(public enum Type)
     BLANK,
     INDENT,
     ID,
@@ -15,6 +12,7 @@ inline `public enum Type`
     NUM,
     STRING,
     CHAR,
+    TEMPLATE_STRING,
     ASSIGN,
     COMP_ASSIGN,
     UNARY_OPER,
@@ -44,21 +42,22 @@ inline `public enum Type`
     STATIC,
     IMPORT,
     CLASS,
+    ENUM,
+    ALIAS,
 
-public Type type
-public string value
+Type type
+string value
 
 Token(Type type, string value):
     this.type = type
     this.value = value
 
 static Token fromString(string v):
-    if v.isEmpty()
-        return new Token(Type.BLANK, v)
+    return new Token(Type.BLANK, v) if !v
 
     Type t
-    let f = v.charAt(0)
-    let l = v.charAt(v.length() - 1)
+    char f = v.charAt(0)
+    char l = v.charAt(v.length() - 1)
     // System.out.println(f + ", " + l)
 
     if v.length() == 0
@@ -78,23 +77,25 @@ static Token fromString(string v):
     elif f == '"' && l == '"'
         t = Type.STRING
     elif v.startsWith("'''") && v.endsWith("'''")
-        String vNoQuotes = v.substring(3, v.length() - 3)
-        String realStr = StringParser.unescapeString(vNoQuotes)
+        string vNoQuotes = v.substring(3, v.length() - 3)
+        string realStr = StringParser.unescapeString(vNoQuotes)
 
         if realStr.length() != 1
             t = Type.STRING
-            v = "\"\"\"" + StringParser.escapeDoubleQuotes(vNoQuotes) + "\"\"\""
+            v = "\"\"\"" + vNoQuotes + "\"\"\""
         else
             t = Type.CHAR
     elif f == '\'' && l == '\''
-        String vNoQuotes = v.substring(1, v.length() - 1)
-        String realStr = StringParser.unescapeString(vNoQuotes)
+        string vNoQuotes = v.substring(1, v.length() - 1)
+        string realStr = StringParser.unescapeString(vNoQuotes)
 
         if realStr.length() != 1
             t = Type.STRING
             v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"'
         else
             t = Type.CHAR
+    elif f == '`' && l == '`'
+        t = Type.TEMPLATE_STRING
     elif f == '(' && l == ')'
         t = Type.EXPR
     elif v.equals("=")
@@ -151,6 +152,10 @@ static Token fromString(string v):
         t = Type.IMPORT
     elif v.equals("class")
         t = Type.CLASS
+    elif v.equals("enum")
+        t = Type.ENUM
+    elif v.equals("alias")
+        t = Type.ALIAS
     elif v.equals("string")
         // string transforms into String
         v = "String"
@@ -159,28 +164,32 @@ static Token fromString(string v):
         // bool transforms into boolean
         v = "boolean"
         t = Type.ID
+    elif (List.of(
+        "+", "-", "*", "/", "%", "&", "|",
+        "and", "or", "xor", "nor",
+        "&&", "||", "^",
+        ">", "<", ">=", "<=",
+        "==", "!=", "is").contains(v)
+    )
+        t = Type.BIN_OPER
+    elif (List.of(
+        "!", "~", "not").contains(v))
+        t = Type.UNARY_OPER
     elif isAlpha(v)
         t = Type.ID
     elif isNum(v)
         if v.contains(".") && !(v.endsWith("f") || v.endsWith("d"))
             v += Options.defaultDecimal
         t = Type.NUM
-    elif List.of(
-        "+", "-", "*", "/", "%",
-        "not", "and", "or", "xor", "&", "|", "&&", "||", ">", "<", ">=", "<=", "==", "!=").contains(v)
-        t = Type.BIN_OPER
-    elif List.of(
-        "!", "~", "not").contains(v)
-        t = Type.UNARY_OPER
     else
         t = Type.SYMBOL
 
     return new Token(t, v)
 
-static bool isAlpha(string s):
+static boolean isAlpha(string s):
     return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")
 
-static bool isNum(string s):
+static boolean isNum(string s):
     return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$")
 
 string toString:

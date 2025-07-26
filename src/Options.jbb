@@ -1,0 +1,17 @@
+static string defaultDecimal
+
+static reset:
+    defaultDecimal = "f"
+
+inline(static)
+    reset()
+
+static setOption(string name, string value):
+    name .= toLowerCase()
+    string valueLower = value.toLowerCase()
+
+    if (name.equals("decimal") || name.equals("default_decimal"))
+        if (valueLower.equals("float") || valueLower.equals("f"))
+            defaultDecimal = "f"
+        else if (valueLower.equals("double") || valueLower.equals("d"))
+            defaultDecimal = "d"

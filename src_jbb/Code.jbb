@@ -1,32 +1,41 @@
-int field = 10
-int age = 21
-string name = 'aiden'
-string name2 = 'value'
-
 static main:
-    let some1000_a = (1.0**1.0 * 2 + 5 - 1)
-    println "hello" + ", " + 10
-    println 'nice' if List.of(1, 2, 'hi')
-    println 'yeah' if List.of(1)
+    let a = "String1"
+    let b = "String2"
 
-    println i for i in 10
-    print 0 + c + ' ' for c in "hello\n"
+    if a.substring(0, a.size() - 1) == b
+        println "Hello, World!"
+    if a.substring(0, a.size() - 1) == b.substring(0, b.size() - 1)
+        println "No"
 
-    let num = 17
-    println num ^ 3
-    println num ^ 3 ^ 3
-    println num ^ 3 ^ 3 ^ 3
-    println 13 ^ 3 ^ 5 ^ 6
+// int field = 10
+// int age = 21
+// string name = 'aiden'
+// string name2 = 'value'
 
-    // 5 and go()
-    // println "YEAH!" if not a or b
+// static main:
+//     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
+//     println "hello" + ", " + 10
+//     println 'nice' if List.of(1, 2, 'hi')
+//     println 'yeah' if List.of(1)
 
-public string _get_name:
-    return name.toUpperCase()
+//     println i for i in 10
+//     print 0 + c + ' ' for c in "hello\n"
 
-# string go:
-    println "WHAT!!!!!!!!"
-    return "value"
+//     let num = 17
+//     println num ^ 3
+//     println num ^ 3 ^ 3
+//     println num ^ 3 ^ 3 ^ 3
+//     println 13 ^ 3 ^ 5 ^ 6
+
+//     // 5 and go()
+//     // println "YEAH!" if not a or b
+
+// public string _get_name:
+//     return name.toUpperCase()
+
+// # string go:
+//     println "WHAT!!!!!!!!"
+//     return "value"
 
 // class Operators
 

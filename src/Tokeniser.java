@@ -95,11 +95,11 @@ public class Tokeniser {
                 // Join together operators: -= += *= /= **= == >= <= .= ??=
                 ("+-*/=><!.?".contains("" + lastChar)) && c == '='
             // ) && !(
-            //     lastType == CharType.A && c == '.' // Join together names like `word.upper` (second part is below)
+            //     lastType == CharType.A && c == '.' // Join together names like 'word.upper' (second part is below)
             // ) && !(
             //     type == CharType.A && lastChar == '.' // Second part to the line above
             ) && !(
-                lastChar == '_' && type == CharType.A // Join together names like `string_one` (second part is below)
+                lastChar == '_' && type == CharType.A // Join together names like 'string_one' (second part is below)
             ) && !(
                 lastType == CharType.A && c == '_' // Second part to the line above
             ) && !(
@@ -111,15 +111,17 @@ public class Tokeniser {
             ) && !(
                 lastChar == '.' && type == CharType.D // Join decimals (second part)
             ) && !(
-                lastChar == '_' && c == '_' // Join together all `_` tokens
+                lastChar == '_' && c == '_' // Join together all '_' tokens
             ) && !(
-                lastChar == '+' && c == '+' // Join together all `+` tokens
+                lastChar == '+' && c == '+' // Join together all '+' tokens
             ) && !(
-                lastChar == '-' && c == '-' // Join together all `-` tokens
+                lastChar == '-' && c == '-' // Join together all '-' tokens
             ) && !(
-                lastChar == '*' && c == '*' // Join together all `*` tokens
+                lastChar == '*' && c == '*' // Join together all '*' tokens
             ) && !(
-                lastChar == '?' && c == '?' // Join together all `?` tokens
+                lastChar == '?' && c == '?' // Join together all '?' tokens
+            ) && !(
+                lastChar == '.' && c == '.' // Join together all '.' tokens
             ) && !current.isBlank()) {
                 tok.add(Token.fromString(current.trim()));
                 current = "";

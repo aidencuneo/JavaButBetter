@@ -12,8 +12,11 @@ public class Code {
         String nullable = null;
         nullable = ((nullable) != null) ? (nullable) : ("null");
         what = Math.pow(what, 2);
-        if (((what += 1) == 5)) {
+        if (LangUtil.isTruthy(((what += 1) == 5))) {
             dosomething ();
+        }
+        while (!(LangUtil.isTruthy((what == 10)))) {
+            ++ what;
         }
     }
     public int max(int a , int b) {
@@ -28,10 +31,10 @@ public class Code {
     }
     public static void function(String s) {
         String h = "what" + s;
-        h = h . substring (1);
+        h = h.substring (1);
     }
     public static void dosomething() {
-        pass;
+        
     }
 }
 class Point {

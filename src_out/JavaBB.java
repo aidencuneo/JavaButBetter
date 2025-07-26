@@ -6,33 +6,33 @@ import java.util.*;
 public class JavaBB {
     public static void main(String args []) {
         var compDir = "src";
-        if (args . length) {
+        if (LangUtil.isTruthy(args.length)) {
             var compDir = args [0];
         }
         var outDir = compDir + "_out";
-        if (args . length > 1) {
+        if (LangUtil.isTruthy(args.length > 1)) {
             var outDir = args [1];
         }
-        if (! new File (outDir) . exists ()) {
-            new File (outDir) . mkdir ();
+        if (LangUtil.isTruthy(! new File (outDir).exists ())) {
+            new File (outDir).mkdir ();
         } {
-            var fileContent = '';
+            var fileContent = "";
             var fromPath = compDir + '/' + files [i];
-            var toPath = outDir + '/' + files [i] . split ('\\.') [0] + ".java";
-            var className = files [i] . split ('\\.') [0];
-            try scanner = new Scanner (new File(fromPath)); {
-                var fileContent = scanner . useDelimiter ('\\Z') . next ();
+            var toPath = outDir + '/' + files [i].split ("\\.")[0] + ".java";
+            var className = files [i].split ("\\.")[0];
+            try scanner = new Scanner (new File (fromPath)); {
+                var fileContent = scanner.useDelimiter ("\\Z").next ();
             }
             catch (FileNotFoundException e); {
-                pass;
+                
             }
-            var compiled = Compiler . compileFile (className, fileContent);
+            var compiled = Compiler.compileFile (className , fileContent);
             try writer = new PrintWriter (toPath); {
-                new File (toPath) . createNewFile ();
-                writer . println (compiled);
+                new File (toPath).createNewFile ();
+                writer.println (compiled);
             }
             catch (IOException e); {
-                pass;
+                
             }
         }
         System.out.println("Done.");

@@ -10,6 +10,8 @@
     what **= 2
     if (what += 1) == 5 // Also try if what += 1
         dosomething()
+    until what == 10
+        ++what
 int max(int a, int b):
     ret a > b ? a : b
 
@@ -25,7 +27,7 @@ int max(int a, int b):
     h .= substring(1)
 
 # dosomething:
-    pass
+    ...
 
 class Point
 

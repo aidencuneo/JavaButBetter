@@ -3,7 +3,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class Compiler {
-    public static String compileFile(String className, String code) {
+    public static CompResult compileFile(String className, String code) {
         ArrayList<String> lines = Tokeniser.splitFile(code);
 
         String startTemplate = "import java.io.*;\nimport java.util.*;\n";
@@ -96,7 +96,9 @@ public class Compiler {
                 else if (startTok == Token.Type.UNTIL)
                     out += "while (!(";
 
-                out += compileExpr(Util.select(tok, 1)) + ")";
+                out += "LangUtil.isTruthy(";
+                out += compileExpr(Util.select(tok, 1));
+                out += "))";
 
                 if (startTok == Token.Type.UNTIL)
                     out += ")";
@@ -145,6 +147,18 @@ public class Compiler {
                         --end;
                     }
 
+                    // Get type arguments
+                    String typeArgs = "";
+
+                    for (int j = 0; j <= end; ++j) {
+                        Token t = tok.get(j);
+
+                        if (t.type == Token.Type.EXPR) {
+                            typeArgs = t.value.substring(1, t.value.length() - 1);
+                            break;
+                        }
+                    }
+
                     // Get method access
                     MethodAccess methodAccess = getMethodAccess(tok, end + 1);
 
@@ -169,6 +183,16 @@ public class Compiler {
                 out += "return ";
                 out += compileExpr(Util.select(tok, 1));
                 out += ";";
+            }
+
+            else if (startTok == Token.Type.BREAK)
+                out += "break;";
+
+            else if (startTok == Token.Type.CONTINUE)
+                out += "continue;";
+
+            else if (startTok == Token.Type.PASS) {
+                // Do nothing
             }
 
             // ID keywords
@@ -201,23 +225,8 @@ public class Compiler {
             lastIndent -= 4;
         }
 
-        // Construct classes
-        String out = "";
-
-        // File class goes first
-        if (outClasses.containsKey(className))
-            out += constructClassString(className, outClasses.get(className), outClassAccess.get(className));
-
-        // Construct other classes
-        for (String c : outClasses.keySet()) {
-            // The null class is used to write code without a class
-            if (c.equals("null"))
-                out += outClasses.get(c);
-            else if (!c.equals(className))
-                out += constructClassString(c, outClasses.get(c), outClassAccess.get(c));
-        }
-
-        return startTemplate + "\n" + out + endTemplate;
+        // Return compilation result
+        return new CompResult(outClasses, outClassAccess, startTemplate, endTemplate);
     }
 
     public static String compileExpr(ArrayList<Token> tok, boolean nested) {
@@ -315,6 +324,13 @@ public class Compiler {
             out += "Math.pow(" + lhs + ", " + rhs + ")";
         }
 
+        // Dot operator
+        else if ((f = findTokenRev(tok, ".")) != -1) {
+            String lhs = compileExpr(Util.select(tok, 0, f));
+            String rhs = compileExpr(Util.select(tok, f + 1));
+            out += lhs + "." + rhs;
+        }
+
         // Expressions (parentheses)
         else if (tok.get(0).type == Token.Type.EXPR) {
             String expr = tok.get(0).value;
@@ -324,9 +340,25 @@ public class Compiler {
 
         // Fallback - add tokens as they are
         else {
-            for (int j = 0; j < tok.size(); ++j)
-                out += tok.get(j).value + " ";
+            for (int j = 0; j < tok.size(); ++j) {
+                Token t = tok.get(j);
+
+                // Perform conversions for some tokens
+
+                // Compile expressions
+                if (t.type == Token.Type.EXPR) {
+                    System.out.println("Happened");
+                    String raw = t.value.substring(1, t.value.length() - 1);
+                    ArrayList<Token> tokens = Tokeniser.tokLine(raw);
+                    out += "(" + compileExpr(tokens) + ")";
+                }
+
+                else
+                    out += tok.get(j).value + " ";
+            }
         }
+
+        System.out.println("Just did expr: " + Util.d(tok));
 
         return out.trim();
     }
@@ -348,17 +380,6 @@ public class Compiler {
         return "(" + out.trim() + ")";
     }
 
-    public static String constructClassString(String className, String code, AccessMod accessMod) {
-        String accessModStr = MethodAccess.accessModToString(accessMod);
-        String separator = (accessModStr.length() > 0 ? " " : "");
-
-        String out = accessModStr + separator + "class " + className + " {\n";
-        out += "    " + code.trim();
-        out += "\n}\n";
-
-        return out;
-    }
-
     public static int findToken(ArrayList<Token> tok, String value) {
         for (int i = 0; i < tok.size(); ++i)
             if (tok.get(i).value.equals(value))
@@ -366,8 +387,22 @@ public class Compiler {
         return -1;
     }
 
+    public static int findTokenRev(ArrayList<Token> tok, String value) {
+        for (int i = tok.size() - 1; i >= 0; --i)
+            if (tok.get(i).value.equals(value))
+                return i;
+        return -1;
+    }
+
     public static int findAnyToken(ArrayList<Token> tok, List<String> values) {
         for (int i = 0; i < tok.size(); ++i)
+            if (values.contains(tok.get(i).value))
+                return i;
+        return -1;
+    }
+
+    public static int findAnyTokenRev(ArrayList<Token> tok, List<String> values) {
+        for (int i = tok.size() - 1; i >= 0; --i)
             if (values.contains(tok.get(i).value))
                 return i;
         return -1;

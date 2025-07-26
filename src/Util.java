@@ -32,6 +32,21 @@ public class Util {
         return select(lst, start, lst.size());
     }
 
+    public static String select(String str, int start, int end) {
+        try {
+            start = indexConvert(start, str.length());
+            end = indexConvert(end, str.length());
+
+            return str.substring(start, end);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public static String select(String str, int start) {
+        return select(str, start, str.length());
+    }
+
     public static <T> String d(ArrayList<T> s) {
         if (s.isEmpty())
             return "[]";

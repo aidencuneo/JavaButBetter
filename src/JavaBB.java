@@ -35,7 +35,8 @@ public class JavaBB {
             } catch (FileNotFoundException e) {}
 
             // Compile this file
-            String compiled = Compiler.compileFile(className, fileContent);
+            CompResult res = Compiler.compileFile(className, fileContent);
+            String compiled = res.getCompiledCode(className);
 
             // Write to output file
             try (PrintWriter writer = new PrintWriter(toPath)) {
@@ -43,6 +44,42 @@ public class JavaBB {
                 writer.println(compiled);
             } catch (IOException e) {}
         }
+
+        // Compile LangUtil
+        CompResult res = Compiler.compileFile("LangUtil", """
+# print(Object s):
+    System.out.print('' + s)
+
+# println(Object s):
+    System.out.println('' + s)
+
+# bool isTruthy(bool v):
+    ret v
+
+# bool isTruthy(Object v):
+    ret v != null
+
+# bool isTruthy(int v):
+    ret v != 0
+
+# bool isTruthy(double v):
+    ret v != 0
+
+# bool isTruthy(string v):
+    ret !v.isEmpty()
+
+# bool (T) isTruthy(T[] v):
+    ret v.length > 0
+
+# bool isTruthy(List v):
+    ret !v.isEmpty()
+        """.trim());
+        String langUtilCode = res.getCompiledCode("LangUtil");
+
+        try (PrintWriter writer = new PrintWriter(outDir + "/LangUtil.java")) {
+            new File(outDir + "/LangUtil.java").createNewFile();
+            writer.println(langUtilCode);
+        } catch (IOException e) {}
 
         System.out.println("Done.");
     }

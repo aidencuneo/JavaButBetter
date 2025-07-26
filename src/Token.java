@@ -27,6 +27,7 @@ public class Token {
         RETURN,
         BREAK,
         CONTINUE,
+        PASS,
         IF,
         ELIF,
         ELSE,
@@ -77,7 +78,7 @@ public class Token {
             String vNoQuotes = v.substring(1, v.length() - 1);
             String realStr = StringParser.unescapeString(vNoQuotes);
 
-            if (realStr.length() > 1) {
+            if (realStr.length() != 1) {
                 t = Type.STRING;
                 v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"';
             } else
@@ -102,6 +103,8 @@ public class Token {
             t = Type.BREAK;
         else if (v.equals("continue") || v.equals("next"))
             t = Type.CONTINUE;
+        else if (v.equals("pass") || v.equals("..."))
+            t = Type.PASS;
         else if (v.equals("if"))
             t = Type.IF;
         else if (v.equals("elif"))
@@ -131,6 +134,10 @@ public class Token {
         else if (v.equals("string")) {
             // string transforms into String
             v = "String";
+            t = Type.ID;
+        } else if (v.equals("bool")) {
+            // bool transforms into boolean
+            v = "boolean";
             t = Type.ID;
         } else if (isAlpha(v))
             t = Type.ID;

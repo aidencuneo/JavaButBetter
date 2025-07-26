@@ -1,7 +1,7 @@
-# main:
+static main:
     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
     println "hello" + ", " + 10 //+ ' days remaining'
-    //' function('hello')
+    //' f('hello')
 
     let n = 0.0
     n = 0.0;n = 10.0 if some1000_a
@@ -17,20 +17,21 @@
     print 0 + c + ' ' for c in 'hello\n'
 
 int max(int a, int b):
-    ret a > b ? a : b
+    ret a if a > b
+    ret b
 
-+# string what:
+static string what:
     let i = 0
     ++i
     i += 1
     let s = "" + i; // Comment?
     ret null
 
-# function(string s):
+static f(string s):
     string h = 'what' + s
     h .= substring(1)
 
-# dosomething:
+static dosomething:
     println 'Something done'
 
 class Point
@@ -42,3 +43,10 @@ int y = 0
 Point: // This is a constructor
     let newx = x
     let newy = y
+
+class null
+
+inline `enum Colour`
+    RED,
+    GREEN,
+    BLUE,

@@ -359,7 +359,7 @@ public class Compiler {
 
         // Expressions
         else
-            out += compileExpr(tok, false) + ";";
+            out += compileExpr(tok, false) + (endTok == Token.Type.COMMA ? "" : ";");
 
         return out;
     }

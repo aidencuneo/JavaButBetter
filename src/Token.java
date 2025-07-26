@@ -81,7 +81,16 @@ public class Token {
             t = Type.FALSE;
         else if (f == '"' && l == '"')
             t = Type.STRING;
-        else if (f == '\'' && l == '\'') {
+        else if (v.startsWith("'''") && v.endsWith("'''")) {
+            String vNoQuotes = v.substring(3, v.length() - 3);
+            String realStr = StringParser.unescapeString(vNoQuotes);
+
+            if (realStr.length() != 1) {
+                t = Type.STRING;
+                v = "\"\"\"" + StringParser.escapeDoubleQuotes(vNoQuotes) + "\"\"\"";
+            } else
+                t = Type.CHAR;
+        } else if (f == '\'' && l == '\'') {
             String vNoQuotes = v.substring(1, v.length() - 1);
             String realStr = StringParser.unescapeString(vNoQuotes);
 

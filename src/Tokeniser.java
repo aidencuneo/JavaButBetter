@@ -199,6 +199,10 @@ public class Tokeniser {
                 lastChar == '?' && c == '?' // Join together all '?' tokens
             ) && !(
                 lastChar == '.' && c == '.' // Join together all '.' tokens
+            ) && !(
+                lastChar == '\'' && c == '\'' // Join together all single quotes
+            ) && !(
+                lastChar == '"' && c == '"' // Join together all double quotes
             ) && !current.isBlank()) {
                 tok.add(Token.fromString(current.trim()));
                 current = "";

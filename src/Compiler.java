@@ -25,13 +25,19 @@ public class Compiler {
         int lastIndent = 0;
 
         for (int i = 0; i < lines.size(); ++i) {
-            System.out.println(i + ": " + lines.get(i));
+            // System.out.println(i + "/" + (lines.size() - 1) + ": " + lines.get(i));
             String out = outClasses.getOrDefault(currentClass, "");
 
             ArrayList<Token> tok = Tokeniser.tokLine(lines.get(i));
+
+            // Nothing in the line?
+            if (tok.isEmpty())
+                continue;
+
             int indent = tok.get(0).value.length();
             tok.remove(0);
 
+            // Nothing but indentation in the line?
             if (tok.isEmpty())
                 continue;
 
@@ -59,7 +65,7 @@ public class Compiler {
 
             lastIndent = indent;
 
-            // System.out.println(Util.d(tok));
+            System.out.println(Util.d(tok));
         }
 
         // After the final line of a class, reset indentation
@@ -154,6 +160,15 @@ public class Compiler {
                 out += ")";
         }
 
+        // For-in loops
+        else if (startTok == Token.Type.FOR && (f = findTokenType(tok, Token.Type.IN)) != -1) {
+            out += "for (";
+            String varname = tok.get(1).value;
+            out += "var " + varname + " : LangUtil.asIterable(";
+            out += compileExpr(Util.select(tok, f + 1));
+            out += ")) ";
+        }
+
         // Statement control flow
         else if ((f = findTokenTypeRev(tok, Token.Type.IF)) != -1) {
             out += "if (LangUtil.isTruthy(";
@@ -182,13 +197,18 @@ public class Compiler {
             out += " }";
         }
 
-        // For-in loops
-        else if (startTok == Token.Type.FOR && (f = findTokenType(tok, Token.Type.IN)) != -1) {
-            out += "for (";
-            String varname = tok.get(1).value;
-            out += "var " + varname + " : LangUtil.asIterable(";
-            out += compileExpr(Util.select(tok, f + 1));
-            out += ")) ";
+        else if ((f = findTokenTypeRev(tok, Token.Type.FOR)) != -1) {
+            // For-in
+            int f_in = findTokenTypeRev(tok, Token.Type.IN);
+            if (f_in != -1) {
+                out += "for (";
+                String varname = tok.get(f + 1).value;
+                out += "var " + varname + " : LangUtil.asIterable(";
+                out += compileExpr(Util.select(tok, f_in + 1));
+                out += ")) { ";
+                out = compileStatement(Util.select(tok, 0, f), out);
+                out += " }";
+            }
         }
 
         // Try

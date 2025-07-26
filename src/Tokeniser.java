@@ -37,6 +37,8 @@ public class Tokeniser {
         int rb = 0;
         int sb = 0;
         int cb = 0;
+        int lastIndent = 0;
+        int indent = 0;
 
         // Start tokenising
         for (int i = 0; i < file.length(); ++i) {
@@ -44,16 +46,32 @@ public class Tokeniser {
             lastType = type;
             type = charType(c);
 
+            // Increase indent
+            if (c == ' ' && lastType == CharType.W)
+                ++indent;
+            else if (c == '\t' && lastType == CharType.W)
+                indent += 4;
+
             if ((c == '\n' || c == ';') && !(
                 sq || dq || bt || rb > 0 || sb > 0 || cb > 0
             )) {
-                if (!current.isEmpty())
-                    lines.add(current);
-
+                lines.add(current);
                 current = "";
 
                 // Replace indentation of next line with indentation of this line
-                if (c == ';') {}
+                if (c == ';') {
+                    current += " ".repeat(indent);
+
+                    // Seek until next non-indent character
+                    for (++i; i < file.length() && file.charAt(i) == ' ' || file.charAt(i) == '\t'; ++i) {}
+                    --i;
+                }
+            } else if (comment <= 1) {
+                if (comment > 0 && c != '/')
+                    comment = 0;
+
+                if (c != '\r')
+                    current += c;
             }
 
             if (comment >= 2);
@@ -73,24 +91,17 @@ public class Tokeniser {
                 --sb;
             else if (c == '/' && !(sq || dq || bt)) {
                 if (++comment >= 2) {
-                    // Remove last character, since it will be a '/'
-                    current = current.substring(0, current.length() - 1);
+                    // Remove last two characters, since they will be '//'
+                    current = current.substring(0, current.length() - 2);
                     // lines.remove(lines.size() - 1);
-                    // current = current.substring(0, current.length() - 2);
-                    break;
                 }
             }
 
-            // Reset comment at end of line
-            if (c == '\n')
+            if (c == '\n') {
+                // Reset some state at end of line
                 comment = 0;
-
-            if (comment <= 1) {
-                if (comment > 0 && c != '/')
-                    comment = 0;
-
-                if (c != '\r')
-                    current += c;
+                lastIndent = indent;
+                indent = 0;
             }
 
             lastChar = c;
@@ -149,7 +160,6 @@ public class Tokeniser {
             char c = line.charAt(i);
             lastType = type;
             type = charType(c);
-            // System.out.println(c + ", " + type);
 
             // Break
             if ((type != lastType && type != CharType.W || type == CharType.S) && !(
@@ -229,7 +239,7 @@ public class Tokeniser {
         }
 
         if (!current.isEmpty())
-            tok.add(Token.fromString(current));
+            tok.add(Token.fromString(current.trim()));
 
         return tok;
     }

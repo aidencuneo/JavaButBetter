@@ -45,7 +45,7 @@ public class JavaBB {
             } catch (IOException e) {}
         }
 
-        System.exit(0);
+        // System.exit(0);
 
         // Compile LangUtil
         CompResult res = Compiler.compileFile("LangUtil", """
@@ -79,11 +79,17 @@ public class JavaBB {
 # T[] (T) asIterable(T[] v):
     ret v
 
-# List (T) asIterable(int n):
+# List asIterable(int n):
     let lst = new ArrayList<Integer>();
     inline `for (int i = 0; i < n; ++i)`
         lst.add(i);
     ret lst
+
+# List asIterable(List v):
+    ret v
+
+# char[] asIterable(string s):
+    ret s.toCharArray()
         """.trim());
         String langUtilCode = res.getCompiledCode("LangUtil");
 

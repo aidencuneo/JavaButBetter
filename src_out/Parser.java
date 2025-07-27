@@ -4,7 +4,7 @@ import java.util.*;
 public class Parser {
     public static ArrayList < Token > convertIdentifiers(ArrayList < Token > tok) {
         var lastWasDot = false;
-        for (var i : LangUtil.asIterable(tok.size())) {
+        for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
             if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
                 if (LangUtil.isTruthy(t.value.equals("string"))) {
@@ -79,6 +79,7 @@ public class Parser {
                     var alias = Compiler.aliases.get(t.value);
                     tok.remove(i);
                     tok.addAll(i , alias.tokens);
+                    i += alias.tokens.size() - 1;
                 }
             }
             lastWasDot = false;

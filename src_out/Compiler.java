@@ -88,7 +88,6 @@ public class Compiler {
                 return "";
             }
             String name = tok.get(1).value;
-            ArrayList < Token > tokens;
             var args = new ArrayList < String > ();
             if (LangUtil.isTruthy(f > 2)) {
                 var argToken = tok.get(2);
@@ -100,11 +99,8 @@ public class Compiler {
                 for (var t : LangUtil.asIterable(argsTok)) {
                     if (LangUtil.isTruthy(t.type == Token.Type.ID)) { args.add(t.value); }
                 }
-                tokens = Util.select(tok , 3 , f - 1);
             }
-            else {
-                tokens = Util.select(tok , 2 , f - 1);
-            }
+            var tokens = Util.select(tok , f + 1);
             aliases.put(name , new Alias(name , tokens , args));
             System.out.println(name + " = " + args + ", " + tokens);
         }

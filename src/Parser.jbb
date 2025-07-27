@@ -1,8 +1,9 @@
 static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
     let lastWasDot = false
 
-    for i in tok.size()
+    inline(for (int i = 0; i < tok.size(); ++i))
         let t = tok.get(i)
+        let nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token(Token.Type.BLANK, "")
 
         // println i + ": " + t + ' - ' + lastWasDot
 
@@ -66,9 +67,17 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
             if Compiler.aliases.containsKey(t.value)
                 let alias = Compiler.aliases.get(t.value)
 
+                // If this alias has arguments, check for a bracketed expression
+                if alias.args && nextTok.type == Token.Type.EXPR
+                    // Perform identifier replacement on alias tokens
+                    let argTokens = Tokeniser.extractCommaExpr(nextTok.value)
+
+                    let aliasTokens = replaceIdentifiers(alias.tokens, )
+
                 // Push tokens onto tok
                 tok.remove(i)
                 tok.addAll(i, alias.tokens)
+                i += alias.tokens.size() - 1
 
         lastWasDot = false
         if t.type == Token.Type.DOT

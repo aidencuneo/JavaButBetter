@@ -120,28 +120,12 @@ static string compileStatement(ArrayList<Token> tok, string out):
             return ""
 
         string name = tok.get(1).value
-        ArrayList<Token> tokens
         let args = new ArrayList<string>()
 
         if f > 2
-            // Fetch args
-            let argToken = tok.get(2)
+            args = Tokeniser.extractArgsFromExpr(tok.get(2).value)
 
-            if argToken.type != Token.Type.EXPR
-                // Error!
-                return ""
-
-            // Tokenise args
-            let argStr = argToken.value.substring(1, argToken.value.length() - 1)
-            let argsTok = Tokeniser.tokLine(argStr)
-
-            // Get identifiers from tokens
-            for t in argsTok
-                args.add(t.value) if t.type == Token.Type.ID
-
-            tokens = Util.select(tok, 3, f - 1)
-        else
-            tokens = Util.select(tok, 2, f - 1)
+        let tokens = Util.select(tok, f + 1)
 
         aliases.put(name, new Alias(name, tokens, args))
         println name + " = " + args + ", " + tokens

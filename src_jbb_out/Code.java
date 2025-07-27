@@ -7,9 +7,9 @@ public class Code {
         
         
         
-        System.out.println(max(1 , 2));
+        System.out.println(a > b ? a : b(1 , 2));
         Integer age = 2;
-        var ages = new stringintmap();
+        var ages = new HashMap < String , Integer > ();
         _boolean what;
     }
     public static HashMap < String String > method(String [] args) {

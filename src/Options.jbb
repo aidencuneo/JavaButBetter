@@ -8,10 +8,10 @@ inline(static)
 
 static setOption(string name, string value):
     name .= toLowerCase()
-    string valueLower = value.toLowerCase()
+    let valueLower = value.toLowerCase()
 
-    if (name.equals("decimal") || name.equals("default_decimal"))
-        if (valueLower.equals("float") || valueLower.equals("f"))
+    if name.equals("decimal") || name.equals("default_decimal")
+        if valueLower.equals("float") || valueLower.equals("f")
             defaultDecimal = "f"
-        else if (valueLower.equals("double") || valueLower.equals("d"))
+        elif valueLower.equals("double") || valueLower.equals("d")
             defaultDecimal = "d"

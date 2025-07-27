@@ -14,8 +14,8 @@ static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
         start = indexConvert(start, lst.size())
         end = indexConvert(end, lst.size())
         return new ArrayList<>(lst.subList(start, end))
-    catch (IndexOutOfBoundsException e)
-        return null
+    catch (IndexOutOfBoundsException | IllegalArgumentException e)
+        return new ArrayList<T>()
     
 static <T> ArrayList<T> select(ArrayList<T> lst, int start):
     return select(lst, start, lst.size())
@@ -26,8 +26,8 @@ static String select(String str, int start, int end):
         end = indexConvert(end, str.length())
 
         return str.substring(start, end)
-    catch (IndexOutOfBoundsException e)
-        return null
+    catch (IndexOutOfBoundsException | IllegalArgumentException e)
+        return ""
 
 static String select(String str, int start):
     return select(str, start, str.length())

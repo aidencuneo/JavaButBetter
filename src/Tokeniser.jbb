@@ -235,4 +235,8 @@ static ArrayList<Token> tokLine(string line):
         lastChar = c
 
     tok.add(Token.fromString(current.trim())) if current
+
+    // Perform identifier conversion
+    tok = Parser.convertIdentifiers(tok)
+
     return tok

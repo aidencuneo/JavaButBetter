@@ -1,0 +1,8 @@
+string name
+inline(public ArrayList<Token> tokens;)
+inline(public ArrayList<String> args;)
+
+Alias(string name, ArrayList<Token> tokens, ArrayList<string> args):
+    this.name = name
+    this.tokens = tokens
+    this.args = args

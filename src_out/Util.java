@@ -21,8 +21,8 @@ public class Util {
             end = indexConvert(end , lst.size());
             return new ArrayList < > (lst.subList(start , end));
         }
-        catch (IndexOutOfBoundsException e) {
-            return null;
+        catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            return new ArrayList < T > ();
         }
     }
     public static < T > ArrayList < T > select(ArrayList < T > lst , int start) {
@@ -34,8 +34,8 @@ public class Util {
             end = indexConvert(end , str.length());
             return str.substring(start , end);
         }
-        catch (IndexOutOfBoundsException e) {
-            return null;
+        catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            return "";
         }
     }
     public static String select(String str , int start) {

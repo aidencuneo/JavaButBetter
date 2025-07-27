@@ -1,0 +1,112 @@
+static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
+    let lastWasDot = false
+
+    for i in tok.size()
+        let t = tok.get(i)
+
+        // println i + ": " + t + ' - ' + lastWasDot
+
+        if t.type == Token.Type.ID && !lastWasDot
+            // Perform identifier conversion
+
+            // String and object are in lowercase
+            if t.value.equals("string")
+                t.value = "String"
+            elif t.value.equals("String")
+                t.value = "string"
+            elif t.value.equals("object")
+                t.value = "Object"
+            elif t.value.equals("Object")
+                t.value = "object"
+
+            // Primitive type conversions
+            elif t.value.equals("byte")
+                t.value = "Byte"
+            elif t.value.equals("Byte")
+                t.value = "byte"
+            elif t.value.equals("short")
+                t.value = "Short"
+            elif t.value.equals("Short")
+                t.value = "short"
+            elif t.value.equals("int")
+                t.value = "Integer"
+            elif t.value.equals("Integer")
+                t.value = "int"
+            elif t.value.equals("long")
+                t.value = "Long"
+            elif t.value.equals("Long")
+                t.value = "long"
+            elif t.value.equals("float")
+                t.value = "Float"
+            elif t.value.equals("Float")
+                t.value = "float"
+            elif t.value.equals("double")
+                t.value = "Double"
+            elif t.value.equals("Double")
+                t.value = "double"
+            elif t.value.equals("char")
+                t.value = "Character"
+            elif t.value.equals("Character")
+                t.value = "char"
+            elif t.value.equals("bool")
+                t.value = "Boolean"
+            elif t.value.equals("Boolean")
+                t.value = "bool"
+            elif t.value.equals("boolean")
+                t.value = "_boolean"
+
+            // Apply to the token
+            tok.set(i, t)
+
+            // Aliases
+            for k in Compiler.aliases.keySet()
+                println k
+                println Compiler.aliases.get(k).tokens
+
+            if Compiler.aliases.containsKey(t.value)
+                let alias = Compiler.aliases.get(t.value)
+
+                // Push tokens onto tok
+                tok.remove(i)
+                tok.addAll(i, alias.tokens)
+
+        lastWasDot = false
+        if t.type == Token.Type.DOT
+            lastWasDot = true
+
+    return tok
+
+static ArrayList<Token> parseAccessMods(ArrayList<Token> tok):
+    let accessMod = AccessMod.DEFAULT
+    let isStatic = false
+
+    while tok
+        let v = tok.get(0).value
+
+        if v.equals("+") || v.equals("public")
+            accessMod = AccessMod.PUBLIC
+        elif v.equals("-") || v.equals("private")
+            accessMod = AccessMod.PRIVATE
+        elif v.equals("*") || v.equals("protected")
+            accessMod = AccessMod.PROTECTED
+        elif v.equals("#") || v.equals("static")
+            isStatic = true
+        else
+            break
+
+        // Remove token
+        tok.remove(0)
+
+    println tok
+
+    let newTok = new ArrayList<Token>()
+
+    newTok.add(new Token(Token.Type.ACCESS_MOD, ("" + accessMod).toLowerCase()))
+    newTok.add(new Token(Token.Type.STATIC, "static")) if isStatic
+    newTok.add(t) for t in tok
+
+    return newTok
+
+static ArrayList<Token> parseDeclaration(ArrayList<Token> tok):
+    println tok
+    return null

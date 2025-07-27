@@ -11,12 +11,12 @@ public class Options {
     }
     public static void setOption(String name , String value) {
         name = name.toLowerCase();
-        String valueLower = value.toLowerCase();
-        if (LangUtil.isTruthy(((LangUtil.isTruthy(name.equals("decimal"))) ? (name.equals("decimal")) : (name.equals("default_decimal"))))) {
-            if (LangUtil.isTruthy(((LangUtil.isTruthy(valueLower.equals("float"))) ? (valueLower.equals("float")) : (valueLower.equals("f"))))) {
+        var valueLower = value.toLowerCase();
+        if (LangUtil.isTruthy((LangUtil.isTruthy(name.equals("decimal"))) ? (name.equals("decimal")) : (name.equals("default_decimal")))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(valueLower.equals("float"))) ? (valueLower.equals("float")) : (valueLower.equals("f")))) {
                 defaultDecimal = "f";
             }
-            else {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(valueLower.equals("double"))) ? (valueLower.equals("double")) : (valueLower.equals("d")))) {
                 defaultDecimal = "d";
             }
         }

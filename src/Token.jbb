@@ -167,14 +167,6 @@ static Token fromString(string v):
         t = Type.ENUM
     elif v.equals("alias")
         t = Type.ALIAS
-    elif v.equals("string")
-        // string transforms into String
-        v = "String"
-        t = Type.ID
-    elif v.equals("bool")
-        // bool transforms into boolean
-        v = "boolean"
-        t = Type.ID
     elif isAlpha(v)
         t = Type.ID
     elif isNum(v)
@@ -186,10 +178,10 @@ static Token fromString(string v):
 
     return new Token(t, v)
 
-static boolean isAlpha(string s):
+static bool isAlpha(string s):
     return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")
 
-static boolean isNum(string s):
+static bool isNum(string s):
     return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$")
 
 string toString:

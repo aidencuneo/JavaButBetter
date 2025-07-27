@@ -8,6 +8,7 @@ public class Compiler {
     public static String endTemplate = "";
     public static HashMap<String, String> outClasses = new HashMap<>();
     public static HashMap<String, AccessMod> outClassAccess = new HashMap<>();
+    public static HashMap<String, Alias> aliases = new HashMap<>();
     public static int nextTempVar = 0;
     public static int indent = 0;
     public static CompResult compileFile(String className , String code) {
@@ -18,6 +19,7 @@ public class Compiler {
         outClasses = new HashMap < > ();
         outClassAccess = new HashMap < > ();
         outClassAccess.put(mainClassName , AccessMod.PUBLIC);
+        aliases = new HashMap < > ();
         nextTempVar = 0;
         ArrayList < String > lines = Tokeniser.splitFile(code);
         int lastIndent = 0;
@@ -74,6 +76,37 @@ public class Compiler {
             String optionName = tok.get(1).value;
             String optionValue = tok.get(2).value;
             Options.setOption(optionName , optionValue);
+        }
+        else if (LangUtil.isTruthy(startTok == Token.Type.ALIAS)) {
+            if (LangUtil.isTruthy(tok.size() < 2)) {
+                return "";
+            }
+            if (LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.ASSIGN))) == - 1)) {
+                return "";
+            }
+            if (LangUtil.isTruthy(f < 2)) {
+                return "";
+            }
+            String name = tok.get(1).value;
+            ArrayList < Token > tokens;
+            var args = new ArrayList < String > ();
+            if (LangUtil.isTruthy(f > 2)) {
+                var argToken = tok.get(2);
+                if (LangUtil.isTruthy(argToken.type != Token.Type.EXPR)) {
+                    return "";
+                }
+                var argStr = argToken.value.substring(1 , argToken.value.length() - 1);
+                var argsTok = Tokeniser.tokLine(argStr);
+                for (var t : LangUtil.asIterable(argsTok)) {
+                    if (LangUtil.isTruthy(t.type == Token.Type.ID)) { args.add(t.value); }
+                }
+                tokens = Util.select(tok , 3 , f - 1);
+            }
+            else {
+                tokens = Util.select(tok , 2 , f - 1);
+            }
+            aliases.put(name , new Alias(name , tokens , args));
+            System.out.println(name + " = " + args + ", " + tokens);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.CLASS))) != - 1)) ? (f + 1 < tok.size()) : (((f = findTokenType(tok , Token.Type.CLASS))) != - 1))) {
             outClasses.put(currentClass , out);
@@ -505,7 +538,6 @@ public class Compiler {
         for (var j : LangUtil.asIterable(end)) {
             Token . Type t = tok.get(j).type;
             String v = tok.get(j).value;
-            System.out.println(j + ": " + v);
             if (LangUtil.isTruthy(accessMod == AccessMod.DEFAULT)) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }

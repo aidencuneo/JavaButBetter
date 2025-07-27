@@ -4,6 +4,7 @@ static string startTemplate = ""
 static string endTemplate = ""
 inline(public static HashMap<String, String> outClasses = new HashMap<>();)
 inline(public static HashMap<String, AccessMod> outClassAccess = new HashMap<>();)
+inline(public static HashMap<String, Alias> aliases = new HashMap<>();)
 
 static int nextTempVar = 0
 static int indent = 0
@@ -19,6 +20,7 @@ static CompResult compileFile(string className, string code):
     outClasses = new HashMap<>()
     outClassAccess = new HashMap<>()
     outClassAccess.put(mainClassName, AccessMod.PUBLIC)
+    aliases = new HashMap<>()
 
     nextTempVar = 0
     
@@ -102,6 +104,48 @@ static string compileStatement(ArrayList<Token> tok, string out):
         string optionValue = tok.get(2).value
         Options.setOption(optionName, optionValue)
 
+    // Aliases
+    elif startTok == Token.Type.ALIAS
+        if tok.size() < 2
+            // Error!
+            return ""
+
+        // Find the equals sign
+        if (f = findTokenType(tok, Token.Type.ASSIGN)) == -1
+            // Error!
+            return ""
+
+        if f < 2
+            // Error!
+            return ""
+
+        string name = tok.get(1).value
+        ArrayList<Token> tokens
+        let args = new ArrayList<string>()
+
+        if f > 2
+            // Fetch args
+            let argToken = tok.get(2)
+
+            if argToken.type != Token.Type.EXPR
+                // Error!
+                return ""
+
+            // Tokenise args
+            let argStr = argToken.value.substring(1, argToken.value.length() - 1)
+            let argsTok = Tokeniser.tokLine(argStr)
+
+            // Get identifiers from tokens
+            for t in argsTok
+                args.add(t.value) if t.type == Token.Type.ID
+
+            tokens = Util.select(tok, 3, f - 1)
+        else
+            tokens = Util.select(tok, 2, f - 1)
+
+        aliases.put(name, new Alias(name, tokens, args))
+        println name + " = " + args + ", " + tokens
+
     // Classes
     elif (f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()
         // Set code for previous class before moving to new one
@@ -153,7 +197,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
         out += compileExpr(Util.select(tok, f + 1))
         out += ")) "
 
-    // Statement control flow
+    // Statement control flow (TODO: combine these together so precedence is the same)
     elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1
         out += "if (LangUtil.isTruthy("
         string cond = compileExpr(Util.select(tok, f + 1))
@@ -661,7 +705,7 @@ static MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
     for j in end
         Token.Type t = tok.get(j).type
         string v = tok.get(j).value
-        System.out.println(j + ": " + v)
+        // System.out.println(j + ": " + v)
 
         // Attempt to get access modifier from every token (if not found already)
         if accessMod == AccessMod.DEFAULT

@@ -1,17 +1,15 @@
-static main:
-    // if (startTok == Token.Type.IF
-    //     || startTok == Token.Type.ELIF
-    //     || startTok == Token.Type.ELSE
-    //     || startTok == Token.Type.WHILE
-    //     || startTok == Token.Type.UNTIL
-    // )
-    inline(switch (startTok))
-        inline(case IF -> out += "if (";)
-        inline(case ELIF -> out += "else if (";)
-        inline(case ELSE -> out += "else";)
-        inline(case WHILE -> out += "while (";)
-        inline(case UNTIL -> out += "while (!(";)
-        inline(default -> {})
+#main:
+    alias stringintmap = HashMap<string, int>
+    alias max(a, b) = a > b ? a : b
+    alias min(a, b, c) = a < b ? a : b < c ? b : c
+    alias bigtype(a, b) = HashMap<a, b>
+    println max(1, 2)
+    int age = 2
+    let ages = new stringintmap()
+    boolean what
+
++# (T) HashMap<string, string> method(string[] args):
+    ...
 
 // int field = 10
 // int age = 21

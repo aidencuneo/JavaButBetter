@@ -205,14 +205,6 @@ public class Token {
         else if (LangUtil.isTruthy(v.equals("alias"))) {
             t = Type.ALIAS;
         }
-        else if (LangUtil.isTruthy(v.equals("string"))) {
-            v = "String";
-            t = Type.ID;
-        }
-        else if (LangUtil.isTruthy(v.equals("bool"))) {
-            v = "boolean";
-            t = Type.ID;
-        }
         else if (LangUtil.isTruthy(isAlpha(v))) {
             t = Type.ID;
         }

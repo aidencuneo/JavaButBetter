@@ -42,7 +42,7 @@ public class Compiler {
             out += "\n";
             outClasses.put(currentClass , out);
             lastIndent = indent;
-            System.out.println(Util.d(tok));
+            // System.out.println(Util.d(tok));
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
             String curOut = outClasses.getOrDefault(currentClass , "");
@@ -505,7 +505,7 @@ public class Compiler {
         for (var j : LangUtil.asIterable(end)) {
             Token . Type t = tok.get(j).type;
             String v = tok.get(j).value;
-            System.out.println(j + ": " + v);
+            // System.out.println(j + ": " + v);
             if (LangUtil.isTruthy(accessMod == AccessMod.DEFAULT)) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }

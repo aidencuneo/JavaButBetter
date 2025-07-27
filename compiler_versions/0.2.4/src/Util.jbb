@@ -20,7 +20,7 @@ static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
 static <T> ArrayList<T> select(ArrayList<T> lst, int start):
     return select(lst, start, lst.size())
 
-static string select(string str, int start, int end):
+static String select(String str, int start, int end):
     try
         start = indexConvert(start, str.length())
         end = indexConvert(end, str.length())
@@ -29,10 +29,10 @@ static string select(string str, int start, int end):
     catch (IndexOutOfBoundsException | IllegalArgumentException e)
         return ""
 
-static string select(string str, int start):
+static String select(String str, int start):
     return select(str, start, str.length())
 
-static <T> string d(ArrayList<T> s):
+static <T> String d(ArrayList<T> s):
     return "[]" if !s
     let out = "["
     out += e + " " for e in s

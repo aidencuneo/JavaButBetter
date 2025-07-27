@@ -36,16 +36,16 @@ public class JavaBB {
         var res = Compiler.compileFile("LangUtil" , """
 import java.lang.reflect.*
 
-# print(Object s):
+# print(object s):
     System.out.print('' + s)
 
-# println(Object s):
+# println(object s):
     System.out.println('' + s)
 
 # bool isTruthy(bool v):
     ret v
 
-# bool isTruthy(Object v):
+# bool isTruthy(object v):
     ret v != null
 
 # bool isTruthy(int v):
@@ -55,19 +55,21 @@ import java.lang.reflect.*
     ret v != 0
 
 # bool isTruthy(string v):
-    ret !(v ?? "").isEmpty()
+    ret false if v is null
+    ret !v.isEmpty()
 
 # bool (T) isTruthy(T[] v):
     ret v.length > 0
 
 # bool isTruthy(List v):
-    ret !(v ?? new List()).isEmpty()
+    ret false if v is null
+    ret !v.isEmpty()
 
 # T[] (T) asIterable(T[] v):
     ret v
 
-# List<Integer> asIterable(int n):
-    let lst = new ArrayList<Integer>()
+# List<int> asIterable(int n):
+    let lst = new ArrayList<int>()
     inline `for (int i = 0; i < n; ++i)`
         lst.add(i)
     ret lst
@@ -75,7 +77,7 @@ import java.lang.reflect.*
 # Iterable<T> (T) asIterable(Iterable<T> v):
     ret v
 
-# char[] asIterable(string s):
+# Character[] asIterable(string s):
     ret s.toCharArray()
 
 // # Object get(Object obj, string varname):

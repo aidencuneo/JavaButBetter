@@ -128,7 +128,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
         let tokens = Util.select(tok, f + 1)
 
         aliases.put(name, new Alias(name, tokens, args))
-        // println name + " = " + args + ", " + tokens
+        println name + " = " + args + ", " + tokens
 
     // Classes
     elif (f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < tok.size()

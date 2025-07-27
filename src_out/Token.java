@@ -58,8 +58,8 @@ public class Token {
     public static Token fromString(String v) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK , v); }
         Type t;
-        char f = v.charAt(0);
-        char l = v.charAt(v.length() - 1);
+        Character f = v.charAt(0);
+        Character l = v.charAt(v.length() - 1);
         if (LangUtil.isTruthy(v.length() == 0)) {
             t = Type.BLANK;
         }
@@ -219,10 +219,10 @@ public class Token {
         }
         return new Token(t , v);
     }
-    public static boolean isAlpha(String s) {
+    public static Boolean isAlpha(String s) {
         return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
     }
-    public static boolean isNum(String s) {
+    public static Boolean isNum(String s) {
         return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$");
     }
     public String toString() {

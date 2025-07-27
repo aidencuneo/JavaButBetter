@@ -20,7 +20,7 @@ static string unescapeString(string str):
 
             if next == 'u' && i + 4 < str.length()
                 try
-                    let code = int.parseInt(str.substring(i + 1, i + 5), 16)
+                    let code = Integer.parseInt(str.substring(i + 1, i + 5), 16)
                     inline(out += (char) code;)
                     i += 4
                 catch (NumberFormatException e)

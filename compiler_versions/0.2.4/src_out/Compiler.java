@@ -9,8 +9,8 @@ public class Compiler {
     public static HashMap<String, String> outClasses = new HashMap<>();
     public static HashMap<String, AccessMod> outClassAccess = new HashMap<>();
     public static HashMap<String, Alias> aliases = new HashMap<>();
-    public static Integer nextTempVar = 0;
-    public static Integer indent = 0;
+    public static int nextTempVar = 0;
+    public static int indent = 0;
     public static CompResult compileFile(String className , String code) {
         mainClassName = className;
         currentClass = className;
@@ -22,7 +22,7 @@ public class Compiler {
         aliases = new HashMap < > ();
         nextTempVar = 0;
         ArrayList < String > lines = Tokeniser.splitFile(code);
-        Integer lastIndent = 0;
+        int lastIndent = 0;
         for (var i : LangUtil.asIterable(lines.size())) {
             String out = outClasses.getOrDefault(currentClass , "");
             ArrayList < Token > tok = Tokeniser.tokLine(lines.get(i));
@@ -58,7 +58,7 @@ public class Compiler {
         ArrayList < Token . Type > types = getTokenTypes(tok);
         Token . Type startTok = types.get(0);
         Token . Type endTok = Util.get(types , - 1);
-        Integer f = - 1;
+        int f = - 1;
         if (LangUtil.isTruthy(startTok == Token.Type.IMPORT)) {
             String importStr = "import ";
             for (int j = 1; j < tok.size(); ++j) {
@@ -94,6 +94,7 @@ public class Compiler {
             }
             var tokens = Util.select(tok , f + 1);
             aliases.put(name , new Alias(name , tokens , args));
+            System.out.println(name + " = " + args + ", " + tokens);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.CLASS))) != - 1)) ? (f + 1 < tok.size()) : (((f = findTokenType(tok , Token.Type.CLASS))) != - 1))) {
             outClasses.put(currentClass , out);
@@ -153,7 +154,7 @@ public class Compiler {
             out += " }";
         }
         else if (LangUtil.isTruthy(((f = findTokenTypeRev(tok , Token.Type.FOR))) != - 1)) {
-            Integer f_in = findTokenTypeRev(tok , Token.Type.IN);
+            int f_in = findTokenTypeRev(tok , Token.Type.IN);
             if (LangUtil.isTruthy(f_in != - 1)) {
                 out += "for (";
                 String varname = tok.get(f + 1).value;
@@ -196,7 +197,7 @@ public class Compiler {
                 
             }
             else {
-                Integer end = tok.size() - 2;
+                int end = tok.size() - 2;
                 String args = "()";
                 if (LangUtil.isTruthy((LangUtil.isTruthy(end >= 0)) ? (tok.get(end).type == Token.Type.EXPR) : (end >= 0))) {
                     args = compileMethodArgs(tok.get(end).value);
@@ -267,7 +268,7 @@ public class Compiler {
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() >= 2)) ? (!LangUtil.isTruthy(indent)) : (tok.size() >= 2))) {
-            Integer end = tok.size() - 1;
+            int end = tok.size() - 1;
             String value = "";
             if (LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.ASSIGN))) != - 1)) {
                 value = " = " + compileExpr(Util.select(tok , f + 1));
@@ -288,10 +289,10 @@ public class Compiler {
         }
         return out;
     }
-    public static String compileExpr(ArrayList < Token > tok , Boolean nested) {
+    public static String compileExpr(ArrayList < Token > tok , boolean nested) {
         String out = "";
-        Integer f = - 1;
-        Integer f2 = - 1;
+        int f = - 1;
+        int f2 = - 1;
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return out; }
         if (LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.ASSIGN))) != - 1)) {
             String vartype = "";
@@ -478,37 +479,37 @@ public class Compiler {
     public static String getNextTemp() {
         return "_temp" + nextTempVar++;
     }
-    public static Integer findToken(ArrayList < Token > tok , String value) {
+    public static int findToken(ArrayList < Token > tok , String value) {
         for (var i : LangUtil.asIterable(tok.size())) {
             if (LangUtil.isTruthy(tok.get(i).value.equals(value))) { return i; }
         }
         return - 1;
     }
-    public static Integer findTokenRev(ArrayList < Token > tok , String value) {
+    public static int findTokenRev(ArrayList < Token > tok , String value) {
         for (int i = tok.size() - 1; i >= 0; --i) {
             if (LangUtil.isTruthy(tok.get(i).value.equals(value))) { return i; }
         }
         return - 1;
     }
-    public static Integer findAnyToken(ArrayList < Token > tok , List < String > values) {
+    public static int findAnyToken(ArrayList < Token > tok , List < String > values) {
         for (var i : LangUtil.asIterable(tok.size())) {
             if (LangUtil.isTruthy(values.contains(tok.get(i).value))) { return i; }
         }
         return - 1;
     }
-    public static Integer findAnyTokenRev(ArrayList < Token > tok , List < String > values) {
+    public static int findAnyTokenRev(ArrayList < Token > tok , List < String > values) {
         for (int i = tok.size() - 1; i >= 0; --i) {
             if (LangUtil.isTruthy(values.contains(tok.get(i).value))) { return i; }
         }
         return - 1;
     }
-    public static Integer findTokenType(ArrayList < Token > tok , Token . Type type) {
+    public static int findTokenType(ArrayList < Token > tok , Token . Type type) {
         for (var i : LangUtil.asIterable(tok.size())) {
             if (LangUtil.isTruthy(tok.get(i).type == type)) { return i; }
         }
         return - 1;
     }
-    public static Integer findTokenTypeRev(ArrayList < Token > tok , Token . Type type) {
+    public static int findTokenTypeRev(ArrayList < Token > tok , Token . Type type) {
         for (int i = tok.size() - 1; i >= 0; --i) {
             if (LangUtil.isTruthy(tok.get(i).type == type)) { return i; }
         }
@@ -519,9 +520,9 @@ public class Compiler {
         for (var t : LangUtil.asIterable(tok)) { types.add(t.type); }
         return types;
     }
-    public static MethodAccess getMethodAccess(ArrayList < Token > tok , Integer end) {
+    public static MethodAccess getMethodAccess(ArrayList < Token > tok , int end) {
         AccessMod accessMod = AccessMod.DEFAULT;
-        Boolean isStatic = false;
+        boolean isStatic = false;
         for (var j : LangUtil.asIterable(end)) {
             Token . Type t = tok.get(j).type;
             String v = tok.get(j).value;

@@ -5,7 +5,7 @@ public class Tokeniser {
     public enum CharType {
         A , D , S , W ,
     }
-    public static CharType charType(char c) {
+    public static CharType charType(Character c) {
         if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(c >= 'a')) ? (c <= 'z') : (c >= 'a')))) ? (((LangUtil.isTruthy(c >= 'a')) ? (c <= 'z') : (c >= 'a'))) : ((LangUtil.isTruthy(((LangUtil.isTruthy(c >= 'A')) ? (c <= 'Z') : (c >= 'A')))) ? (((LangUtil.isTruthy(c >= 'A')) ? (c <= 'Z') : (c >= 'A'))) : (c == '_')))) {
             return CharType.A;
         }
@@ -25,19 +25,19 @@ public class Tokeniser {
         String current = "";
         CharType type = charType(file.charAt(0));
         CharType lastType;
-        char lastChar = 0;
-        int comment = 0;
-        boolean backslash = false;
-        boolean sq = false;
-        boolean dq = false;
-        boolean bt = false;
-        int rb = 0;
-        int sb = 0;
-        int cb = 0;
-        int lastIndent = 0;
-        int indent = 0;
+        Character lastChar = 0;
+        Integer comment = 0;
+        Boolean backslash = false;
+        Boolean sq = false;
+        Boolean dq = false;
+        Boolean bt = false;
+        Integer rb = 0;
+        Integer sb = 0;
+        Integer cb = 0;
+        Integer lastIndent = 0;
+        Integer indent = 0;
         for (var i : LangUtil.asIterable(file.length())) {
-            char c = file.charAt(i);
+            Character c = file.charAt(i);
             lastType = type;
             type = charType(c);
             if (LangUtil.isTruthy((LangUtil.isTruthy(c == ' ')) ? (lastType == CharType.W) : (c == ' '))) {
@@ -112,7 +112,7 @@ public class Tokeniser {
         var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
         String indent = "";
-        int i = 0;
+        Integer i = 0;
         for (; i < line.length(); ++i) {
             var c = line.charAt(i);
             if (LangUtil.isTruthy(c == ' ')) {
@@ -132,17 +132,17 @@ public class Tokeniser {
         String current = "";
         CharType type = charType(line.charAt(i));
         CharType lastType;
-        char lastChar = 0;
-        int comment = 0;
-        boolean backslash = false;
-        boolean sq = false;
-        boolean dq = false;
-        boolean bt = false;
-        int rb = 0;
-        int sb = 0;
-        int cb = 0;
+        Character lastChar = 0;
+        Integer comment = 0;
+        Boolean backslash = false;
+        Boolean sq = false;
+        Boolean dq = false;
+        Boolean bt = false;
+        Integer rb = 0;
+        Integer sb = 0;
+        Integer cb = 0;
         for (; i < line.length(); ++i) {
-            char c = line.charAt(i);
+            Character c = line.charAt(i);
             lastType = type;
             type = charType(c);
             if (LangUtil.isTruthy(((LangUtil.isTruthy(((LangUtil.isTruthy((LangUtil.isTruthy(type != lastType)) ? (type != CharType.W) : (type != lastType))) ? ((LangUtil.isTruthy(type != lastType)) ? (type != CharType.W) : (type != lastType)) : (type == CharType.S)))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(("+-*/=><!.?".contains("" + lastChar)))) ? (c == '=') : (("+-*/=><!.?".contains("" + lastChar))))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '_')) ? (type == CharType.A) : (lastChar == '_'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.A)) ? (c == '_') : (lastType == CharType.A))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.A)) ? (type == CharType.D) : (lastType == CharType.A))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(type == CharType.A)) ? (lastType == CharType.D) : (type == CharType.A))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.D)) ? (c == '.') : (lastType == CharType.D))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '.')) ? (type == CharType.D) : (lastChar == '.'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '-')) ? (c == '>') : (lastChar == '-'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '=')) ? (c == '>') : (lastChar == '='))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '_')) ? (c == '_') : (lastChar == '_'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '+')) ? (c == '+') : (lastChar == '+'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '-')) ? (c == '-') : (lastChar == '-'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '*')) ? (c == '*') : (lastChar == '*'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '?')) ? (c == '?') : (lastChar == '?'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '.')) ? (c == '.') : (lastChar == '.'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '&')) ? (c == '&') : (lastChar == '&'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '|')) ? (c == '|') : (lastChar == '|'))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '\'')) ? (c == '\'') : (lastChar == '\''))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '"')) ? (c == '"') : (lastChar == '"'))))) ? (!LangUtil.isTruthy(current.isBlank())) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '"')) ? (c == '"') : (lastChar == '"'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '\'')) ? (c == '\'') : (lastChar == '\''))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '|')) ? (c == '|') : (lastChar == '|'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '&')) ? (c == '&') : (lastChar == '&'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '.')) ? (c == '.') : (lastChar == '.'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '?')) ? (c == '?') : (lastChar == '?'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '*')) ? (c == '*') : (lastChar == '*'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '-')) ? (c == '-') : (lastChar == '-'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '+')) ? (c == '+') : (lastChar == '+'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '_')) ? (c == '_') : (lastChar == '_'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '=')) ? (c == '>') : (lastChar == '='))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '-')) ? (c == '>') : (lastChar == '-'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '.')) ? (type == CharType.D) : (lastChar == '.'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.D)) ? (c == '.') : (lastType == CharType.D))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(type == CharType.A)) ? (lastType == CharType.D) : (type == CharType.A))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.A)) ? (type == CharType.D) : (lastType == CharType.A))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastType == CharType.A)) ? (c == '_') : (lastType == CharType.A))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(lastChar == '_')) ? (type == CharType.A) : (lastChar == '_'))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(("+-*/=><!.?".contains("" + lastChar)))) ? (c == '=') : (("+-*/=><!.?".contains("" + lastChar))))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))))) : (((LangUtil.isTruthy((LangUtil.isTruthy(type != lastType)) ? (type != CharType.W) : (type != lastType))) ? ((LangUtil.isTruthy(type != lastType)) ? (type != CharType.W) : (type != lastType)) : (type == CharType.S)))))) {

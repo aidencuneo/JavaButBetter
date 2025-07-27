@@ -9,31 +9,33 @@ public class LangUtil {
     public static void println(Object s) {
         System.out.println("" + s);
     }
-    public static boolean isTruthy(boolean v) {
+    public static Boolean isTruthy(Boolean v) {
         return v;
     }
-    public static boolean isTruthy(Object v) {
+    public static Boolean isTruthy(Object v) {
         return v != null;
     }
-    public static boolean isTruthy(int v) {
+    public static Boolean isTruthy(Integer v) {
         return v != 0;
     }
-    public static boolean isTruthy(double v) {
+    public static Boolean isTruthy(Double v) {
         return v != 0;
     }
-    public static boolean isTruthy(String v) {
+    public static Boolean isTruthy(String v) {
+        if (LangUtil.isTruthy(v == null)) { return false; }
         return !LangUtil.isTruthy(v.isEmpty());
     }
-    public static <T> boolean isTruthy(T [] v) {
+    public static <T> Boolean isTruthy(T [] v) {
         return v.length > 0;
     }
-    public static boolean isTruthy(List v) {
+    public static Boolean isTruthy(List v) {
+        if (LangUtil.isTruthy(v == null)) { return false; }
         return !LangUtil.isTruthy(v.isEmpty());
     }
     public static <T> T [] asIterable(T [] v) {
         return v;
     }
-    public static List < Integer > asIterable(int n) {
+    public static List < Integer > asIterable(Integer n) {
         var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
             lst.add(i);
@@ -45,30 +47,6 @@ public class LangUtil {
     }
     public static char [] asIterable(String s) {
         return s.toCharArray();
-    }
-    public static Object get(Object obj , String varname) {
-        var method_name = "_get_" + varname;
-        var inst = obj;
-        try {
-            return inst.getClass().getDeclaredMethod(method_name).invoke(inst);
-        }
-        catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            
-        }
-        try {
-            return inst.getClass().getDeclaredField(varname).get(inst);
-        }
-        catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e) {
-            return null;
-        }
-    }
-    public static Object dot(Object obj , String method) {
-        try {
-            return obj.getClass().getMethod(method);
-        }
-        catch (NoSuchMethodException e) {
-            return null;
-        }
     }
 }
 

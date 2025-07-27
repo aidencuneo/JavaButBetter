@@ -6,6 +6,8 @@ public class Parser {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
+            var nextTok = i + 1 < tok.size ()? tok.get (i + 1): new Token(Token.Type.BLANK , "");
+            System.out.println(i + ": " + tok);
             if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
                 if (LangUtil.isTruthy(t.value.equals("string"))) {
                     t . value = "String";
@@ -71,15 +73,19 @@ public class Parser {
                     t . value = "_boolean";
                 }
                 tok.set(i , t);
-                for (var k : LangUtil.asIterable(Compiler.aliases.keySet())) {
-                    System.out.println(k);
-                    System.out.println(Compiler.aliases.get(k).tokens);
-                }
                 if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
                     var alias = Compiler.aliases.get(t.value);
+                    var aliasTokens = alias.tokens;
+                    var hasArgs = (LangUtil.isTruthy(!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)))) ? (nextTok.type == Token.Type.EXPR) : (!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)));
                     tok.remove(i);
-                    tok.addAll(i , alias.tokens);
-                    i += alias.tokens.size() - 1;
+                    if (LangUtil.isTruthy(hasArgs)) {
+                        System.out.println("so this shouldn't go");
+                        var argTokens = Tokeniser.extractCommaExpr(nextTok.value);
+                        aliasTokens = replaceIdentifiers(aliasTokens , alias.args , argTokens);
+                        tok.remove(i);
+                    }
+                    tok.addAll(i , aliasTokens);
+                    i += aliasTokens.size() - 1;
                 }
             }
             lastWasDot = false;
@@ -88,6 +94,21 @@ public class Parser {
             }
         }
         return tok;
+    }
+    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
+        var lastWasDot = false;
+        var newTok = new ArrayList < Token > ();
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
+                var i = names.indexOf(t.value);
+                if (LangUtil.isTruthy(i != - 1)) {
+                    newTok.addAll(values.get(i));
+                    continue;
+                }
+            }
+            newTok.add(t);
+        }
+        return newTok;
     }
     public static ArrayList < Token > parseAccessMods(ArrayList < Token > tok) {
         var accessMod = AccessMod.DEFAULT;

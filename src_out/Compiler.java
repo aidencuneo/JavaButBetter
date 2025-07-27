@@ -90,15 +90,7 @@ public class Compiler {
             String name = tok.get(1).value;
             var args = new ArrayList < String > ();
             if (LangUtil.isTruthy(f > 2)) {
-                var argToken = tok.get(2);
-                if (LangUtil.isTruthy(argToken.type != Token.Type.EXPR)) {
-                    return "";
-                }
-                var argStr = argToken.value.substring(1 , argToken.value.length() - 1);
-                var argsTok = Tokeniser.tokLine(argStr);
-                for (var t : LangUtil.asIterable(argsTok)) {
-                    if (LangUtil.isTruthy(t.type == Token.Type.ID)) { args.add(t.value); }
-                }
+                args = Tokeniser.extractArgsFromExpr(tok.get(2).value);
             }
             var tokens = Util.select(tok , f + 1);
             aliases.put(name , new Alias(name , tokens , args));

@@ -7,10 +7,10 @@ public class Code {
         
         
         
-        System.out.println(a > b ? a : b(1 , 2));
-        Integer age = 2;
+        
+        System.out.println(1 > 2 ? 1 : 2 + 10);
+        if (LangUtil.isTruthy((LangUtil.isTruthy("something")) ? ("h" > "w" ? "h" : "w") : ("something"))) { 5 < 6.9f ? 5 : 6.9f < 2 ? 6.9f : 2; }
         var ages = new HashMap < String , Integer > ();
-        _boolean what;
     }
     public static HashMap < String String > method(String [] args) {
         

@@ -242,7 +242,7 @@ static ArrayList<Token> tokLine(string line):
     return tok
 
 static ArrayList<string> extractArgsFromExpr(string s):
-    let args = new ArrayList<string>
+    let args = new ArrayList<string>()
 
     // Tokenise expr
     let tok = Tokeniser.tokLine(s.substring(1, s.length() - 1))
@@ -254,13 +254,20 @@ static ArrayList<string> extractArgsFromExpr(string s):
     return args
 
 static ArrayList<ArrayList<Token>> extractCommaExpr(string s):
-    let elems = new ArrayList<ArrayList<Token>>
+    let elems = new ArrayList<ArrayList<Token>>()
 
     // Tokenise expr
     let tok = Tokeniser.tokLine(s.substring(1, s.length() - 1))
 
-    // Get identifiers from tokens
-    for t in argsTok
-        args.add(t.value) if t.type == Token.Type.ID
+    // Add tokens and split at commas
+    let current = new ArrayList<Token>()
 
-    return args
+    for t in tok
+        if t.type == Token.Type.COMMA
+            elems.add(current)
+            current = new ArrayList<Token>()
+        elif t.type != Token.Type.INDENT // Not really necessary in the end, but feels nicer
+            current.add(t)
+
+    elems.add(current)
+    return elems

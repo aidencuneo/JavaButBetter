@@ -194,5 +194,29 @@ public class Tokeniser {
         tok = Parser.convertIdentifiers(tok);
         return tok;
     }
+    public static ArrayList < String > extractArgsFromExpr(String s) {
+        var args = new ArrayList < String > ();
+        var tok = Tokeniser.tokLine(s.substring(1 , s.length() - 1));
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy(t.type == Token.Type.ID)) { args.add(t.value); }
+        }
+        return args;
+    }
+    public static ArrayList < ArrayList < Token > > extractCommaExpr(String s) {
+        var elems = new ArrayList < ArrayList < Token > > ();
+        var tok = Tokeniser.tokLine(s.substring(1 , s.length() - 1));
+        var current = new ArrayList < Token > ();
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy(t.type == Token.Type.COMMA)) {
+                elems.add(current);
+                current = new ArrayList < Token > ();
+            }
+            else if (LangUtil.isTruthy(t.type != Token.Type.INDENT)) {
+                current.add(t);
+            }
+        }
+        elems.add(current);
+        return elems;
+    }
 }
 

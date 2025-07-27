@@ -5,6 +5,7 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
         let t = tok.get(i)
         let nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token(Token.Type.BLANK, "")
 
+        println i + ": " + tok
         // println i + ": " + t + ' - ' + lastWasDot
 
         if t.type == Token.Type.ID && !lastWasDot
@@ -59,31 +60,60 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
             // Apply to the token
             tok.set(i, t)
 
-            // Aliases
-            for k in Compiler.aliases.keySet()
-                println k
-                println Compiler.aliases.get(k).tokens
+            // // Aliases
+            // for k in Compiler.aliases.keySet()
+            //     println k
+            //     println Compiler.aliases.get(k).tokens
 
             if Compiler.aliases.containsKey(t.value)
                 let alias = Compiler.aliases.get(t.value)
+                let aliasTokens = alias.tokens
+                let hasArgs = !!alias.args && nextTok.type == Token.Type.EXPR
+                println !!alias.args
+                println hasArgs
+                println nextTok.type == Token.Type.EXPR
+
+                // Remove alias name
+                tok.remove(i)
 
                 // If this alias has arguments, check for a bracketed expression
-                if alias.args && nextTok.type == Token.Type.EXPR
+                if hasArgs
+                    println "so this shouldn't go"
                     // Perform identifier replacement on alias tokens
                     let argTokens = Tokeniser.extractCommaExpr(nextTok.value)
+                    aliasTokens = replaceIdentifiers(aliasTokens, alias.args, argTokens)
 
-                    let aliasTokens = replaceIdentifiers(alias.tokens, )
+                    // Remove expression
+                    tok.remove(i)
 
                 // Push tokens onto tok
-                tok.remove(i)
-                tok.addAll(i, alias.tokens)
-                i += alias.tokens.size() - 1
+                tok.addAll(i, aliasTokens)
+
+                // Push i ahead by the tokens added
+                i += aliasTokens.size() - 1
+                // --i if hasArgs
 
         lastWasDot = false
         if t.type == Token.Type.DOT
             lastWasDot = true
 
     return tok
+
+static ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<string> names, ArrayList<ArrayList<Token>> values):
+    let lastWasDot = false
+    let newTok = new ArrayList<Token>()
+
+    for t in tok
+        if t.type == Token.Type.ID && !lastWasDot
+            let i = names.indexOf(t.value)
+
+            if i != -1
+                newTok.addAll(values.get(i))
+                next
+
+        newTok.add(t)
+
+    return newTok
 
 static ArrayList<Token> parseAccessMods(ArrayList<Token> tok):
     let accessMod = AccessMod.DEFAULT

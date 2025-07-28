@@ -1,11 +1,26 @@
 public static class Code
 
 main:
-    let range = [23432.439..9123.459382..343.11]
-    let range2 = [0.. ..10]
-    let range3 = [..20..10]
-    let range4 = [20.. ..-1]
-    // let lst = [1, 2, 3, "hello"]
+    // let range0 = [9123.459382..23432.439..343.11]
+    // let range1 = [..10]
+    // let range2 = [0..100..10]
+    // let range3 = [..20..10]
+    // let range4 = [20..-100..-10]
+    // let range5 = [..]
+
+    // print i for i in [..]
+    // println "0: " + i for i in range0
+    // println "1: " + i for i in range1
+    // println "2: " + i for i in range2
+    // println "3: " + i for i in range3
+    // println "4: " + i for i in range4
+    // println "5: " + i for i in range5
+
+    let empty = []
+    let lst = [1, 2, 3, "hello"]
+    let ints = [0, 1, 2, 3]
+    // println ints[0], ints[1], ints[2], ints[3], ints[-1], ints[-2], ints[-3], ints[-4]
+    println ints[0:-1:1], ints[::-1], ints[::1], ints[:2:-1], ints[1:]
 
     println "69" == "69" // => true
 

@@ -647,14 +647,29 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         string args = t.value.substring(1, t.value.length() - 1)
         out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
 
+    // Dot operator
+    elif (f = findTokenRev(tok, ".")) > 0
+        string lhs = compileExpr(Util.select(tok, 0, f))
+        string rhs = compileExpr(Util.select(tok, f + 1))
+        out += lhs + "." + rhs
+        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+
     // Expressions (parentheses)
-    elif len(tok) == 1 && tok.get(0).type == Token.Type.EXPR
+    elif tok.get(0).type == Token.Type.EXPR
         let expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
         out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
 
+    // // Index/slice expressions (identifier, square brackets)
+    // elif tok.get(0).type == Token.Type.ID && len(tok) > 1 && tok.get(1).type == Token.Type.SQUARE_EXPR
+    //     println "\n\n\nSlice found: " + tok + "\n\n\n"
+    //     out += "[slice]"
+    //     // let expr = tok.get(0).value
+    //     // expr = expr.substring(1, expr.length() - 1)
+    //     // out += expr
+
     // List expressions (square brackets)
-    elif len(tok) == 1 && tok.get(0).type == Token.Type.SQUARE_EXPR
+    elif tok.get(0).type == Token.Type.SQUARE_EXPR
         // Replace tok with the tokens from this expression
         let expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
@@ -664,79 +679,15 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         if tok && tok.get(0).type == Token.Type.INDENT
             tok.remove(0)
 
-        // Range
+        // Range expression
         if findTokenType(tok, Token.Type.RANGE) != -1
             out += compileRange(tok)
 
-        // List
-        else
-            out += "List.of(" + compileExpr(tok) + ")"
-
-    // Index/slice expressions ([tokens], square brackets)
-    elif (f = findTokenTypeRev(tok, Token.Type.SQUARE_EXPR)) > 0
-        println tok
-        // Get the iterable expression and replace tok with the tokens from this slice
-        let iterable = compileExpr(Util.select(tok, 0, f))
-        let expr = tok.get(f).value
-        expr = expr.substring(1, expr.length() - 1)
-        tok = Tokeniser.tokLine(expr)
-
-        // Slice
-        if findToken(tok, ":") != -1
-            // start?, :?, end?, :?, step?
-
-            let startTokens = new ArrayList<Token>()
-            let endTokens = new ArrayList<Token>()
-            let stepTokens = new ArrayList<Token>()
-
-            // Eat start
-            while tok && tok.get(0).value != ":"
-                startTokens.add(tok.get(0))
-                tok.remove(0)
-
-            // Eat :
-            tok.remove(0)
-
-            // Eat end
-            while tok && tok.get(0).value != ":"
-                endTokens.add(tok.get(0))
-                tok.remove(0)
-
-            // Eat step (and :)
-            if tok && tok.get(0).value == ":"
-                // Step becomes the remaining tokens
-                stepTokens = tok
-                tok.remove(0)
-
-            // Compile tokens
-            let start = compileExpr(startTokens)
-            let end = compileExpr(endTokens)
-            let step = compileExpr(stepTokens)
-
-            start = "null" if !start
-            end = "null" if !end
-            step = "1" if !step
-
-            out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
-            println iterable + "[" + start + ':' + end + ':' + step + "]"
-
-        // Index
-        else
-            out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
-            println "Index: " + iterable + "[" + compileExpr(tok) + "]"
-
     // Brace expressions (curly brackets)
-    elif len(tok) == 1 && tok.get(0).type == Token.Type.BRACE_EXPR
+    elif tok.get(0).type == Token.Type.BRACE_EXPR
         string expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
         out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
-
-    // Dot operator
-    elif (f = findTokenRev(tok, ".")) > 0
-        string lhs = compileExpr(Util.select(tok, 0, f))
-        string rhs = compileExpr(Util.select(tok, f + 1))
-        out += lhs + "." + rhs
-        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
 
     // Fallback - add tokens as they are
     else

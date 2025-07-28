@@ -647,6 +647,13 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         string args = t.value.substring(1, t.value.length() - 1)
         out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
 
+    // Dot operator
+    elif (f = findTokenRev(tok, ".")) > 0
+        string lhs = compileExpr(Util.select(tok, 0, f))
+        string rhs = compileExpr(Util.select(tok, f + 1))
+        out += lhs + "." + rhs
+        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+
     // Expressions (parentheses)
     elif len(tok) == 1 && tok.get(0).type == Token.Type.EXPR
         let expr = tok.get(0).value
@@ -673,8 +680,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += "List.of(" + compileExpr(tok) + ")"
 
     // Index/slice expressions ([tokens], square brackets)
-    elif (f = findTokenTypeRev(tok, Token.Type.SQUARE_EXPR)) > 0
-        println tok
+    elif (f = findTokenType(tok, Token.Type.SQUARE_EXPR)) > 0
         // Get the iterable expression and replace tok with the tokens from this slice
         let iterable = compileExpr(Util.select(tok, 0, f))
         let expr = tok.get(f).value
@@ -730,13 +736,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         string expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
         out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
-
-    // Dot operator
-    elif (f = findTokenRev(tok, ".")) > 0
-        string lhs = compileExpr(Util.select(tok, 0, f))
-        string rhs = compileExpr(Util.select(tok, f + 1))
-        out += lhs + "." + rhs
-        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
 
     // Fallback - add tokens as they are
     else

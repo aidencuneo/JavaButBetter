@@ -4,9 +4,9 @@ import java.util.*;
 public class JavaBB {
     public static void main(String[] args) {
         var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
+        if (LangUtil.isTruthy(args)) { compDir = Extensions.operGetIndex(args, 0); }
         var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
+        if (LangUtil.isTruthy(args.length > 1)) { outDir = Extensions.operGetIndex(args, 1); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
@@ -25,6 +25,19 @@ int len(string s):
 
 (T) int len(T[] v):
     ret v.length
+
+// getIndex
+char operGetIndex(string s, int i):
+    i = LangUtil.indexConvert(i, s.length())
+    ret s.charAt(i)
+
+(T) T operGetIndex(T[] v, int i):
+    i = LangUtil.indexConvert(i, v.length)
+    ret v[i]
+
+(T) T operGetIndex(List<T> v, int i):
+    i = LangUtil.indexConvert(i, v.size())
+    ret v.get(i)
 
 // +
 int operAdd(int a, int b):
@@ -60,9 +73,9 @@ bool operEq(object a, object b):
     """.trim());
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
-            var fromPath = compDir + "/" + files [i];
-            var toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
+            var fromPath = compDir + "/" + Extensions.operGetIndex(files, i);
+            var toPath = outDir + "/" + Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0) + ".java";
+            var className = Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
             }
@@ -141,7 +154,7 @@ bool isTruthy(object v):
 
 List<Int> asIterable(int n):
     let lst = new ArrayList<Int>()
-    inline `for (int i = 0; i < n; ++i)`
+    inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
 
@@ -153,6 +166,72 @@ List<Int> asIterable(int n):
 
 char[] asIterable(string s):
     ret s.toCharArray()
+
+// slice (string)
+string slice(string s, int start, int end, int step):
+    start = indexConvert(start, s.length())
+    end = indexConvert(end, s.length())
+
+    if step == 1
+        return s.substring(start, end)
+
+    let newStr = ""
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        newStr += s.charAt(i)
+    ret newStr
+
+string slice(string s, object start, object end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, step > 0 ? s.length() : -s.length() - 1, step)
+
+string slice(string s, object start, int end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, end, step)
+
+string slice(string s, int start, object end, int step):
+    return slice(s, start, step > 0 ? s.length() : -1, step)
+
+// slice (List)
+(T) List<T> slice(List<T> v, int start, int end, int step):
+    start = indexConvert(start, v.size())
+    end = indexConvert(end, v.size())
+
+    let lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        println i + ", " + start + ", " + end + ", " + step
+        lst.add(v.get(i))
+    ret lst
+
+(T) List<T> slice(List<T> v, object start, object end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
+
+(T) List<T> slice(List<T> v, object start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
+
+(T) List<T> slice(List<T> v, int start, object end, int step):
+    return slice(v, start, step > 0 ? v.size() : -1, step)
+
+// slice (array)
+(T) List<T> slice(T[] v, int start, int end, int step):
+    start = indexConvert(start, v.length)
+    end = indexConvert(end, v.length)
+
+    let lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        lst.add(v[i])
+    ret lst
+
+(T) List<T> slice(T[] v, object start, object end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, step > 0 ? v.length : -v.length - 1, step)
+
+(T) List<T> slice(T[] v, object start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, end, step)
+
+(T) List<T> slice(T[] v, int start, object end, int step):
+    return slice(v, start, step > 0 ? v.length : -1, step)
+
+// indexConvert (helper function)
+int indexConvert(int index, int size):
+    index += size if index < 0
+    return index
 
 // range (int)
 IntRange range(int start, int stop, int step):

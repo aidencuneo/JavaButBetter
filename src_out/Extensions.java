@@ -2,6 +2,29 @@ import java.io.*;
 import java.util.*;
 
 public class Extensions {
+    public static int len(String s) {
+        return s.length();
+    }
+    public static <T> int len(Iterable < T > v) {
+        var c = 0;
+        for (var _ : LangUtil.asIterable(v)) { ++ c; }
+        return c;
+    }
+    public static <T> int len(T [] v) {
+        return v.length;
+    }
+    public static char operGetIndex(String s , int i) {
+        i = LangUtil.indexConvert(i, s.length());
+        return s.charAt(i);
+    }
+    public static <T> T operGetIndex(T [] v , int i) {
+        i = LangUtil.indexConvert(i, v.length);
+        return Extensions.operGetIndex(v, i);
+    }
+    public static <T> T operGetIndex(List < T > v , int i) {
+        i = LangUtil.indexConvert(i, v.size());
+        return v.get(i);
+    }
     public static int operAdd(int a , int b) {
         return a + b;
     }

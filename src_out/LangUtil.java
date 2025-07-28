@@ -50,19 +50,226 @@ public class LangUtil {
     public static <T> Iterable < T > asIterable(Iterable < T > v) {
         return v;
     }
+    public static <T> Iterable < T > asIterable(Iterator < T > v) {
+        return new IteratorToIterable < T > (v);
+    }
     public static char [] asIterable(String s) {
         return s.toCharArray();
     }
-    public static int len(String s) {
-        return s.length();
+    public static String slice(String s , int start , int end , int step) {
+        start = indexConvert(start, s.length());
+        end = indexConvert(end, s.length());
+        if (LangUtil.isTruthy(Extensions.operEq(step, 1))) {
+            return s.substring(start, end);
+        }
+        var newStr = "";
+        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
+            newStr += s.charAt(i);
+        }
+        return newStr;
     }
-    public static <T> int len(Iterable < T > v) {
-        var c = 0;
-        for (var _ : LangUtil.asIterable(v)) { ++ c; }
-        return c;
+    public static String slice(String s , Object start , Object end , int step) {
+        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (s.length() - 1), LangUtil.isTruthy(step > 0) ? (s.length()) : (- s.length() - 1), step);
     }
-    public static <T> int len(T [] v) {
-        return v.length;
+    public static String slice(String s , Object start , int end , int step) {
+        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (s.length() - 1), end, step);
     }
+    public static String slice(String s , int start , Object end , int step) {
+        return slice(s, start, LangUtil.isTruthy(step > 0) ? (s.length()) : (- 1), step);
+    }
+    public static <T> List < T > slice(List < T > v , int start , int end , int step) {
+        start = indexConvert(start, v.size());
+        end = indexConvert(end, v.size());
+        var lst = new ArrayList < T > ();
+        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
+            LangUtil.println(i + ", " + start + ", " + end + ", " + step);
+            lst.add(v.get(i));
+        }
+        return lst;
+    }
+    public static <T> List < T > slice(List < T > v , Object start , Object end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), LangUtil.isTruthy(step > 0) ? (v.size()) : (- v.size() - 1), step);
+    }
+    public static <T> List < T > slice(List < T > v , Object start , int end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), end, step);
+    }
+    public static <T> List < T > slice(List < T > v , int start , Object end , int step) {
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (- 1), step);
+    }
+    public static <T> List < T > slice(T [] v , int start , int end , int step) {
+        start = indexConvert(start, v.length);
+        end = indexConvert(end, v.length);
+        var lst = new ArrayList < T > ();
+        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
+            lst.add(Extensions.operGetIndex(v, i));
+        }
+        return lst;
+    }
+    public static <T> List < T > slice(T [] v , Object start , Object end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.length - 1), LangUtil.isTruthy(step > 0) ? (v.length) : (- v.length - 1), step);
+    }
+    public static <T> List < T > slice(T [] v , Object start , int end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.length - 1), end, step);
+    }
+    public static <T> List < T > slice(T [] v , int start , Object end , int step) {
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.length) : (- 1), step);
+    }
+    public static int indexConvert(int index , int size) {
+        if (LangUtil.isTruthy(index < 0)) { index += size; }
+        return index;
+    }
+    public static IntRange range(int start , int stop , int step) {
+        return new IntRange(start, stop, step);
+    }
+    public static IntRange range(int start , Object stop , Object step) {
+        return range(start, Integer.MAX_VALUE, 1);
+    }
+    public static IntRange range(int start , Object stop , int step) {
+        return range(start, LangUtil.isTruthy(step > 0) ? (Integer.MAX_VALUE) : (Integer.MIN_VALUE), step);
+    }
+    public static IntRange range(int start , int stop , Object step) {
+        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
+    }
+    public static LongRange range(long start , long stop , long step) {
+        return new LongRange(start, stop, step);
+    }
+    public static LongRange range(long start , Object stop , Object step) {
+        return range(start, Long.MAX_VALUE, 1);
+    }
+    public static LongRange range(long start , Object stop , long step) {
+        return range(start, LangUtil.isTruthy(step > 0) ? (Long.MAX_VALUE) : (Long.MIN_VALUE), step);
+    }
+    public static LongRange range(long start , long stop , Object step) {
+        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
+    }
+    public static DoubleRange range(double start , double stop , double step) {
+        return new DoubleRange(start, stop, step);
+    }
+    public static DoubleRange range(double start , Object stop , Object step) {
+        return range(start, Double.MAX_VALUE, 1);
+    }
+    public static DoubleRange range(double start , Object stop , double step) {
+        return range(start, LangUtil.isTruthy(step > 0) ? (Double.MAX_VALUE) : (Double.MIN_VALUE), step);
+    }
+    public static DoubleRange range(double start , double stop , Object step) {
+        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
+    }
+    
+static class IntRange implements Iterator<Integer> {
+    public int start;
+    public int stop;
+    public int step;
+    public int current;
+
+    public IntRange(Integer start, Integer stop, Integer step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        int value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+static class LongRange implements Iterator<Long> {
+    public long start;
+    public long stop;
+    public long step;
+    public long current;
+
+    public LongRange(Long start, Long stop, Long step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        long value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+static class DoubleRange implements Iterator<Double> {
+    public double start;
+    public double stop;
+    public double step;
+    public double current;
+
+    public DoubleRange(Double start, Double stop, Double step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Double next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        double value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+static class IteratorToIterable<T> implements Iterable<T> {
+    private final Iterator<T> iterator;
+
+    public IteratorToIterable(Iterator<T> iterator) {
+        if (iterator == null)
+            throw new IllegalArgumentException();
+        this.iterator = iterator;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return iterator;
+    }
+}
 }
 

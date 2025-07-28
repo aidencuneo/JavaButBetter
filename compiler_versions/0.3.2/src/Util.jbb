@@ -1,17 +1,15 @@
-public static class Util
-
-int indexConvert(int index, int size):
+static int indexConvert(int index, int size):
     index += size if index < 0
     return index
 
-(T) T get(ArrayList<T> lst, int index):
+static <T> T get(ArrayList<T> lst, int index):
     try
         index = indexConvert(index, lst.size())
         return lst.get(index)
     catch IndexOutOfBoundsException e
         return null
 
-(T) ArrayList<T> select(ArrayList<T> lst, int start, int end):
+static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
     try
         start = indexConvert(start, lst.size())
         end = indexConvert(end, lst.size())
@@ -19,10 +17,10 @@ int indexConvert(int index, int size):
     catch IndexOutOfBoundsException | IllegalArgumentException e
         return new ArrayList<T>()
     
-(T) ArrayList<T> select(ArrayList<T> lst, int start):
+static <T> ArrayList<T> select(ArrayList<T> lst, int start):
     return select(lst, start, lst.size())
 
-string select(string str, int start, int end):
+static string select(string str, int start, int end):
     try
         start = indexConvert(start, str.length())
         end = indexConvert(end, str.length())
@@ -31,10 +29,10 @@ string select(string str, int start, int end):
     catch IndexOutOfBoundsException | IllegalArgumentException e
         return ""
 
-string select(string str, int start):
+static string select(string str, int start):
     return select(str, start, str.length())
 
-(T) string d(ArrayList<T> s):
+static <T> string d(ArrayList<T> s):
     return "[]" if !s
     let out = "["
     out += e + " " for e in s

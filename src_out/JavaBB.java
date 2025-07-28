@@ -26,6 +26,19 @@ int len(string s):
 (T) int len(T[] v):
     ret v.length
 
+// getIndex
+char operGetIndex(string s, int i):
+    i = LangUtil.indexConvert(i, s.length())
+    ret s.charAt(i)
+
+(T) T operGetIndex(T[] v, int i):
+    i = LangUtil.indexConvert(i, v.length)
+    ret v[i]
+
+(T) T operGetIndex(List<T> v, int i):
+    i = LangUtil.indexConvert(i, v.size())
+    ret v.get(i)
+
 // +
 int operAdd(int a, int b):
     inline(return a + b;)
@@ -141,32 +154,140 @@ bool isTruthy(object v):
 
 List<Int> asIterable(int n):
     let lst = new ArrayList<Int>()
-    inline `for (int i = 0; i < n; ++i)`
+    inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
 
 (T) Iterable<T> asIterable(Iterable<T> v):
     ret v
 
+(T) Iterable<T> asIterable(Iterator<T> v):
+    ret new IteratorToIterable<T>(v)
+
 char[] asIterable(string s):
     ret s.toCharArray()
 
-// range
-IntRange range(Int start, Int stop, Int step):
+// slice (string)
+string slice(string s, int start, int end, int step):
+    start = indexConvert(start, s.length())
+    end = indexConvert(end, s.length())
+
+    if step == 1
+        return s.substring(start, end)
+
+    let newStr = ""
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        newStr += s.charAt(i)
+    ret newStr
+
+string slice(string s, object start, object end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, step > 0 ? s.length() : -s.length() - 1, step)
+
+string slice(string s, object start, int end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, end, step)
+
+string slice(string s, int start, object end, int step):
+    return slice(s, start, step > 0 ? s.length() : -1, step)
+
+// slice (List)
+(T) List<T> slice(List<T> v, int start, int end, int step):
+    start = indexConvert(start, v.size())
+    end = indexConvert(end, v.size())
+
+    let lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        println i + ", " + start + ", " + end + ", " + step
+        lst.add(v.get(i))
+    ret lst
+
+(T) List<T> slice(List<T> v, object start, object end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
+
+(T) List<T> slice(List<T> v, object start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
+
+(T) List<T> slice(List<T> v, int start, object end, int step):
+    return slice(v, start, step > 0 ? v.size() : -1, step)
+
+// slice (array)
+(T) List<T> slice(T[] v, int start, int end, int step):
+    start = indexConvert(start, v.length)
+    end = indexConvert(end, v.length)
+
+    let lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        lst.add(v[i])
+    ret lst
+
+(T) List<T> slice(T[] v, object start, object end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, step > 0 ? v.length : -v.length - 1, step)
+
+(T) List<T> slice(T[] v, object start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, end, step)
+
+(T) List<T> slice(T[] v, int start, object end, int step):
+    return slice(v, start, step > 0 ? v.length : -1, step)
+
+// indexConvert (helper function)
+int indexConvert(int index, int size):
+    index += size if index < 0
+    return index
+
+// range (int)
+IntRange range(int start, int stop, int step):
     return new IntRange(start, stop, step)
 
-LongRange range(Long start, Long stop, Long step):
+IntRange range(int start, object stop, object step):
+    return range(start, Int.MAX_VALUE, 1)
+
+IntRange range(int start, object stop, int step):
+    return range(start, step > 0 ? Int.MAX_VALUE : Int.MIN_VALUE, step)
+
+IntRange range(int start, int stop, object step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// range (long)
+LongRange range(long start, long stop, long step):
     return new LongRange(start, stop, step)
 
-DoubleRange range(Double start, Double stop, Double step):
+LongRange range(long start, object stop, object step):
+    return range(start, Long.MAX_VALUE, 1)
+
+LongRange range(long start, object stop, long step):
+    return range(start, step > 0 ? Long.MAX_VALUE : Long.MIN_VALUE, step)
+
+LongRange range(long start, long stop, object step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// range (double)
+DoubleRange range(double start, double stop, double step):
     return new DoubleRange(start, stop, step)
 
-CharRange range(Char start, Char stop, Char step):
-    return new CharRange(start, stop, step)
+DoubleRange range(double start, object stop, object step):
+    return range(start, Double.MAX_VALUE, 1)
+
+DoubleRange range(double start, object stop, double step):
+    return range(start, step > 0 ? Double.MAX_VALUE : Double.MIN_VALUE, step)
+
+DoubleRange range(double start, double stop, object step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// // range (char)
+// CharRange range(char start, char stop, char step):
+//     return new CharRange(start, stop, step)
+
+// CharRange range(char start, object stop, object step):
+//     return range(start, Char.MAX_VALUE, 1)
+
+// CharRange range(char start, object stop, char step):
+//     return range(start, step > 0 ? Char.MAX_VALUE : Char.MIN_VALUE, step)
+
+// CharRange range(char start, char stop, object step):
+//     return range(start, stop, start < stop ? 1 : -1)
 
 // IntRange class
 inline(
-class IntRange implements Iterator<Integer> {
+static class IntRange implements Iterator<Integer> {
     public int start;
     public int stop;
     public int step;
@@ -182,9 +303,9 @@ class IntRange implements Iterator<Integer> {
     @Override
     public boolean hasNext() {
         if (step > 0 && stop > start)
-            return start < stop;
+            return current < stop;
         if (step < 0 && stop < start)
-            return start > stop;
+            return current > stop;
         return step == 0;
     }
 
@@ -202,7 +323,7 @@ class IntRange implements Iterator<Integer> {
 
 // LongRange class
 inline(
-class LongRange implements Iterator<Long> {
+static class LongRange implements Iterator<Long> {
     public long start;
     public long stop;
     public long step;
@@ -218,9 +339,9 @@ class LongRange implements Iterator<Long> {
     @Override
     public boolean hasNext() {
         if (step > 0 && stop > start)
-            return start < stop;
+            return current < stop;
         if (step < 0 && stop < start)
-            return start > stop;
+            return current > stop;
         return step == 0;
     }
 
@@ -238,7 +359,7 @@ class LongRange implements Iterator<Long> {
 
 // DoubleRange class
 inline(
-class DoubleRange implements Iterator<Double> {
+static class DoubleRange implements Iterator<Double> {
     public double start;
     public double stop;
     public double step;
@@ -254,9 +375,9 @@ class DoubleRange implements Iterator<Double> {
     @Override
     public boolean hasNext() {
         if (step > 0 && stop > start)
-            return start < stop;
+            return current < stop;
         if (step < 0 && stop < start)
-            return start > stop;
+            return current > stop;
         return step == 0;
     }
 
@@ -272,39 +393,20 @@ class DoubleRange implements Iterator<Double> {
     }
 })
 
-// CharRange class
+// Iterator to iterable class
 inline(
-class CharRange implements Iterator<Character> {
-    public char start;
-    public char stop;
-    public char step;
-    public char current;
+static class IteratorToIterable<T> implements Iterable<T> {
+    private final Iterator<T> iterator;
 
-    public CharRange(Character start, Character stop, Character step) {
-        this.start = start;
-        this.stop = stop;
-        this.step = step;
-        this.current = start;
+    public IteratorToIterable(Iterator<T> iterator) {
+        if (iterator == null)
+            throw new IllegalArgumentException();
+        this.iterator = iterator;
     }
 
     @Override
-    public boolean hasNext() {
-        if (step > 0 && stop > start)
-            return start < stop;
-        if (step < 0 && stop < start)
-            return start > stop;
-        return step == 0;
-    }
-
-    @Override
-    public Character next() {
-        if (!hasNext())
-            throw new NoSuchElementException();
-
-        char value = current;
-        current += step;
-
-        return value;
+    public Iterator<T> iterator() {
+        return iterator;
     }
 })
     """.trim());

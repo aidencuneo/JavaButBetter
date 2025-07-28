@@ -3,10 +3,10 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        var range = LangUtil.range(23432.439f, 9123.459382f, 343.11f);
-        var range2 = LangUtil.range(0, null, 10);
-        var range3 = LangUtil.range(null, 20, 10);
-        var range4 = LangUtil.range(20, null, - 1);
+        var empty = List.of();
+        var lst = List.of(1, 2, 3, "hello");
+        var ints = List.of(0, 1, 2, 3);
+        LangUtil.println(LangUtil.slice(ints, 0, - 1, 1), LangUtil.slice(ints, null, null, - 1), LangUtil.slice(ints, null, null, 1), LangUtil.slice(ints, null, 2, - 1), LangUtil.slice(ints, 1, null, 1));
         LangUtil.println(Extensions.operEq("69", "69"));
     }
 }

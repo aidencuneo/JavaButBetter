@@ -1,17 +1,20 @@
-import java.io.*;
-import java.util.*;
+static main:
+    // Get input and output directories
+    let compDir = "src"
+    compDir = args[0] if args
 
-public class JavaBB {
-    public static void main(String[] args) {
-        var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
-        var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
-            new File(outDir).mkdir();
-        }
-        var files = new File(compDir).list((File dir, String name)-> name.endsWith(".jbb"));
-        var extensionsClassRes = Compiler.compileFile("Extensions", """
+    let outDir = compDir + "_out"
+    outDir = args[1] if args.length > 1
+
+    // Create directory if it doesn't exist
+    if !new File(outDir).exists()
+        new File(outDir).mkdir()
+
+    // Compile files one by one
+    let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb"))
+
+    // Extensions code
+    let extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
 
 // len
@@ -57,44 +60,57 @@ bool operEq(string a, string b):
 
 bool operEq(object a, object b):
     return a.equals(b)
-    """.trim());
-        for (var i : LangUtil.asIterable(files.length)) {
-            var fileContent = "";
-            var fromPath = compDir + "/" + files [i];
-            var toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
-            try (var scanner = new Scanner(new File(fromPath))) {
-                fileContent = scanner.useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
-            var res = Compiler.compileFile(className, fileContent);
-            if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
-                var curCode = extensionsClassRes.classes.get("Extensions");
-                var newCode = res.classes.get("Extensions");
-                extensionsClassRes.classes.put("Extensions", "    " + curCode + newCode);
-                res.classes.remove("Extensions");
-            }
-            var compiled = res.getCompiledCode(className);
-            try (var writer = new PrintWriter(toPath)) {
-                new File(toPath).createNewFile();
-                writer.println(compiled);
-            }
-            catch (IOException e) {
-                
-            }
-        }
-        LangUtil.println("\n\nCompiling Extensions...");
-        try (var writer = new PrintWriter(outDir + "/Extensions.java")) {
-            new File(outDir + "/Extensions.java").createNewFile();
-            writer.println(extensionsClassRes.getCompiledCode("Extensions"));
-        }
-        catch (IOException e) {
-            
-        }
-        LangUtil.println("\n\nCompiling LangUtil...");
-        var res = Compiler.compileFile("LangUtil", """
+    """.trim())
+
+    for i in files.length
+        let fileContent = ""
+        let fromPath = compDir + "/" + files[i]
+        let toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
+        let className = files[i].split("\\.")[0]
+
+        // Read input file
+        try let scanner = new Scanner(new File(fromPath))
+            fileContent = scanner.useDelimiter("\\Z").next()
+        catch FileNotFoundException e
+            ...
+
+        // Compile this file
+        let res = Compiler.compileFile(className, fileContent)
+
+        // Extract Extensions class if it exists
+        if res.classes.containsKey("Extensions")
+            // Add code to current Extensions class
+            let curCode = extensionsClassRes.classes.get("Extensions")
+            let newCode = res.classes.get("Extensions")
+            extensionsClassRes.classes.put("Extensions", "    " + curCode + newCode)
+
+            // Remove Extensions class from this file's output
+            res.classes.remove("Extensions")
+
+        // Get final compiled code
+        let compiled = res.getCompiledCode(className)
+
+        // Write to output file
+        try let writer = new PrintWriter(toPath)
+            new File(toPath).createNewFile()
+            writer.println(compiled)
+        catch IOException e
+            ...
+
+    // System.exit(0)
+    println "\n\nCompiling Extensions..."
+
+    // Write Extensions.java
+    try let writer = new PrintWriter(outDir + "/Extensions.java")
+        new File(outDir + "/Extensions.java").createNewFile()
+        writer.println(extensionsClassRes.getCompiledCode("Extensions"))
+    catch IOException e
+        ...
+
+    println "\n\nCompiling LangUtil..."
+
+    // Compile LangUtil
+    let res = Compiler.compileFile("LangUtil", """
 // import java.lang.reflect.*
 
 public static class LangUtil
@@ -330,16 +346,16 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 })
-    """.trim());
-        var langUtilCode = res.getCompiledCode("LangUtil");
-        try (var writer = new PrintWriter(outDir + "/LangUtil.java")) {
-            new File(outDir + "/LangUtil.java").createNewFile();
-            writer.println(langUtilCode);
-        }
-        catch (IOException e) {
-            
-        }
-        LangUtil.println("\n\nDone.");
-    }
-}
+    """.trim())
+    let langUtilCode = res.getCompiledCode("LangUtil")
 
+    try let writer = new PrintWriter(outDir + "/LangUtil.java")
+        new File(outDir + "/LangUtil.java").createNewFile()
+        writer.println(langUtilCode)
+    catch IOException e
+        ...
+
+    println "\n\nDone."
+    // dot(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.")
+    // var f = a.b.c.d.e("hello")
+    // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello")

@@ -83,10 +83,11 @@ CompResult compileFile(string className, string code):
 string compileStatement(ArrayList<Token> tok, string out):
     return "" if !tok
 
-    ArrayList<Token.Type> types = getTokenTypes(tok)
-    Token.Type startTok = types.get(0)
-    Token.Type endTok = Util.get(types, -1)
-    int f = -1
+    let types = getTokenTypes(tok)
+    let startTok = types.get(0)
+    let endTok = Util.get(types, -1)
+    let f = -1
+    let f2 = -1
 
     // Imports
     if startTok == Token.Type.IMPORT
@@ -105,8 +106,8 @@ string compileStatement(ArrayList<Token> tok, string out):
             // Error!
             return ""
 
-        string optionName = tok.get(1).value
-        string optionValue = tok.get(2).value
+        let optionName = tok.get(1).value
+        let optionValue = tok.get(2).value
         Options.setOption(optionName, optionValue)
 
     // Aliases
@@ -124,7 +125,7 @@ string compileStatement(ArrayList<Token> tok, string out):
             // Error!
             return ""
 
-        string name = tok.get(1).value
+        let name = tok.get(1).value
         let args = new ArrayList<string>()
 
         if f > 2
@@ -185,7 +186,7 @@ string compileStatement(ArrayList<Token> tok, string out):
         out += ")) "
 
     // Statement control flow (TODO: combine these together so precedence is the same)
-    elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1
+    elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1 && findTokenTypeRev(tok, Token.Type.ELSE) == -1
         out += "if (LangUtil.isTruthy("
         string cond = compileExpr(Util.select(tok, f + 1))
         out += cond.isEmpty() ? "true" : cond
@@ -472,6 +473,13 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     elif (f = findToken(tok, "?")) != -1 && (f2 = findToken(tok, ":")) != -1
         string cond = compileExpr(Util.select(tok, 0, f))
         string lhs = compileExpr(Util.select(tok, f + 1, f2))
+        string rhs = compileExpr(Util.select(tok, f2 + 1))
+        out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
+
+    // Ternary conditional operator (word version)
+    elif (f = findToken(tok, "if")) != -1 && (f2 = findToken(tok, "else")) != -1
+        string lhs = compileExpr(Util.select(tok, 0, f))
+        string cond = compileExpr(Util.select(tok, f + 1, f2))
         string rhs = compileExpr(Util.select(tok, f2 + 1))
         out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
 

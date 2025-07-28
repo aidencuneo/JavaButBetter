@@ -4,6 +4,7 @@ import java.util.*;
 public class Code {
     public static void main(String[] args) {
         var ending = LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.COMMA)) ? ("") : (";");
+        var ending = LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.COMMA)) ? ("") : (";");
         if (LangUtil.isTruthy(Extensions.operEq("hi", "hi"))) {
             LangUtil.println("yes");
         }

@@ -56,10 +56,11 @@ public class Compiler {
     }
     public static String compileStatement(ArrayList < Token > tok , String out) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return ""; }
-        ArrayList < Token . Type > types = getTokenTypes(tok);
-        Token . Type startTok = types.get(0);
-        Token . Type endTok = Util.get(types , - 1);
-        int f = - 1;
+        var types = getTokenTypes(tok);
+        var startTok = types.get(0);
+        var endTok = Util.get(types , - 1);
+        var f = - 1;
+        var f2 = - 1;
         if (LangUtil.isTruthy(startTok == Token.Type.IMPORT)) {
             var importStr = "import ";
             for (int j = 1; j < tok.size(); ++j) {
@@ -74,8 +75,8 @@ public class Compiler {
             if (LangUtil.isTruthy(tok.size() < 3)) {
                 return "";
             }
-            String optionName = tok.get(1).value;
-            String optionValue = tok.get(2).value;
+            var optionName = tok.get(1).value;
+            var optionValue = tok.get(2).value;
             Options.setOption(optionName , optionValue);
         }
         else if (LangUtil.isTruthy(startTok == Token.Type.ALIAS)) {
@@ -88,7 +89,7 @@ public class Compiler {
             if (LangUtil.isTruthy(f < 2)) {
                 return "";
             }
-            String name = tok.get(1).value;
+            var name = tok.get(1).value;
             var args = new ArrayList < String > ();
             if (LangUtil.isTruthy(f > 2)) {
                 args = Tokeniser.extractArgsFromExpr(tok.get(2).value);
@@ -126,7 +127,7 @@ public class Compiler {
             out += compileExpr(Util.select(tok , f + 1));
             out += ")) ";
         }
-        else if (LangUtil.isTruthy(((f = findTokenTypeRev(tok , Token.Type.IF))) != - 1)) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findTokenTypeRev(tok , Token.Type.IF))) != - 1)) ? (findTokenTypeRev(tok , Token.Type.ELSE) == - 1) : (((f = findTokenTypeRev(tok , Token.Type.IF))) != - 1))) {
             out += "if (LangUtil.isTruthy(";
             String cond = compileExpr(Util.select(tok , f + 1));
             out += cond.isEmpty ()? "true" : cond;
@@ -348,6 +349,12 @@ public class Compiler {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findToken(tok , "?"))) != - 1)) ? (((f2 = findToken(tok , ":"))) != - 1) : (((f = findToken(tok , "?"))) != - 1))) {
             String cond = compileExpr(Util.select(tok , 0 , f));
             String lhs = compileExpr(Util.select(tok , f + 1 , f2));
+            String rhs = compileExpr(Util.select(tok , f2 + 1));
+            out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findToken(tok , "if"))) != - 1)) ? (((f2 = findToken(tok , "else"))) != - 1) : (((f = findToken(tok , "if"))) != - 1))) {
+            String lhs = compileExpr(Util.select(tok , 0 , f));
+            String cond = compileExpr(Util.select(tok , f + 1 , f2));
             String rhs = compileExpr(Util.select(tok , f2 + 1));
             out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
         }

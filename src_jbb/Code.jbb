@@ -5,6 +5,7 @@ alias max(a, b) = (a > b ? a : b)
 alias balls(a, b) = max(a, b)
 
 main:
+    let ending = "" if endTok == Token.Type.COMMA else ";"
     let ending = endTok == Token.Type.COMMA ? "" : ";"
     if "hi" == "hi"
         println "yes"

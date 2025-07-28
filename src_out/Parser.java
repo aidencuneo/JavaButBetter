@@ -6,49 +6,49 @@ public class Parser {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
-            var nextTok = i + 1 < tok.size ()? tok.get (i + 1): new Token();
-            if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
-                if (LangUtil.isTruthy(t.value.equals("string"))) {
+            var nextTok = LangUtil.isTruthy(i + 1 < tok.size()) ? (tok.get(i + 1)) : (new Token());
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
                     t . value = "String";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("String"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "String"))) {
                     t . value = "string";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("object"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "object"))) {
                     t . value = "Object";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Object"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Object"))) {
                     t . value = "object";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Int"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Int"))) {
                     t . value = "Integer";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Integer"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Integer"))) {
                     t . value = "Int";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Char"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Char"))) {
                     t . value = "Character";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Character"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Character"))) {
                     t . value = "Char";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("bool"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "bool"))) {
                     t . value = "boolean";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("boolean"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "boolean"))) {
                     t . value = "_boolean";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Boolean"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Boolean"))) {
                     t . value = "Bool";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("Bool"))) {
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Bool"))) {
                     t . value = "Boolean";
                 }
                 tok.set(i , t);
                 if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
                     var alias = Compiler.aliases.get(t.value);
                     var aliasTokens = alias.tokens;
-                    var hasArgs = (LangUtil.isTruthy(!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)))) ? (nextTok.type == Token.Type.EXPR) : (!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)));
+                    var hasArgs = (LangUtil.isTruthy(!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)))) ? (Extensions.operEq(nextTok.type, Token.Type.EXPR)) : (!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)));
                     tok.remove(i);
                     if (LangUtil.isTruthy(hasArgs)) {
                         var argTokens = Tokeniser.extractCommaExpr(nextTok.value);
@@ -60,7 +60,7 @@ public class Parser {
                 }
             }
             lastWasDot = false;
-            if (LangUtil.isTruthy(t.type == Token.Type.DOT)) {
+            if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.DOT))) {
                 lastWasDot = true;
             }
         }
@@ -70,14 +70,14 @@ public class Parser {
         var lastWasDot = false;
         var newTok = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {
-            if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 var i = names.indexOf(t.value);
-                if (LangUtil.isTruthy(i != - 1)) {
+                if (LangUtil.isTruthy(!Extensions.operEq(i, - 1))) {
                     newTok.addAll(values.get(i));
                     continue;
                 }
             }
-            else if (LangUtil.isTruthy(t.type == Token.Type.EXPR)) {
+            else if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.EXPR))) {
                 var exprStr = t.value.substring(1 , t.value.length() - 1);
                 var replaced = replaceIdentifiers(Tokeniser.tokLine (exprStr), names , values);
                 var newExpr = "";

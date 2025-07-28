@@ -721,7 +721,7 @@ ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
 
         // Start list from first non-access token
         if (MethodAccess.accessModFromToken(t) == AccessMod.NONE &&
-            v != "static" && v != "#" && v != "instance" && v != "^")
+            !v.equals("static") && !v.equals("#") && !v.equals("instance") && !v.equals("^"))
             return new ArrayList<Token>(tok.subList(i, tok.size()))
 
     return tok

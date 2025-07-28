@@ -11,31 +11,31 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
             // Perform identifier conversion
 
             // String and object are in lowercase
-            if t.value == "string"
+            if t.value.equals("string")
                 t.value = "String"
-            elif t.value == "String"
+            elif t.value.equals("String")
                 t.value = "string"
-            elif t.value == "object"
+            elif t.value.equals("object")
                 t.value = "Object"
-            elif t.value == "Object"
+            elif t.value.equals("Object")
                 t.value = "object"
 
             // Some primitive type classes are shortened
-            elif t.value == "Int"
+            elif t.value.equals("Int")
                 t.value = "Integer"
-            elif t.value == "Integer"
+            elif t.value.equals("Integer")
                 t.value = "Int"
-            elif t.value == "Char"
+            elif t.value.equals("Char")
                 t.value = "Character"
-            elif t.value == "Character"
+            elif t.value.equals("Character")
                 t.value = "Char"
-            elif t.value == "bool"
+            elif t.value.equals("bool")
                 t.value = "boolean"
-            elif t.value == "boolean"
+            elif t.value.equals("boolean")
                 t.value = "_boolean"
-            elif t.value == "Boolean"
+            elif t.value.equals("Boolean")
                 t.value = "Bool"
-            elif t.value == "Bool"
+            elif t.value.equals("Bool")
                 t.value = "Boolean"
 
             // Apply to the token
@@ -110,13 +110,13 @@ static ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<strin
 //     while tok
 //         let v = tok.get(0).value
 
-//         if v == "+" || v == "public"
+//         if v.equals("+") || v.equals("public")
 //             accessMod = AccessMod.PUBLIC
-//         elif v == "-" || v == "private"
+//         elif v.equals("-") || v.equals("private")
 //             accessMod = AccessMod.PRIVATE
-//         elif v == "*" || v == "protected"
+//         elif v.equals("*") || v.equals("protected")
 //             accessMod = AccessMod.PROTECTED
-//         elif v == "#" || v == "static"
+//         elif v.equals("#") || v.equals("static")
 //             isStatic = true
 //         else
 //             break

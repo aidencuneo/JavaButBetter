@@ -10,8 +10,8 @@ static setOption(string name, string value):
     name .= toLowerCase()
     let valueLower = value.toLowerCase()
 
-    if name == "decimal" || name == "default_decimal"
-        if valueLower == "float" || valueLower == "f"
+    if name.equals("decimal") || name.equals("default_decimal")
+        if valueLower.equals("float") || valueLower.equals("f")
             defaultDecimal = "f"
-        elif valueLower == "double" || valueLower == "d"
+        elif valueLower.equals("double") || valueLower.equals("d")
             defaultDecimal = "d"

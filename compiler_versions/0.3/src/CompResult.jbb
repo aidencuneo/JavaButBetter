@@ -42,7 +42,7 @@ string getCompiledCode(string mainClassName):
         // The null class is used to write code without a class
         if c == "null"
             out += classes.get(c)
-        elif c != mainClassName
+        elif !c.equals(mainClassName)
             out += constructClassString(c)
 
     return startTemplate + "\n" + out + endTemplate

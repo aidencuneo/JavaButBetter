@@ -9,20 +9,20 @@ public class MethodAccess {
         this . isStatic = isStatic;
     }
     public static AccessMod accessModFromToken(Token tok) {
-        if (LangUtil.isTruthy((LangUtil.isTruthy(tok.type == Token.Type.DEFAULT)) ? (tok.type == Token.Type.DEFAULT) : (tok.value.equals("?")))) { return AccessMod.DEFAULT; }
-        if (LangUtil.isTruthy((LangUtil.isTruthy(tok.value.equals("public"))) ? (tok.value.equals("public")) : (tok.value.equals("+")))) { return AccessMod.PUBLIC; }
-        if (LangUtil.isTruthy((LangUtil.isTruthy(tok.value.equals("private"))) ? (tok.value.equals("private")) : (tok.value.equals("-")))) { return AccessMod.PRIVATE; }
-        if (LangUtil.isTruthy((LangUtil.isTruthy(tok.value.equals("protected"))) ? (tok.value.equals("protected")) : (tok.value.equals("*")))) { return AccessMod.PROTECTED; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.type, Token.Type.DEFAULT))) ? (Extensions.operEq(tok.type, Token.Type.DEFAULT)) : (Extensions.operEq(tok.value, "?")))) { return AccessMod.DEFAULT; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.value, "public"))) ? (Extensions.operEq(tok.value, "public")) : (Extensions.operEq(tok.value, "+")))) { return AccessMod.PUBLIC; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.value, "private"))) ? (Extensions.operEq(tok.value, "private")) : (Extensions.operEq(tok.value, "-")))) { return AccessMod.PRIVATE; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.value, "protected"))) ? (Extensions.operEq(tok.value, "protected")) : (Extensions.operEq(tok.value, "*")))) { return AccessMod.PROTECTED; }
         return AccessMod.NONE;
     }
     public static String accessModToString(AccessMod accessMod) {
-        if (LangUtil.isTruthy(accessMod == AccessMod.PUBLIC)) { return "public"; }
-        if (LangUtil.isTruthy(accessMod == AccessMod.PRIVATE)) { return "private"; }
-        if (LangUtil.isTruthy(accessMod == AccessMod.PROTECTED)) { return "protected"; }
+        if (LangUtil.isTruthy(Extensions.operEq(accessMod, AccessMod.PUBLIC))) { return "public"; }
+        if (LangUtil.isTruthy(Extensions.operEq(accessMod, AccessMod.PRIVATE))) { return "private"; }
+        if (LangUtil.isTruthy(Extensions.operEq(accessMod, AccessMod.PROTECTED))) { return "protected"; }
         return "";
     }
     public String toString() {
-        return accessModToString(accessMod) + (isStatic ? " static" : "");
+        return accessModToString(accessMod) + (LangUtil.isTruthy(isStatic) ? (" static") : (""));
     }
 }
 

@@ -17,7 +17,7 @@ public class CompResult {
         var accessMod = classAccess.getOrDefault(className , AccessMod.DEFAULT);
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }
         var accessModStr = MethodAccess.accessModToString(accessMod);
-        var separator = (accessModStr.length() > 0 ? " " : "");
+        var separator = (LangUtil.isTruthy(accessModStr.length() > 0) ? (" ") : (""));
         var out = accessModStr + separator + "class " + className + " {\n";
         out += "    " + code.trim();
         out += "\n}\n";
@@ -29,10 +29,10 @@ public class CompResult {
             out += constructClassString(mainClassName);
         }
         for (var c : LangUtil.asIterable(classes.keySet())) {
-            if (LangUtil.isTruthy(c.equals("null"))) {
+            if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
                 out += classes.get(c);
             }
-            else if (LangUtil.isTruthy(!LangUtil.isTruthy(c.equals(mainClassName)))) {
+            else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
                 out += constructClassString(c);
             }
         }

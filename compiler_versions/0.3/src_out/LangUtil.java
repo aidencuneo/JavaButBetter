@@ -13,10 +13,10 @@ public class LangUtil {
         return v;
     }
     public static boolean isTruthy(int v) {
-        return !Extensions.operEq(v, 0);
+        return v != 0;
     }
     public static boolean isTruthy(double v) {
-        return !Extensions.operEq(v, 0);
+        return v != 0;
     }
     public static boolean isTruthy(String v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
@@ -35,7 +35,7 @@ public class LangUtil {
         if (v instanceof Double x) return x != 0;
         if (v instanceof String x) return x == null ? false : !x.isEmpty();
         if (v instanceof List x) return x == null ? false : !x.isEmpty();
-        return !Extensions.operEq(v, null);
+        return v != null;
     }
     public static <T> T [] asIterable(T [] v) {
         return v;

@@ -6,10 +6,10 @@ public class StringParser {
         var out = "";
         for (int i = 0; i < str.length(); ++i) {
             var c = str.charAt(i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(c == '\\')) ? (i + 1 < str.length()) : (c == '\\'))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (i + 1 < str.length()) : (Extensions.operEq(c, '\\')))) {
                 var next = str.charAt(i + 1);
                 ++ i;
-                if (LangUtil.isTruthy((LangUtil.isTruthy(next == 'u')) ? (i + 4 < str.length()) : (next == 'u'))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (i + 4 < str.length()) : (Extensions.operEq(next, 'u')))) {
                     try {
                         var code = Integer.parseInt(str.substring (i + 1 , i + 5), 16);
                         out += (char) code;

@@ -6,10 +6,10 @@ MethodAccess(AccessMod accessMod, bool isStatic):
     this.isStatic = isStatic
 
 static AccessMod accessModFromToken(Token tok):
-    return AccessMod.DEFAULT if tok.type == Token.Type.DEFAULT || tok.value == "?"
-    return AccessMod.PUBLIC if tok.value == "public" || tok.value == "+"
-    return AccessMod.PRIVATE if tok.value == "private" || tok.value == "-"
-    return AccessMod.PROTECTED if tok.value == "protected" || tok.value == "*"
+    return AccessMod.DEFAULT if tok.type == Token.Type.DEFAULT || tok.value.equals("?")
+    return AccessMod.PUBLIC if tok.value.equals("public") || tok.value.equals("+")
+    return AccessMod.PRIVATE if tok.value.equals("private") || tok.value.equals("-")
+    return AccessMod.PROTECTED if tok.value.equals("protected") || tok.value.equals("*")
     return AccessMod.NONE
 
 static string accessModToString(AccessMod accessMod):

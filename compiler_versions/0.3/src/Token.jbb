@@ -70,15 +70,15 @@ static Token fromString(string v):
         t = Type.BLANK
     elif v.length() > 0 && v.isBlank()
         t = Type.INDENT
-    elif v == ":"
+    elif v.equals(":")
         t = Type.SCOPE
-    elif v == "option"
+    elif v.equals("option")
         t = Type.OPTION
-    elif v == "null"
+    elif v.equals("null")
         t = Type.NULL
-    elif v == "true"
+    elif v.equals("true")
         t = Type.TRUE
-    elif v == "false"
+    elif v.equals("false")
         t = Type.FALSE
     elif f == '"' && l == '"'
         t = Type.STRING
@@ -115,67 +115,67 @@ static Token fromString(string v):
     elif (List.of(
         "!", "~", "not").contains(v))
         t = Type.UNARY_OPER
-    elif v == "="
+    elif v.equals("=")
         t = Type.ASSIGN
     elif v.endsWith("=")
         t = Type.COMP_ASSIGN
-    elif v == "."
+    elif v.equals(".")
         t = Type.DOT
-    elif v == ","
+    elif v.equals(",")
         t = Type.COMMA
-    elif v == "#"
+    elif v.equals("#")
         t = Type.HASH
-    elif v == "=>"
+    elif v.equals("=>")
         t = Type.LAMBDA
-    elif v == "->"
+    elif v.equals("->")
         t = Type.ARROW
-    elif v == "++"
+    elif v.equals("++")
         t = Type.INCREMENT
-    elif v == "--"
+    elif v.equals("--")
         t = Type.DECREMENT
-    elif v == "inline"
+    elif v.equals("inline")
         t = Type.INLINE
-    elif v == "ret" || v == "return"
+    elif v.equals("ret") || v.equals("return")
         t = Type.RETURN
-    elif v == "break"
+    elif v.equals("break")
         t = Type.BREAK
-    elif v == "continue" || v == "next"
+    elif v.equals("continue") || v.equals("next")
         t = Type.CONTINUE
-    elif v == "pass" || v == "..."
+    elif v.equals("pass") || v.equals("...")
         t = Type.PASS
-    elif v == "if"
+    elif v.equals("if")
         t = Type.IF
-    elif v == "elif"
+    elif v.equals("elif")
         t = Type.ELIF
-    elif v == "else"
+    elif v.equals("else")
         t = Type.ELSE
-    elif v == "while"
+    elif v.equals("while")
         t = Type.WHILE
-    elif v == "until"
+    elif v.equals("until")
         t = Type.UNTIL
-    elif v == "for"
+    elif v.equals("for")
         t = Type.FOR
-    elif v == "in"
+    elif v.equals("in")
         t = Type.IN
-    elif v == "try"
+    elif v.equals("try")
         t = Type.TRY
-    elif v == "catch" || v == "except"
+    elif v.equals("catch") || v.equals("except")
         t = Type.CATCH
-    elif v == "default"
+    elif v.equals("default")
         t = Type.DEFAULT
-    elif v == "public" || v == "private" || v == "protected" || v == "internal"
+    elif v.equals("public") || v.equals("private") || v.equals("protected") || v.equals("internal")
         t = Type.ACCESS_MOD
-    elif v == "static"
+    elif v.equals("static")
         t = Type.STATIC
-    elif v == "instance"
+    elif v.equals("instance")
         t = Type.INSTANCE
-    elif v == "import" || v == "include" || v == "require" || v == "use"
+    elif v.equals("import") || v.equals("include") || v.equals("require") || v.equals("use")
         t = Type.IMPORT
-    elif v == "class"
+    elif v.equals("class")
         t = Type.CLASS
-    elif v == "enum"
+    elif v.equals("enum")
         t = Type.ENUM
-    elif v == "alias"
+    elif v.equals("alias")
         t = Type.ALIAS
     elif isAlpha(v)
         t = Type.ID

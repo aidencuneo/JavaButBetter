@@ -20,35 +20,15 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
             elif t.value.equals("Object")
                 t.value = "object"
 
-            // Primitive type conversions
-            elif t.value.equals("byte")
-                t.value = "Byte"
-            elif t.value.equals("Byte")
-                t.value = "byte"
-            elif t.value.equals("short")
-                t.value = "Short"
-            elif t.value.equals("Short")
-                t.value = "short"
-            elif t.value.equals("int")
+            // Some primitive type classes are shortened
+            elif t.value.equals("Int")
                 t.value = "Integer"
             elif t.value.equals("Integer")
-                t.value = "int"
-            elif t.value.equals("long")
-                t.value = "Long"
-            elif t.value.equals("Long")
-                t.value = "long"
-            elif t.value.equals("float")
-                t.value = "Float"
-            elif t.value.equals("Float")
-                t.value = "float"
-            elif t.value.equals("double")
-                t.value = "Double"
-            elif t.value.equals("Double")
-                t.value = "double"
-            elif t.value.equals("char")
+                t.value = "Int"
+            elif t.value.equals("Char")
                 t.value = "Character"
             elif t.value.equals("Character")
-                t.value = "char"
+                t.value = "Char"
             elif t.value.equals("bool")
                 t.value = "Boolean"
             elif t.value.equals("Boolean")

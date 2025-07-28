@@ -3,11 +3,12 @@ import java.util.*;
 import java.lang.reflect.*;
 
 public class LangUtil {
-    public static void print(Object s) {
-        System.out.print("" + s);
+    public static void print(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
     }
-    public static void println(Object s) {
-        System.out.println("" + s);
+    public static void println(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
+        System.out.println("");
     }
     public static Boolean isTruthy(Boolean v) {
         return v;

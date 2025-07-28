@@ -1,13 +1,13 @@
 import java.io.*;
 import java.util.*;
-import java.lang.reflect.*;
 
 public class LangUtil {
-    public static void print(Object s) {
-        System.out.print("" + s);
+    public static void print(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
     }
-    public static void println(Object s) {
-        System.out.println("" + s);
+    public static void println(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
+        System.out.println("");
     }
     public static Boolean isTruthy(Boolean v) {
         return v;
@@ -15,10 +15,10 @@ public class LangUtil {
     public static Boolean isTruthy(Object v) {
         return v != null;
     }
-    public static Boolean isTruthy(Integer v) {
+    public static Boolean isTruthy(int v) {
         return v != 0;
     }
-    public static Boolean isTruthy(Double v) {
+    public static Boolean isTruthy(double v) {
         return v != 0;
     }
     public static Boolean isTruthy(String v) {
@@ -35,7 +35,7 @@ public class LangUtil {
     public static <T> T [] asIterable(T [] v) {
         return v;
     }
-    public static List < Integer > asIterable(Integer n) {
+    public static List < Integer > asIterable(int n) {
         var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
             lst.add(i);

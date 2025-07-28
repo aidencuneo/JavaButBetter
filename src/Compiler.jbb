@@ -85,7 +85,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
 
     // Imports
     if startTok == Token.Type.IMPORT
-        string importStr = "import "
+        let importStr = "import "
         inline(for (int j = 1; j < tok.size(); ++j))
             importStr += tok.get(j).value
         startTemplate += importStr + ";\n"
@@ -139,6 +139,11 @@ static string compileStatement(ArrayList<Token> tok, string out):
         currentClass = tok.get(f + 1).value
         out = outClasses.getOrDefault(currentClass, "")
         AccessMod accessMod = AccessMod.DEFAULT
+
+        // Parse access modifiers
+        println "before: ", tok
+        tok = Parser.parseAccessMods(tok)
+        println "after: ", tok
 
         // out = out.trim()
         // out += "\n}\n\n"
@@ -354,7 +359,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
     ))
         // print, println
         if tok.get(0).value.equals("print") || tok.get(0).value.equals("println")
-            out += "System.out." + tok.get(0).value + "("
+            out += "LangUtil." + tok.get(0).value + "("
             out += compileExpr(Util.select(tok, 1))
             out += ");"
 

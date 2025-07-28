@@ -32,15 +32,16 @@ public class JavaBB {
                 
             }
         }
-        System.out.println("\n\nCompiling LangUtil...");
+        LangUtil.println("\n\nCompiling LangUtil...");
         var res = Compiler.compileFile("LangUtil" , """
-import java.lang.reflect.*
+// import java.lang.reflect.*
 
-# print(object s):
-    System.out.print('' + s)
+# print(object ... args):
+    System.out.print('' + x) for x in args
 
-# println(object s):
-    System.out.println('' + s)
+# println(object ... args):
+    System.out.print('' + x) for x in args
+    System.out.println('')
 
 # bool isTruthy(bool v):
     ret v
@@ -68,8 +69,8 @@ import java.lang.reflect.*
 # T[] (T) asIterable(T[] v):
     ret v
 
-# List<int> asIterable(int n):
-    let lst = new ArrayList<int>()
+# List<Int> asIterable(int n):
+    let lst = new ArrayList<Int>()
     inline `for (int i = 0; i < n; ++i)`
         lst.add(i)
     ret lst
@@ -77,7 +78,7 @@ import java.lang.reflect.*
 # Iterable<T> (T) asIterable(Iterable<T> v):
     ret v
 
-# Character[] asIterable(string s):
+# char[] asIterable(string s):
     ret s.toCharArray()
 
 // # Object get(Object obj, string varname):
@@ -110,7 +111,7 @@ import java.lang.reflect.*
         catch (IOException e) {
             
         }
-        System.out.println("\nDone.");
+        LangUtil.println("\nDone.");
     }
 }
 

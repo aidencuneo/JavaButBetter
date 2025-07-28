@@ -36,11 +36,12 @@ public class JavaBB {
         var res = Compiler.compileFile("LangUtil" , """
 import java.lang.reflect.*
 
-# print(object s):
-    System.out.print('' + s)
+# print(object ... args):
+    System.out.print('' + x) for x in args
 
-# println(object s):
-    System.out.println('' + s)
+# println(object ... args):
+    System.out.print('' + x) for x in args
+    System.out.println('')
 
 # bool isTruthy(bool v):
     ret v

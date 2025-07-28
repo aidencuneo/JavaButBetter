@@ -44,7 +44,7 @@ public class Compiler {
             out += "\n";
             outClasses.put(currentClass , out);
             lastIndent = indent;
-            System.out.println(Util.d(tok));
+            LangUtil.println(Util.d(tok));
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
             String curOut = outClasses.getOrDefault(currentClass , "");
@@ -60,7 +60,7 @@ public class Compiler {
         Token . Type endTok = Util.get(types , - 1);
         Integer f = - 1;
         if (LangUtil.isTruthy(startTok == Token.Type.IMPORT)) {
-            String importStr = "import ";
+            var importStr = "import ";
             for (int j = 1; j < tok.size(); ++j) {
                 importStr += tok.get(j).value;
             }
@@ -100,6 +100,9 @@ public class Compiler {
             currentClass = tok.get(f + 1).value;
             out = outClasses.getOrDefault(currentClass , "");
             AccessMod accessMod = AccessMod.DEFAULT;
+            LangUtil.println("before: " , tok);
+            tok = Parser.parseAccessMods(tok);
+            LangUtil.println("after: " , tok);
             for (int j = 0; j < f && accessMod == AccessMod.DEFAULT; ++j) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }
@@ -261,7 +264,7 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(startTok == Token.Type.ID)) ? (((LangUtil.isTruthy(tok.get(0).value.equals("print"))) ? (tok.get(0).value.equals("print")) : (tok.get(0).value.equals("println")))) : (startTok == Token.Type.ID)))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(tok.get(0).value.equals("print"))) ? (tok.get(0).value.equals("print")) : (tok.get(0).value.equals("println")))) {
-                out += "System.out." + tok.get(0).value + "(";
+                out += "LangUtil." + tok.get(0).value + "(";
                 out += compileExpr(Util.select(tok , 1));
                 out += ");";
             }

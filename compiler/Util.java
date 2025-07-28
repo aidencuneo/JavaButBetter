@@ -2,6 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Util {
+    public static void println(Object ... args) {
+        for (int i = 0; i < args.length; i++) {
+            System.out.println(args[i].toString());
+        }
+    }
     public static int indexConvert(int index , int size) {
         if (LangUtil.isTruthy(index < 0)) { index += size; }
         return index;

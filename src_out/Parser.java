@@ -20,47 +20,17 @@ public class Parser {
                 else if (LangUtil.isTruthy(t.value.equals("Object"))) {
                     t . value = "object";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("byte"))) {
-                    t . value = "Byte";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Byte"))) {
-                    t . value = "byte";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("short"))) {
-                    t . value = "Short";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Short"))) {
-                    t . value = "short";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("int"))) {
+                else if (LangUtil.isTruthy(t.value.equals("Int"))) {
                     t . value = "Integer";
                 }
                 else if (LangUtil.isTruthy(t.value.equals("Integer"))) {
-                    t . value = "int";
+                    t . value = "Int";
                 }
-                else if (LangUtil.isTruthy(t.value.equals("long"))) {
-                    t . value = "Long";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Long"))) {
-                    t . value = "long";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("float"))) {
-                    t . value = "Float";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Float"))) {
-                    t . value = "float";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("double"))) {
-                    t . value = "Double";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Double"))) {
-                    t . value = "double";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("char"))) {
+                else if (LangUtil.isTruthy(t.value.equals("Char"))) {
                     t . value = "Character";
                 }
                 else if (LangUtil.isTruthy(t.value.equals("Character"))) {
-                    t . value = "char";
+                    t . value = "Char";
                 }
                 else if (LangUtil.isTruthy(t.value.equals("bool"))) {
                     t . value = "Boolean";
@@ -130,7 +100,7 @@ public class Parser {
             }
             tok.remove(0);
         }
-        System.out.println(tok);
+        LangUtil.println(tok);
         var newTok = new ArrayList < Token > ();
         newTok.add(new Token(Token.Type.ACCESS_MOD ,("" + accessMod).toLowerCase()));
         if (LangUtil.isTruthy(isStatic)) { newTok.add(new Token(Token.Type.STATIC , "static")); }
@@ -138,7 +108,7 @@ public class Parser {
         return newTok;
     }
     public static ArrayList < Token > parseDeclaration(ArrayList < Token > tok) {
-        System.out.println(tok);
+        LangUtil.println(tok);
         return null;
     }
 }

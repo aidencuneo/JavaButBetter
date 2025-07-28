@@ -262,7 +262,7 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(startTok == Token.Type.ID)) ? (((LangUtil.isTruthy(tok.get(0).value.equals("print"))) ? (tok.get(0).value.equals("print")) : (tok.get(0).value.equals("println")))) : (startTok == Token.Type.ID)))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(tok.get(0).value.equals("print"))) ? (tok.get(0).value.equals("print")) : (tok.get(0).value.equals("println")))) {
-                out += "System.out." + tok.get(0).value + "(";
+                out += "LangUtil." + tok.get(0).value + "(";
                 out += compileExpr(Util.select(tok , 1));
                 out += ");";
             }

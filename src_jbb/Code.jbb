@@ -4,9 +4,9 @@ alias min(a, b, c) = a < b ? a : b < c ? b : c
 alias bigtype(a, b) = HashMap<a, b>
 alias balls = max(1, 2)
 
-+ static StrIntMap (T) name1
-+ static StrIntMap (T) name2 = new StrIntMap()
-+ static StrIntMap (T) name3:
++ static StrIntMap name1
++ static StrIntMap name2 = new StrIntMap()
++ static (T) StrIntMap name3:
     return null
 
 ?#main:
@@ -15,7 +15,7 @@ alias balls = max(1, 2)
     let ages = new StrIntMap()
     StrIntMap ages2 = new StrIntMap()
 
-+# HashMap<string, string> (T) method(string[] args):
++# (T) HashMap<string, string> method(string[] args):
     return null
 
 // int field = 10

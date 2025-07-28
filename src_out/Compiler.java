@@ -202,19 +202,19 @@ public class Compiler {
                     methodAccess . accessMod = AccessMod.PUBLIC;
                 }
                 var typeArgs = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(0).type == Token.Type.EXPR) : (tok.size() > 0))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (tok.get(0).type == Token.Type.EXPR) : (tok))) {
                     var v = tok.get(0).value;
                     typeArgs = "<" + v.substring(1 , v.length() - 1) + "> ";
                     tok.remove(0);
                 }
                 tok.remove(tok.size() - 1);
                 var args = "()";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(tok.size() - 1).type == Token.Type.EXPR) : (tok.size() > 0))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (tok.get(tok.size() - 1).type == Token.Type.EXPR) : (tok))) {
                     args = compileMethodArgs(tok.get(tok.size() - 1).value);
                     tok.remove(tok.size() - 1);
                 }
                 var methodName = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(tok.size() - 1).type == Token.Type.ID) : (tok.size() > 0))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (tok.get(tok.size() - 1).type == Token.Type.ID) : (tok))) {
                     methodName = tok.get(tok.size() - 1).value;
                     tok.remove(tok.size() - 1);
                 }
@@ -262,23 +262,33 @@ public class Compiler {
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() >= 2)) ? (!LangUtil.isTruthy(indent)) : (tok.size() >= 2))) {
-            Integer end = tok.size() - 1;
-            String value = "";
-            if (LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.ASSIGN))) != - 1)) {
-                value = " = " + compileExpr(Util.select(tok , f + 1));
-                end = f - 1;
-            }
-            MethodAccess methodAccess = getMethodAccess(tok , end);
+            var methodAccess = getMethodAccess(tok);
+            tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(methodAccess.accessMod == AccessMod.NONE)) {
                 methodAccess . accessMod = AccessMod.PUBLIC;
             }
-            String varname = tok.get(end).value;
-            -- end;
-            String vartype = tok.get(end).value;
-            out += methodAccess + " " + vartype + " " + varname + value + ";";
+            var value = "";
+            if (LangUtil.isTruthy(((f = findTokenType(tok , Token.Type.ASSIGN))) != - 1)) {
+                value = " = " + compileExpr(Util.select(tok , f + 1));
+                tok = Util.select(tok , 0 , f);
+            }
+            var name = "";
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (tok.get(tok.size() - 1).type == Token.Type.ID) : (tok))) {
+                name = tok.get(tok.size() - 1).value;
+                tok.remove(tok.size() - 1);
+            }
+            else {
+                
+            }
+            var vartype = "";
+            for (var t : LangUtil.asIterable(tok)) { vartype += t.value + " "; }
+            if (LangUtil.isTruthy(!LangUtil.isTruthy(vartype))) {
+                
+            }
+            out += methodAccess + " " + vartype + name + value + ";";
         }
         else {
-            String ending = endTok == Token.Type.COMMA ? "" : ";";
+            var ending = endTok == Token.Type.COMMA ? "" : ";";
             out += compileExpr(tok , false) + ending;
         }
         return out;

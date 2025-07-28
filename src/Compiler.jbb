@@ -272,7 +272,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
 
             // Eat type args
             let typeArgs = ""
-            if tok.size() > 0 && tok.get(0).type == Token.Type.EXPR
+            if tok && tok.get(0).type == Token.Type.EXPR
                 let v = tok.get(0).value
                 typeArgs = "<" + v.substring(1, v.length() - 1) + "> "
                 tok.remove(0)
@@ -282,14 +282,14 @@ static string compileStatement(ArrayList<Token> tok, string out):
 
             // Eat method args
             let args = "()"
-            if tok.size() > 0 && tok.get(tok.size() - 1).type == Token.Type.EXPR
+            if tok && tok.get(tok.size() - 1).type == Token.Type.EXPR
                 // Compile method arguments
                 args = compileMethodArgs(tok.get(tok.size() - 1).value)
                 tok.remove(tok.size() - 1)
 
             // Eat method name
             let methodName = ""
-            if tok.size() > 0 && tok.get(tok.size() - 1).type == Token.Type.ID
+            if tok && tok.get(tok.size() - 1).type == Token.Type.ID
                 methodName = tok.get(tok.size() - 1).value
                 tok.remove(tok.size() - 1)
             else
@@ -345,27 +345,40 @@ static string compileStatement(ArrayList<Token> tok, string out):
 
     // Field declarations (two tokens minimum with no indentation)
     elif tok.size() >= 2 && !indent
-        // println("!!!!!!\n\n\n\n\n" + out + "\n\n\n\n\n!!!!!!!!")
-        int end = tok.size() - 1
-        string value = ""
+        // access?, static?, [type], name, (equals, [expr])?
 
-        if (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
-            value = " = " + compileExpr(Util.select(tok, f + 1))
-            end = f - 1
-
-        // Get method access
-        MethodAccess methodAccess = getMethodAccess(tok, end)
+        // Eat access tokens
+        let methodAccess = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
 
         // Default access modifier for fields is public
         if methodAccess.accessMod == AccessMod.NONE
             methodAccess.accessMod = AccessMod.PUBLIC
 
-        // Get variable name and type
-        string varname = tok.get(end).value
-        --end
-        string vartype = tok.get(end).value
+        // Eat value
+        let value = ""
+        if (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
+            value = " = " + compileExpr(Util.select(tok, f + 1))
+            tok = Util.select(tok, 0, f)
 
-        out += methodAccess + " " + vartype + " " + varname + value + ";"
+        // Eat name
+        let name = ""
+        if tok && tok.get(tok.size() - 1).type == Token.Type.ID
+            name = tok.get(tok.size() - 1).value
+            tok.remove(tok.size() - 1)
+        else
+            // Error! Field name not given
+            ...
+
+        // Everything remaining is part of the type
+        let vartype = ""
+        vartype += t.value + " " for t in tok
+
+        if !vartype
+            // Error! Field missing type
+            ...
+
+        out += methodAccess + " " + vartype + name + value + ";"
 
     // Expressions
     else
@@ -375,7 +388,7 @@ static string compileStatement(ArrayList<Token> tok, string out):
         // if findTokenType(tok, Token.Type.ASSIGN) == -1 && findTokenType(tok, Token.Type.COMP_ASSIGN) == -1
         //     assignment = "Object " + getNextTemp() + " = "
 
-        string ending = endTok == Token.Type.COMMA ? "" : ";"
+        let ending = endTok == Token.Type.COMMA ? "" : ";"
         out += compileExpr(tok, false) + ending
 
     return out

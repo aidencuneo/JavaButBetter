@@ -25,6 +25,7 @@ public class Token {
         COMP_ASSIGN,
         DOT,
         COMMA,
+        RANGE,
         LAMBDA,
         ARROW,
         INCREMENT,
@@ -142,6 +143,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, ","))) {
             t = Type.COMMA;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, ".."))) {
+            t = Type.RANGE;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "=>"))) {
             t = Type.LAMBDA;

@@ -522,11 +522,21 @@ public class Compiler {
             expr = expr.substring(1, expr.length() - 1);
             out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")";
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.get(0).type, Token.Type.ID))) ? ((LangUtil.isTruthy(LangUtil.len(tok) > 1)) ? (Extensions.operEq(tok.get(1).type, Token.Type.SQUARE_EXPR)) : (LangUtil.len(tok) > 1)) : (Extensions.operEq(tok.get(0).type, Token.Type.ID)))) {
+            LangUtil.println("\n\n\nSlice found.\n\n\n");
+            out += "[slice]";
+        }
         else if (LangUtil.isTruthy(Extensions.operEq(tok.get(0).type, Token.Type.SQUARE_EXPR))) {
             var expr = tok.get(0).value;
             expr = expr.substring(1, expr.length() - 1);
-            var exprTok = Tokeniser.tokLine(expr);
-            LangUtil.println(exprTok);
+            tok = Tokeniser.tokLine(expr);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.INDENT)) : (tok))) {
+                tok.remove(0);
+            }
+            if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.RANGE))), - 1))) {
+                
+            }
+            LangUtil.println(tok);
             System.exit(0);
         }
         else if (LangUtil.isTruthy(Extensions.operEq(tok.get(0).type, Token.Type.BRACE_EXPR))) {

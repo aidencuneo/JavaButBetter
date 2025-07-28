@@ -660,13 +660,33 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         expr = expr.substring(1, expr.length() - 1)
         out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
 
+    // Index/slice expressions (identifier, square brackets)
+    elif tok.get(0).type == Token.Type.ID && len(tok) > 1 && tok.get(1).type == Token.Type.SQUARE_EXPR
+        println "\n\n\nSlice found.\n\n\n"
+        out += "[slice]"
+        // let expr = tok.get(0).value
+        // expr = expr.substring(1, expr.length() - 1)
+        // out += expr
+
     // List expressions (square brackets)
     elif tok.get(0).type == Token.Type.SQUARE_EXPR
+        // Replace tok with the tokens from this expression
         let expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
-        let exprTok = Tokeniser.tokLine(expr)
+        tok = Tokeniser.tokLine(expr)
 
-        println exprTok
+        // Eat indent
+        if tok && tok.get(0).type == Token.Type.INDENT
+            tok.remove(0)
+
+        // Range expression
+        if (f = findTokenType(tok, Token.Type.RANGE)) != -1
+            ...
+            // let range = splitRange(tok.get(0).value)
+
+            // out += "LangUtil.asRange(" + start + ", " + end + ", " + step + ")"
+
+        println tok
         System.exit(0)
 
     // Brace expressions (curly brackets)

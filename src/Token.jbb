@@ -21,6 +21,7 @@ inline(public enum Type)
     COMP_ASSIGN,
     DOT,
     COMMA,
+    RANGE,
     LAMBDA, // =>
     ARROW,  // ->
     INCREMENT,
@@ -128,6 +129,8 @@ static Token fromString(string v):
         t = Type.DOT
     elif v == ","
         t = Type.COMMA
+    elif v == ".."
+        t = Type.RANGE
     elif v == "=>"
         t = Type.LAMBDA
     elif v == "->"

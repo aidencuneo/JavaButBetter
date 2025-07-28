@@ -1,7 +1,9 @@
-inline `public enum CharType`
+public static class Tokeniser
+
+inline(public enum CharType)
     A, D, S, W,
 
-static CharType charType(char c):
+CharType charType(char c):
     if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
         return CharType.A
     elif c >= '0' && c <= '9'
@@ -11,7 +13,7 @@ static CharType charType(char c):
     else
         return CharType.S
 
-static ArrayList<string> splitFile(string file):
+ArrayList<string> splitFile(string file):
     ArrayList<string> lines = new ArrayList<>()
     return lines if !file
 
@@ -102,7 +104,7 @@ static ArrayList<string> splitFile(string file):
     lines.add(current) if current
     return lines
 
-static ArrayList<Token> tokLine(string line):
+ArrayList<Token> tokLine(string line):
     let tok = new ArrayList<Token>()
     return tok if !line
 
@@ -129,8 +131,12 @@ static ArrayList<Token> tokLine(string line):
     // State
     string current = ""
     CharType type = charType(line.charAt(i))
-    CharType lastType
+    CharType lastType = CharType.W
+    CharType nextType = CharType.W
+    CharType lastLastType
     char lastChar = 0
+    char lastLastChar = 0
+    char nextChar = 0
     int comment = 0
 
     // Context
@@ -145,6 +151,9 @@ static ArrayList<Token> tokLine(string line):
     // Start tokenising
     inline(for (; i < line.length(); ++i))
         char c = line.charAt(i)
+        nextChar = line.charAt(i + 1) if i + 1 < line.length() else 0
+        nextType = charType(nextChar) if i + 1 < line.length() else CharType.W
+        lastLastType = lastType
         lastType = type
         type = charType(c)
 
@@ -167,9 +176,9 @@ static ArrayList<Token> tokLine(string line):
         ) && !(
             type == CharType.A && lastType == CharType.D // Second part to the line above
         ) && !(
-            lastType == CharType.D && c == '.' // Join decimals (first part)
+            lastType == CharType.D && c == '.' && nextType == CharType.D // Join numbers with dots (first part)
         ) && !(
-            lastChar == '.' && type == CharType.D // Join decimals (second part)
+            lastLastType == CharType.D && lastChar == '.' && type == CharType.D // Join numbers with dots (second part)
         ) && !(
             lastChar == '-' && c == '>' // Join together '->'
         ) && !(
@@ -232,6 +241,7 @@ static ArrayList<Token> tokLine(string line):
         if c != '\\'
             backslash = false
 
+        lastLastChar = lastChar
         lastChar = c
 
     tok.add(Token.fromString(current.trim())) if current
@@ -241,7 +251,7 @@ static ArrayList<Token> tokLine(string line):
 
     return tok
 
-static ArrayList<string> extractArgsFromExpr(string s):
+ArrayList<string> extractArgsFromExpr(string s):
     let args = new ArrayList<string>()
 
     // Tokenise expr
@@ -253,7 +263,7 @@ static ArrayList<string> extractArgsFromExpr(string s):
 
     return args
 
-static ArrayList<ArrayList<Token>> extractCommaExpr(string s):
+ArrayList<ArrayList<Token>> extractCommaExpr(string s):
     let elems = new ArrayList<ArrayList<Token>>()
 
     // Tokenise expr

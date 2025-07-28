@@ -1,39 +1,48 @@
-import java.io.*;
-import java.util.*;
+static main:
+    // Get input and output directories
+    let compDir = "src"
+    compDir = args[0] if args
 
-public class JavaBB {
-    public static void main(String[] args) {
-        var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
-        var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
-            new File(outDir).mkdir();
-        }
-        var files = new File(compDir).list((File dir , String name)-> name.endsWith(".jbb"));
-        for (var i : LangUtil.asIterable(files.length)) {
-            var fileContent = "";
-            var fromPath = compDir + "/" + files [i];
-            var toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
-            try (var scanner = new Scanner(new File(fromPath))) {
-                fileContent = scanner.useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
-            var res = Compiler.compileFile(className , fileContent);
-            var compiled = res.getCompiledCode(className);
-            try (var writer = new PrintWriter(toPath)) {
-                new File(toPath).createNewFile();
-                writer.println(compiled);
-            }
-            catch (IOException e) {
-                
-            }
-        }
-        LangUtil.println("\n\nCompiling LangUtil...");
-        var res = Compiler.compileFile("LangUtil" , """
+    let outDir = compDir + "_out"
+    outDir = args[1] if args.length > 1
+
+    // Create directory if it doesn't exist
+    if !new File(outDir).exists()
+        new File(outDir).mkdir()
+
+    // Compile files one by one
+    let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb"))
+
+    // string[] files = new File(compDir).list()
+
+    for i in files.length
+        let fileContent = ""
+        let fromPath = compDir + "/" + files[i]
+        let toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
+        let className = files[i].split("\\.")[0]
+
+        // Read input file
+        try let scanner = new Scanner(new File(fromPath))
+            fileContent = scanner.useDelimiter("\\Z").next()
+        catch (FileNotFoundException e)
+            ...
+
+        // Compile this file
+        let res = Compiler.compileFile(className, fileContent)
+        let compiled = res.getCompiledCode(className)
+
+        // Write to output file
+        try let writer = new PrintWriter(toPath)
+            new File(toPath).createNewFile()
+            writer.println(compiled)
+        catch (IOException e)
+            ...
+
+    // System.exit(0)
+    println "\n\nCompiling LangUtil..."
+
+    // Compile LangUtil
+    let res = Compiler.compileFile("LangUtil", """
 // import java.lang.reflect.*
 
 # print(object ... args):
@@ -107,16 +116,16 @@ public class JavaBB {
 //         return null
 
 // Operators
-    """.trim());
-        var langUtilCode = res.getCompiledCode("LangUtil");
-        try (var writer = new PrintWriter(outDir + "/LangUtil.java")) {
-            new File(outDir + "/LangUtil.java").createNewFile();
-            writer.println(langUtilCode);
-        }
-        catch (IOException e) {
-            
-        }
-        LangUtil.println("\nDone.");
-    }
-}
+    """.trim())
+    let langUtilCode = res.getCompiledCode("LangUtil")
 
+    try let writer = new PrintWriter(outDir + "/LangUtil.java")
+        new File(outDir + "/LangUtil.java").createNewFile()
+        writer.println(langUtilCode)
+    catch (IOException e)
+        ...
+
+    println "\nDone."
+    // dot(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.")
+    // var f = a.b.c.d.e("hello")
+    // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello")

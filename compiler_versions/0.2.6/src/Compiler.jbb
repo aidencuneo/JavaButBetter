@@ -64,7 +64,7 @@ static CompResult compileFile(string className, string code):
 
         lastIndent = indent
 
-        // println Util.d(tok)
+        println Util.d(tok)
 
     // After the final line of a class, reset indentation
     while lastIndent > 0

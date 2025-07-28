@@ -8,8 +8,8 @@ public class Code {
         return null;
     }
      static void main(String[] args) {
-        LangUtil.println(balls + 10);
-        if (LangUtil.isTruthy((LangUtil.isTruthy("something")) ? (max("h" , "w")) : ("something"))) { min(5 , 6.9f , 2); }
+        LangUtil.println(1 > 2 ? 1 : 2 + 10);
+        if (LangUtil.isTruthy((LangUtil.isTruthy("something")) ? ("h" > "w" ? "h" : "w") : ("something"))) { 5 < 6.9f ? 5 : 6.9f < 2 ? 6.9f : 2; }
         var ages = new HashMap < String , Integer > ();
         HashMap < String , Integer > ages2 = new HashMap < String , Integer > ();
     }

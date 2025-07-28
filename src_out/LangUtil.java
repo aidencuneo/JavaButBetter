@@ -9,27 +9,27 @@ public class LangUtil {
         for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
         System.out.println("");
     }
-    public static Boolean isTruthy(Boolean v) {
+    public static boolean isTruthy(boolean v) {
         return v;
     }
-    public static Boolean isTruthy(Integer v) {
+    public static boolean isTruthy(int v) {
         return v != 0;
     }
-    public static Boolean isTruthy(Double v) {
+    public static boolean isTruthy(double v) {
         return v != 0;
     }
-    public static Boolean isTruthy(String v) {
+    public static boolean isTruthy(String v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static <T> Boolean isTruthy(T [] v) {
+    public static <T> boolean isTruthy(T [] v) {
         return v.length > 0;
     }
-    public static Boolean isTruthy(List v) {
+    public static boolean isTruthy(List v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static Boolean isTruthy(Object v) {
+    public static boolean isTruthy(Object v) {
         if (v instanceof Boolean x) return x;
         if (v instanceof Integer x) return x != 0;
         if (v instanceof Double x) return x != 0;
@@ -40,7 +40,7 @@ public class LangUtil {
     public static <T> T [] asIterable(T [] v) {
         return v;
     }
-    public static List < Integer > asIterable(Integer n) {
+    public static List < Integer > asIterable(int n) {
         var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
             lst.add(i);

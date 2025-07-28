@@ -3,8 +3,8 @@ import java.util.*;
 
 public class MethodAccess {
     public AccessMod accessMod = AccessMod.NONE;
-    public Boolean isStatic = false;
-    public MethodAccess(AccessMod accessMod , Boolean isStatic) {
+    public boolean isStatic = false;
+    public MethodAccess(AccessMod accessMod , boolean isStatic) {
         this . accessMod = accessMod;
         this . isStatic = isStatic;
     }

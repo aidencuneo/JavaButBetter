@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Util {
-    public static Integer indexConvert(Integer index , Integer size) {
+    public static int indexConvert(int index , int size) {
         if (LangUtil.isTruthy(index < 0)) { index += size; }
         return index;
     }
-    public static < T > T get(ArrayList < T > lst , Integer index) {
+    public static < T > T get(ArrayList < T > lst , int index) {
         try {
             index = indexConvert(index , lst.size());
             return lst.get(index);
@@ -15,7 +15,7 @@ public class Util {
             return null;
         }
     }
-    public static < T > ArrayList < T > select(ArrayList < T > lst , Integer start , Integer end) {
+    public static < T > ArrayList < T > select(ArrayList < T > lst , int start , int end) {
         try {
             start = indexConvert(start , lst.size());
             end = indexConvert(end , lst.size());
@@ -25,10 +25,10 @@ public class Util {
             return new ArrayList < T > ();
         }
     }
-    public static < T > ArrayList < T > select(ArrayList < T > lst , Integer start) {
+    public static < T > ArrayList < T > select(ArrayList < T > lst , int start) {
         return select(lst , start , lst.size());
     }
-    public static String select(String str , Integer start , Integer end) {
+    public static String select(String str , int start , int end) {
         try {
             start = indexConvert(start , str.length());
             end = indexConvert(end , str.length());
@@ -38,7 +38,7 @@ public class Util {
             return "";
         }
     }
-    public static String select(String str , Integer start) {
+    public static String select(String str , int start) {
         return select(str , start , str.length());
     }
     public static < T > String d(ArrayList < T > s) {

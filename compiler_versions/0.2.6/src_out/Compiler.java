@@ -44,7 +44,7 @@ public class Compiler {
             out += "\n";
             outClasses.put(currentClass , out);
             lastIndent = indent;
-            // LangUtil.println(Util.d(tok));
+            LangUtil.println(Util.d(tok));
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
             String curOut = outClasses.getOrDefault(currentClass , "");

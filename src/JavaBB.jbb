@@ -167,27 +167,162 @@ List<Int> asIterable(int n):
 char[] asIterable(string s):
     ret s.toCharArray()
 
-// object get(object obj, string varname):
-//     let method_name = '_get_' + varname
-//     let inst = obj
+// range
+IntRange range(Int start, Int stop, Int step):
+    return new IntRange(start, stop, step)
 
-//     try
-//         return inst.getClass().getDeclaredMethod(method_name).invoke(inst)
-//     catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e)
-//         ...
+LongRange range(Long start, Long stop, Long step):
+    return new LongRange(start, stop, step)
 
-//     try
-//         return inst.getClass().getDeclaredField(varname).get(inst)
-//     catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e)
-//         return null
+DoubleRange range(Double start, Double stop, Double step):
+    return new DoubleRange(start, stop, step)
 
-// object dot(object obj, string method):
-//     try
-//         return obj.getClass().getMethod(method)
-//     catch (NoSuchMethodException e)
-//         return null
+CharRange range(Char start, Char stop, Char step):
+    return new CharRange(start, stop, step)
 
-// Operators
+// IntRange class
+inline(
+class IntRange implements Iterator<Integer> {
+    public int start;
+    public int stop;
+    public int step;
+    public int current;
+
+    public IntRange(Integer start, Integer stop, Integer step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        int value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// LongRange class
+inline(
+class LongRange implements Iterator<Long> {
+    public long start;
+    public long stop;
+    public long step;
+    public long current;
+
+    public LongRange(Long start, Long stop, Long step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        long value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// DoubleRange class
+inline(
+class DoubleRange implements Iterator<Double> {
+    public double start;
+    public double stop;
+    public double step;
+    public double current;
+
+    public DoubleRange(Double start, Double stop, Double step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Double next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        double value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// CharRange class
+inline(
+class CharRange implements Iterator<Character> {
+    public char start;
+    public char stop;
+    public char step;
+    public char current;
+
+    public CharRange(Character start, Character stop, Character step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Character next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        char value = current;
+        current += step;
+
+        return value;
+    }
+})
     """.trim())
     let langUtilCode = res.getCompiledCode("LangUtil")
 

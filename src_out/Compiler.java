@@ -46,7 +46,6 @@ public class Compiler {
             out += "\n";
             outClasses.put(currentClass, out);
             lastIndent = indent;
-            LangUtil.println(tok);
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
             String curOut = outClasses.getOrDefault(currentClass, "");
@@ -536,9 +535,6 @@ public class Compiler {
             if (LangUtil.isTruthy(!Extensions.operEq(findTokenType(tok, Token.Type.RANGE), - 1))) {
                 out += compileRange(tok);
             }
-            LangUtil.println(tok);
-            LangUtil.println(out);
-            System.exit(0);
         }
         else if (LangUtil.isTruthy(Extensions.operEq(tok.get(0).type, Token.Type.BRACE_EXPR))) {
             String expr = tok.get(0).value;
@@ -596,7 +592,7 @@ public class Compiler {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(start))) { start = "null"; }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(end))) { end = "null"; }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(step))) { step = "null"; }
-        return "LangUtil.asRange(" + start + ", " + end + ", " + step + ")";
+        return "LangUtil.range(" + start + ", " + end + ", " + step + ")";
     }
     public static String getNextTemp() {
         return "_temp" + nextTempVar++;

@@ -43,8 +43,5 @@ public class Extensions {
     public static boolean operEq(Object a , Object b) {
         return a.equals(b);
     }
-public static boolean operEq(String a , String b) {
-        return a.equals(b);
-    }
 }
 

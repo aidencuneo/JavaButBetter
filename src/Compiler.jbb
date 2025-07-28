@@ -70,7 +70,7 @@ CompResult compileFile(string className, string code):
 
         lastIndent = indent
 
-        println tok
+        // println tok
 
     // After the final line of a class, reset indentation
     while lastIndent > 0
@@ -683,10 +683,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         if findTokenType(tok, Token.Type.RANGE) != -1
             out += compileRange(tok)
 
-        println tok
-        println out
-        System.exit(0)
-
     // Brace expressions (curly brackets)
     elif tok.get(0).type == Token.Type.BRACE_EXPR
         string expr = tok.get(0).value
@@ -768,7 +764,7 @@ string compileRange(ArrayList<Token> tok):
     end = "null" if !end
     step = "null" if !step
 
-    return "LangUtil.asRange(" + start + ", " + end + ", " + step + ")"
+    return "LangUtil.range(" + start + ", " + end + ", " + step + ")"
 
 string getNextTemp():
     return "_temp" + nextTempVar++

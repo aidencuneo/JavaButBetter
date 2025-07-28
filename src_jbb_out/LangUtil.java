@@ -53,5 +53,153 @@ public class LangUtil {
     public static char [] asIterable(String s) {
         return s.toCharArray();
     }
+    public static IntRange range(Integer start , Integer stop , Integer step) {
+        return new IntRange(start, stop, step);
+    }
+    public static LongRange range(Long start , Long stop , Long step) {
+        return new LongRange(start, stop, step);
+    }
+    public static DoubleRange range(Double start , Double stop , Double step) {
+        return new DoubleRange(start, stop, step);
+    }
+    public static CharRange range(Character start , Character stop , Character step) {
+        return new CharRange(start, stop, step);
+    }
+    
+class IntRange implements Iterator<Integer> {
+    public int start;
+    public int stop;
+    public int step;
+    public int current;
+
+    public IntRange(Integer start, Integer stop, Integer step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        int value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+class LongRange implements Iterator<Long> {
+    public long start;
+    public long stop;
+    public long step;
+    public long current;
+
+    public LongRange(Long start, Long stop, Long step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        long value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+class DoubleRange implements Iterator<Double> {
+    public double start;
+    public double stop;
+    public double step;
+    public double current;
+
+    public DoubleRange(Double start, Double stop, Double step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Double next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        double value = current;
+        current += step;
+
+        return value;
+    }
+}
+    
+class CharRange implements Iterator<Character> {
+    public char start;
+    public char stop;
+    public char step;
+    public char current;
+
+    public CharRange(Character start, Character stop, Character step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return start < stop;
+        if (step < 0 && stop < start)
+            return start > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Character next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        char value = current;
+        current += step;
+
+        return value;
+    }
+}
 }
 

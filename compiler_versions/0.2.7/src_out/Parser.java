@@ -77,13 +77,6 @@ public class Parser {
                     continue;
                 }
             }
-            else if (LangUtil.isTruthy(t.type == Token.Type.EXPR)) {
-                var exprStr = t.value.substring(1 , t.value.length() - 1);
-                var replaced = replaceIdentifiers(Tokeniser.tokLine (exprStr), names , values);
-                var newExpr = "";
-                for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
-                t . value = "(" + newExpr + ")";
-            }
             newTok.add(t);
         }
         return newTok;

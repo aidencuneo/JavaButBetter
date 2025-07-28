@@ -88,17 +88,6 @@ static ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<strin
                 newTok.addAll(values.get(i))
                 next
 
-        // Perform replacements recursively
-        elif t.type == Token.Type.EXPR
-            // Split expression apart and perform replacements
-            let exprStr = t.value.substring(1, t.value.length() - 1)
-            let replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values)
-
-            // Piece back together and wait for it to be added
-            let newExpr = ""
-            newExpr += token.value for token in replaced
-            t.value = "(" + newExpr + ")"
-
         newTok.add(t)
 
     return newTok

@@ -1,18 +1,16 @@
-public static class Compiler
+static string mainClassName = ""
+static string currentClass = ""
+static string startTemplate = ""
+static string endTemplate = ""
+inline(public static HashMap<String, String> outClasses = new HashMap<>();)
+inline(public static HashMap<String, AccessMod> outClassAccess = new HashMap<>();)
+inline(public static HashMap<String, Alias> aliases = new HashMap<>();)
 
-string mainClassName = ""
-string currentClass = ""
-string startTemplate = ""
-string endTemplate = ""
-HashMap<string, string> outClasses = new HashMap<>()
-HashMap<string, AccessMod> outClassAccess = new HashMap<>()
-HashMap<string, Alias> aliases = new HashMap<>()
+static int nextTempVar = 0
+static int indent = 0
+static bool defaultStatic = false
 
-int nextTempVar = 0
-int indent = 0
-bool defaultStatic = false
-
-CompResult compileFile(string className, string code):
+static CompResult compileFile(string className, string code):
     // Allow all methods to use these variables
     mainClassName = className
     currentClass = className
@@ -79,7 +77,7 @@ CompResult compileFile(string className, string code):
     // Return compilation result
     return new CompResult(outClasses, outClassAccess, startTemplate, endTemplate)
 
-string compileStatement(ArrayList<Token> tok, string out):
+static string compileStatement(ArrayList<Token> tok, string out):
     return "" if !tok
 
     ArrayList<Token.Type> types = getTokenTypes(tok)
@@ -160,11 +158,13 @@ string compileStatement(ArrayList<Token> tok, string out):
         || startTok == Token.Type.WHILE
         || startTok == Token.Type.UNTIL
     )
-        out += "if (" if startTok == Token.Type.IF
-        out += "else if (" if startTok == Token.Type.ELIF
-        out += "else " if startTok == Token.Type.ELSE
-        out += "while (" if startTok == Token.Type.WHILE
-        out += "while (!(" if startTok == Token.Type.UNTIL
+        inline(switch (startTok))
+            inline(case IF -> out += "if (";)
+            inline(case ELIF -> out += "else if (";)
+            inline(case ELSE -> out += "else";)
+            inline(case WHILE -> out += "while (";)
+            inline(case UNTIL -> out += "while (!(";)
+            inline(default -> {})
 
         if startTok != Token.Type.ELSE
             out += "LangUtil.isTruthy("
@@ -392,7 +392,7 @@ string compileStatement(ArrayList<Token> tok, string out):
 
     return out
 
-string compileExpr(ArrayList<Token> tok, bool nested):
+static string compileExpr(ArrayList<Token> tok, bool nested):
     string out = ""
     int f = -1
     int f2 = -1
@@ -627,10 +627,10 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     return out.trim()
 
-string compileExpr(ArrayList<Token> tok):
+static string compileExpr(ArrayList<Token> tok):
     return compileExpr(tok, true)
 
-string compileMethodArgs(string expr):
+static string compileMethodArgs(string expr):
     if expr.startsWith("(") && expr.endsWith(")")
         expr .= substring(1, expr.length() - 1)
 
@@ -639,53 +639,54 @@ string compileMethodArgs(string expr):
     out += t.value + " " for t in tok
     return "(" + out.trim() + ")"
 
-string getNextTemp():
+static string getNextTemp():
     return "_temp" + nextTempVar++
 
-int findToken(ArrayList<Token> tok, string value):
+static int findToken(ArrayList<Token> tok, string value):
     // return i if t.value.equals(value) for t in tok
     for i in tok.size()
         return i if tok.get(i).value.equals(value)
     return -1
 
-int findTokenRev(ArrayList<Token> tok, string value):
+static int findTokenRev(ArrayList<Token> tok, string value):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if tok.get(i).value.equals(value)
     return -1
 
-int findAnyToken(ArrayList<Token> tok, List<string> values):
+static int findAnyToken(ArrayList<Token> tok, List<string> values):
     for i in tok.size()
         return i if values.contains(tok.get(i).value)
     return -1
 
-int findAnyTokenRev(ArrayList<Token> tok, List<string> values):
+static int findAnyTokenRev(ArrayList<Token> tok, List<string> values):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if values.contains(tok.get(i).value)
     return -1
 
-int findTokenType(ArrayList<Token> tok, Token.Type type):
+static int findTokenType(ArrayList<Token> tok, Token.Type type):
     for i in tok.size()
         return i if tok.get(i).type == type
     return -1
 
-int findTokenTypeRev(ArrayList<Token> tok, Token.Type type):
+static int findTokenTypeRev(ArrayList<Token> tok, Token.Type type):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if tok.get(i).type == type
     return -1
 
-ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):
+static ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):
     let types = new ArrayList<Token.Type>()
     types.add(t.type) for t in tok
     return types
 
-MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
-    let accessMod = AccessMod.NONE
-    let isStatic = defaultStatic // Default static value for this class
+static MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
+    AccessMod accessMod = AccessMod.NONE
+    bool isStatic = defaultStatic // Default static value for this class
 
     // Fetch access modifier and static from line
     for j in end
-        let t = tok.get(j).type
-        let v = tok.get(j).value
+        Token.Type t = tok.get(j).type
+        string v = tok.get(j).value
+        // System.out.println(j + ": " + v)
 
         // Attempt to get access modifier from every token (if not found already)
         if accessMod == AccessMod.NONE
@@ -694,12 +695,20 @@ MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
         isStatic = true if v.equals("static") || v.equals("#")
         isStatic = false if v.equals("instance") || v.equals("^")
 
+        // inline(switch (v))
+        //     case "+" -> accessMod = AccessMod.PUBLIC
+        //     case "-" -> accessMod = AccessMod.PRIVATE
+        //     case "*" -> accessMod = AccessMod.PROTECTED
+        //     case "?" -> accessMod = AccessMod.DEFAULT
+        //     case "static", "#" -> isStatic = true
+        //     inline(default -> {})
+
     return new MethodAccess(accessMod, isStatic)
 
-MethodAccess getMethodAccess(ArrayList<Token> tok):
+static MethodAccess getMethodAccess(ArrayList<Token> tok):
     return getMethodAccess(tok, tok.size())
 
-ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
+static ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
     for i in end
         let t = tok.get(i)
         let v = t.value
@@ -711,5 +720,5 @@ ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
 
     return tok
 
-ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
+static ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
     return stripMethodAccess(tok, tok.size())

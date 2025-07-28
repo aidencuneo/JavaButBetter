@@ -45,36 +45,34 @@ static main:
     let res = Compiler.compileFile("LangUtil", """
 // import java.lang.reflect.*
 
-public static class LangUtil
-
-print(object ... args):
+# print(object ... args):
     System.out.print('' + x) for x in args
 
-println(object ... args):
+# println(object ... args):
     System.out.print('' + x) for x in args
     System.out.println('')
 
-bool isTruthy(bool v):
+# bool isTruthy(bool v):
     ret v
 
-bool isTruthy(int v):
+# bool isTruthy(int v):
     ret v != 0
 
-bool isTruthy(double v):
+# bool isTruthy(double v):
     ret v != 0
 
-bool isTruthy(string v):
+# bool isTruthy(string v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
-(T) bool isTruthy(T[] v):
+# (T) bool isTruthy(T[] v):
     ret v.length > 0
 
-bool isTruthy(List v):
+# bool isTruthy(List v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
-bool isTruthy(object v):
+# bool isTruthy(object v):
     inline(if (v instanceof Boolean x) return x;)
     inline(if (v instanceof Integer x) return x != 0;)
     inline(if (v instanceof Double x) return x != 0;)
@@ -82,22 +80,22 @@ bool isTruthy(object v):
     inline(if (v instanceof List x) return x == null ? false : !x.isEmpty();)
     ret v != null
 
-(T) T[] asIterable(T[] v):
+# (T) T[] asIterable(T[] v):
     ret v
 
-List<Int> asIterable(int n):
+# List<Int> asIterable(int n):
     let lst = new ArrayList<Int>()
     inline `for (int i = 0; i < n; ++i)`
         lst.add(i)
     ret lst
 
-(T) Iterable<T> asIterable(Iterable<T> v):
+# (T) Iterable<T> asIterable(Iterable<T> v):
     ret v
 
-char[] asIterable(string s):
+# char[] asIterable(string s):
     ret s.toCharArray()
 
-// object get(object obj, string varname):
+// # Object get(Object obj, string varname):
 //     let method_name = '_get_' + varname
 //     let inst = obj
 
@@ -111,7 +109,7 @@ char[] asIterable(string s):
 //     catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException e)
 //         return null
 
-// object dot(object obj, string method):
+// # Object dot(Object obj, string method):
 //     try
 //         return obj.getClass().getMethod(method)
 //     catch (NoSuchMethodException e)

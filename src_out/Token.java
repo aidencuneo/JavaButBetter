@@ -45,6 +45,7 @@ public class Token {
         DEFAULT ,
         ACCESS_MOD ,
         STATIC ,
+        INSTANCE ,
         IMPORT ,
         CLASS ,
         ENUM ,
@@ -200,6 +201,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(v.equals("static"))) {
             t = Type.STATIC;
+        }
+        else if (LangUtil.isTruthy(v.equals("instance"))) {
+            t = Type.INSTANCE;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("import"))) ? (v.equals("import")) : ((LangUtil.isTruthy(v.equals("include"))) ? (v.equals("include")) : ((LangUtil.isTruthy(v.equals("require"))) ? (v.equals("require")) : (v.equals("use")))))) {
             t = Type.IMPORT;

@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    HashMap<String, String> classes;
-    HashMap<String, AccessMod> classAccess;
+    public HashMap < String , String > classes;
+    public HashMap < String , AccessMod > classAccess;
     public String startTemplate;
     public String endTemplate;
     public CompResult(HashMap < String , String > classes , HashMap < String , AccessMod > classAccess , String startTemplate , String endTemplate) {
@@ -13,18 +13,18 @@ public class CompResult {
         this . endTemplate = endTemplate;
     }
     public String constructClassString(String className) {
-        String code = classes.getOrDefault(className , "");
-        AccessMod accessMod = classAccess.getOrDefault(className , AccessMod.DEFAULT);
+        var code = classes.getOrDefault(className , "");
+        var accessMod = classAccess.getOrDefault(className , AccessMod.DEFAULT);
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }
-        String accessModStr = MethodAccess.accessModToString(accessMod);
-        String separator = (accessModStr.length() > 0 ? " " : "");
-        String out = accessModStr + separator + "class " + className + " {\n";
+        var accessModStr = MethodAccess.accessModToString(accessMod);
+        var separator = (accessModStr.length() > 0 ? " " : "");
+        var out = accessModStr + separator + "class " + className + " {\n";
         out += "    " + code.trim();
         out += "\n}\n";
         return out;
     }
     public String getCompiledCode(String mainClassName) {
-        String out = "";
+        var out = "";
         if (LangUtil.isTruthy(classes.containsKey(mainClassName))) {
             out += constructClassString(mainClassName);
         }

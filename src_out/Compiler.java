@@ -6,11 +6,12 @@ public class Compiler {
     public static String currentClass = "";
     public static String startTemplate = "";
     public static String endTemplate = "";
-    public static HashMap<String, String> outClasses = new HashMap<>();
-    public static HashMap<String, AccessMod> outClassAccess = new HashMap<>();
-    public static HashMap<String, Alias> aliases = new HashMap<>();
+    public static HashMap < String , String > outClasses = new HashMap < > ();
+    public static HashMap < String , AccessMod > outClassAccess = new HashMap < > ();
+    public static HashMap < String , Alias > aliases = new HashMap < > ();
     public static int nextTempVar = 0;
     public static int indent = 0;
+    public static boolean defaultStatic = false;
     public static CompResult compileFile(String className , String code) {
         mainClassName = className;
         currentClass = className;
@@ -21,6 +22,7 @@ public class Compiler {
         outClassAccess.put(mainClassName , AccessMod.PUBLIC);
         aliases = new HashMap < > ();
         nextTempVar = 0;
+        defaultStatic = false;
         ArrayList < String > lines = Tokeniser.splitFile(code);
         int lastIndent = 0;
         for (var i : LangUtil.asIterable(lines.size())) {
@@ -98,21 +100,17 @@ public class Compiler {
             outClasses.put(currentClass , out);
             currentClass = tok.get(f + 1).value;
             out = outClasses.getOrDefault(currentClass , "");
-            AccessMod accessMod = AccessMod.DEFAULT;
-            for (int j = 0; j < f && accessMod == AccessMod.DEFAULT; ++j) {
-                accessMod = MethodAccess.accessModFromToken(tok.get(j));
-            }
-            outClassAccess.put(currentClass , accessMod);
+            var access = getMethodAccess(tok);
+            tok = stripMethodAccess(tok);
+            outClassAccess.put(currentClass , access.accessMod);
+            defaultStatic = access.isStatic;
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(startTok == Token.Type.IF)) ? (startTok == Token.Type.IF) : ((LangUtil.isTruthy(startTok == Token.Type.ELIF)) ? (startTok == Token.Type.ELIF) : ((LangUtil.isTruthy(startTok == Token.Type.ELSE)) ? (startTok == Token.Type.ELSE) : ((LangUtil.isTruthy(startTok == Token.Type.WHILE)) ? (startTok == Token.Type.WHILE) : (startTok == Token.Type.UNTIL))))))) {
-            switch (startTok) {
-                case IF -> out += "if (";
-                case ELIF -> out += "else if (";
-                case ELSE -> out += "else";
-                case WHILE -> out += "while (";
-                case UNTIL -> out += "while (!(";
-                default -> {}
-            }
+            if (LangUtil.isTruthy(startTok == Token.Type.IF)) { out += "if ("; }
+            if (LangUtil.isTruthy(startTok == Token.Type.ELIF)) { out += "else if ("; }
+            if (LangUtil.isTruthy(startTok == Token.Type.ELSE)) { out += "else "; }
+            if (LangUtil.isTruthy(startTok == Token.Type.WHILE)) { out += "while ("; }
+            if (LangUtil.isTruthy(startTok == Token.Type.UNTIL)) { out += "while (!("; }
             if (LangUtil.isTruthy(startTok != Token.Type.ELSE)) {
                 out += "LangUtil.isTruthy(";
                 out += compileExpr(Util.select(tok , 1));
@@ -524,15 +522,16 @@ public class Compiler {
         return types;
     }
     public static MethodAccess getMethodAccess(ArrayList < Token > tok , int end) {
-        AccessMod accessMod = AccessMod.NONE;
-        boolean isStatic = false;
+        var accessMod = AccessMod.NONE;
+        var isStatic = defaultStatic;
         for (var j : LangUtil.asIterable(end)) {
-            Token . Type t = tok.get(j).type;
-            String v = tok.get(j).value;
+            var t = tok.get(j).type;
+            var v = tok.get(j).value;
             if (LangUtil.isTruthy(accessMod == AccessMod.NONE)) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }
             if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("static"))) ? (v.equals("static")) : (v.equals("#")))) { isStatic = true; }
+            if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("instance"))) ? (v.equals("instance")) : (v.equals("^")))) { isStatic = false; }
         }
         return new MethodAccess(accessMod , isStatic);
     }
@@ -542,7 +541,8 @@ public class Compiler {
     public static ArrayList < Token > stripMethodAccess(ArrayList < Token > tok , int end) {
         for (var i : LangUtil.asIterable(end)) {
             var t = tok.get(i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(MethodAccess.accessModFromToken(t) == AccessMod.NONE)) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(t.value.equals("static")))) ? (!LangUtil.isTruthy(t.value.equals("#"))) : (!LangUtil.isTruthy(t.value.equals("static")))) : (MethodAccess.accessModFromToken(t) == AccessMod.NONE))) {
+            var v = t.value;
+            if (LangUtil.isTruthy(((LangUtil.isTruthy(MethodAccess.accessModFromToken(t) == AccessMod.NONE)) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(v.equals("static")))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(v.equals("#")))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(v.equals("instance")))) ? (!LangUtil.isTruthy(v.equals("^"))) : (!LangUtil.isTruthy(v.equals("instance")))) : (!LangUtil.isTruthy(v.equals("#")))) : (!LangUtil.isTruthy(v.equals("static")))) : (MethodAccess.accessModFromToken(t) == AccessMod.NONE)))) {
                 return new ArrayList < Token > (tok.subList(i , tok.size()));
             }
         }

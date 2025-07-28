@@ -1,0 +1,45 @@
+// public static String unescapeString(String str) {
+//     try {
+//         Properties prop = new Properties();
+//         prop.load(new StringReader("x=" + str));
+//         return prop.getProperty("x");
+//     } catch (IOException e) {
+//         return null;
+//     }
+// }
+
+static string unescapeString(string str):
+    let out = ""
+
+    inline(for (int i = 0; i < str.length(); ++i))
+        let c = str.charAt(i)
+
+        if c == '\\' && i + 1 < str.length()
+            let next = str.charAt(i + 1)
+            ++i
+
+            if next == 'u' && i + 4 < str.length()
+                try
+                    let code = Int.parseInt(str.substring(i + 1, i + 5), 16)
+                    inline(out += (char) code;)
+                    i += 4
+                catch (NumberFormatException e)
+                    out += "\\u"
+            else
+                inline(switch (next))
+                    inline(case 'b' -> out += '\b';)
+                    inline(case 'f' -> out += '\f';)
+                    inline(case 'n' -> out += '\n';)
+                    inline(case 'r' -> out += '\r';)
+                    inline(case 't' -> out += '\t';)
+                    inline(case '\"' -> out += '\"';)
+                    inline(case '\'' -> out += '\'';)
+                    inline(case '\\' -> out += '\\';)
+                    inline(default -> out += next;)
+        else
+            out += c
+
+    return out
+
+static string escapeDoubleQuotes(string str):
+    return str.replace("\"", "\\\"")

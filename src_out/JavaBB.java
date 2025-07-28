@@ -11,6 +11,18 @@ public class JavaBB {
             new File(outDir).mkdir();
         }
         var files = new File(compDir).list((File dir , String name)-> name.endsWith(".jbb"));
+        var extensionsClassRes = Compiler.compileFile("Extensions" , """
+public static class Extensions
+
+int operAdd(int a, int b):
+    return a + b
+
+long operAdd(long a, long b):
+    return a + b
+
+double operAdd(double a, double b):
+    return a + b
+    """.trim());
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
             var fromPath = compDir + "/" + files [i];
@@ -23,6 +35,12 @@ public class JavaBB {
                 
             }
             var res = Compiler.compileFile(className , fileContent);
+            if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
+                var curCode = extensionsClassRes.classes.get("Extensions");
+                var newCode = res.classes.get("Extensions");
+                extensionsClassRes.classes.put("Extensions" , "    " + curCode + newCode);
+                res.classes.remove("Extensions");
+            }
             var compiled = res.getCompiledCode(className);
             try (var writer = new PrintWriter(toPath)) {
                 new File(toPath).createNewFile();
@@ -31,6 +49,14 @@ public class JavaBB {
             catch (IOException e) {
                 
             }
+        }
+        LangUtil.println("\n\nCreating Extensions...");
+        try (var writer = new PrintWriter(outDir + "/Extensions.java")) {
+            new File(outDir + "/Extensions.java").createNewFile();
+            writer.println(extensionsClassRes.getCompiledCode("Extensions"));
+        }
+        catch (IOException e) {
+            
         }
         LangUtil.println("\n\nCompiling LangUtil...");
         var res = Compiler.compileFile("LangUtil" , """

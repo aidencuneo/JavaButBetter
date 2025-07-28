@@ -1,5 +1,6 @@
 public static class Compiler
 
+// These fields persist only for the current file
 string mainClassName = ""
 string currentClass = ""
 string startTemplate = ""

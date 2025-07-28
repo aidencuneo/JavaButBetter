@@ -13,7 +13,19 @@ static main:
     // Compile files one by one
     let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb"))
 
-    // string[] files = new File(compDir).list()
+    // Extensions code
+    let extensionsClassRes = Compiler.compileFile("Extensions", """
+public static class Extensions
+
+int operAdd(int a, int b):
+    return a + b
+
+long operAdd(long a, long b):
+    return a + b
+
+double operAdd(double a, double b):
+    return a + b
+    """.trim())
 
     for i in files.length
         let fileContent = ""
@@ -29,6 +41,18 @@ static main:
 
         // Compile this file
         let res = Compiler.compileFile(className, fileContent)
+
+        // Extract Extensions class if it exists
+        if res.classes.containsKey("Extensions")
+            // Add code to current Extensions class
+            let curCode = extensionsClassRes.classes.get("Extensions")
+            let newCode = res.classes.get("Extensions")
+            extensionsClassRes.classes.put("Extensions", "    " + curCode + newCode)
+
+            // Remove Extensions class from this file's output
+            res.classes.remove("Extensions")
+
+        // Get final compiled code
         let compiled = res.getCompiledCode(className)
 
         // Write to output file
@@ -39,6 +63,15 @@ static main:
             ...
 
     // System.exit(0)
+    println "\n\nCreating Extensions..."
+
+    // Write Extensions.java
+    try let writer = new PrintWriter(outDir + "/Extensions.java")
+        new File(outDir + "/Extensions.java").createNewFile()
+        writer.println(extensionsClassRes.getCompiledCode("Extensions"))
+    catch (IOException e)
+        ...
+
     println "\n\nCompiling LangUtil..."
 
     // Compile LangUtil

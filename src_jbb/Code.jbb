@@ -7,6 +7,11 @@ alias balls(a, b) = max(a, b)
 main:
     println balls(4, 5) + 10
 
+public class Extensions
+
+instance string newOperAdd(string a, string b):
+    return a + b
+
 // int field = 10
 // int age = 21
 // string name = 'aiden'

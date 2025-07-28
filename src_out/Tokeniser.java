@@ -202,16 +202,6 @@ public class Tokeniser {
         tok = Parser.convertIdentifiers(tok);
         return tok;
     }
-    public static ArrayList < Token > splitRange(String range) {
-        var tok = new ArrayList < Token > ();
-        for (var s : LangUtil.asIterable(range.split("\\.\\."))) {
-            LangUtil.println(s);
-            tok.add(Token.fromString(s));
-            tok.add(Token.fromString(".."));
-        }
-        tok.remove(tok.size() - 1);
-        return tok;
-    }
     public static ArrayList < String > extractArgsFromExpr(String s) {
         var args = new ArrayList < String > ();
         var tok = Tokeniser.tokLine(s.substring(1, s.length() - 1));

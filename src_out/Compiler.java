@@ -533,10 +533,11 @@ public class Compiler {
             if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.INDENT)) : (tok))) {
                 tok.remove(0);
             }
-            if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.RANGE))), - 1))) {
-                
+            if (LangUtil.isTruthy(!Extensions.operEq(findTokenType(tok, Token.Type.RANGE), - 1))) {
+                out += compileRange(tok);
             }
             LangUtil.println(tok);
+            LangUtil.println(out);
             System.exit(0);
         }
         else if (LangUtil.isTruthy(Extensions.operEq(tok.get(0).type, Token.Type.BRACE_EXPR))) {
@@ -570,6 +571,32 @@ public class Compiler {
         ArrayList < Token > tok = Tokeniser.tokLine(expr);
         for (var t : LangUtil.asIterable(tok)) { out += t.value + " "; }
         return "(" + out.trim() + ")";
+    }
+    public static String compileRange(ArrayList < Token > tok) {
+        LangUtil.println(tok);
+        var startTokens = new ArrayList < Token > ();
+        var endTokens = new ArrayList < Token > ();
+        var stepTokens = new ArrayList < Token > ();
+        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
+            startTokens.add(tok.get(0));
+            tok.remove(0);
+        }
+        tok.remove(0);
+        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
+            endTokens.add(tok.get(0));
+            tok.remove(0);
+        }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
+            stepTokens = tok;
+            tok.remove(0);
+        }
+        var start = compileExpr(startTokens);
+        var end = compileExpr(endTokens);
+        var step = compileExpr(stepTokens);
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(start))) { start = "null"; }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(end))) { end = "null"; }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(step))) { step = "null"; }
+        return "LangUtil.asRange(" + start + ", " + end + ", " + step + ")";
     }
     public static String getNextTemp() {
         return "_temp" + nextTempVar++;

@@ -680,13 +680,11 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             tok.remove(0)
 
         // Range expression
-        if (f = findTokenType(tok, Token.Type.RANGE)) != -1
-            ...
-            // let range = splitRange(tok.get(0).value)
-
-            // out += "LangUtil.asRange(" + start + ", " + end + ", " + step + ")"
+        if findTokenType(tok, Token.Type.RANGE) != -1
+            out += compileRange(tok)
 
         println tok
+        println out
         System.exit(0)
 
     // Brace expressions (curly brackets)
@@ -733,6 +731,44 @@ string compileMethodArgs(string expr):
     ArrayList<Token> tok = Tokeniser.tokLine(expr)
     out += t.value + " " for t in tok
     return "(" + out.trim() + ")"
+
+string compileRange(ArrayList<Token> tok):
+    // [start]?, .., [end]?, (.., [step])?
+    println tok
+
+    let startTokens = new ArrayList<Token>()
+    let endTokens = new ArrayList<Token>()
+    let stepTokens = new ArrayList<Token>()
+
+    // Eat start
+    while tok && tok.get(0).type != Token.Type.RANGE
+        startTokens.add(tok.get(0))
+        tok.remove(0)
+
+    // Eat ..
+    tok.remove(0)
+
+    // Eat end
+    while tok && tok.get(0).type != Token.Type.RANGE
+        endTokens.add(tok.get(0))
+        tok.remove(0)
+
+    // Eat step (and ..)
+    if tok && tok.get(0).type == Token.Type.RANGE
+        // Step becomes the remaining tokens
+        stepTokens = tok
+        tok.remove(0)
+
+    // Compile tokens
+    let start = compileExpr(startTokens)
+    let end = compileExpr(endTokens)
+    let step = compileExpr(stepTokens)
+
+    start = "null" if !start
+    end = "null" if !end
+    step = "null" if !step
+
+    return "LangUtil.asRange(" + start + ", " + end + ", " + step + ")"
 
 string getNextTemp():
     return "_temp" + nextTempVar++

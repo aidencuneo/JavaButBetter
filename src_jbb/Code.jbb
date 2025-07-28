@@ -2,6 +2,9 @@ public static class Code
 
 main:
     let range = [23432.439..9123.459382..343.11]
+    let range2 = [0.. ..10]
+    let range3 = [..20..10]
+    let range4 = [20.. ..-1]
     // let lst = [1, 2, 3, "hello"]
 
     println "69" == "69" // => true

@@ -1,63 +1,39 @@
 public static class Code
 
-alias StrIntMap = HashMap<string, Int>
-alias max(a, b) = (a > b ? a : b)
-alias balls(a, b) = max(a, b)
-
 main:
-    let ending = "" if endTok == Token.Type.COMMA else ";"
-    let ending = endTok == Token.Type.COMMA ? "" : ";"
-    if "hi" == "hi"
-        println "yes"
-    if "hi2" == "hi"
-        println "yes"
-    println balls(4, 5) + 10
+    let lst = [1, 2, 3, "hello"]
+    let range = [1..9..2]
+
+    println "69" == "69" // => true
 
 static class Extensions
 
-bool operEq(string a, int b):
-    return a.equals("" + b)
+bool == (string a, string b):
+    return a.equals(b)
 
-// int field = 10
-// int age = 21
-// string name = 'aiden'
-// string name2 = 'value'
+// public static class Code
 
-// static main:
-//     let some1000_a = (1.0**1.0 * 2 + 5 - 1)
-//     println "hello" + ", " + 10
-//     println 'nice' if List.of(1, 2, 'hi')
-//     println 'yeah' if List.of(1)
+// alias StrIntMap = HashMap<string, Int>
+// alias max(a, b) = (a > b ? a : b)
+// alias balls(a, b) = max(a, b)
+// alias balls = max
 
-//     println i for i in 10
-//     print 0 + c + ' ' for c in "hello\n"
+// main:
+//     println "69" == "69" // => true
+//     println "69" == 69
+//     println 69 == "69"
 
-//     let num = 17
-//     println num ^ 3
-//     println num ^ 3 ^ 3
-//     println num ^ 3 ^ 3 ^ 3
-//     println 13 ^ 3 ^ 5 ^ 6
 
-//     // 5 and go()
-//     // println "YEAH!" if not a or b
+// static class Extensions
 
-// public string _get_name:
-//     return name.toUpperCase()
+// bool == (string a, string b):
+//     return a.equals(b)
 
-// # string go:
-//     println "WHAT!!!!!!!!"
-//     return "value"
+// bool == (string a, int b):
+//     return a == ("" + b)
 
-// class Operators
-
-// T[] (T) + (T[] a, T b):
-//     ArrayList<T> res = new ArrayList<>(a)
-//     res.add(b)
-//     ret res
-
-// List<T> + (List<T> a, T b):
-//     res.add(b)
-//     ret res
+// bool == (int a, string b):
+//     return ("" + a) == b
 
 // class Extensions
 

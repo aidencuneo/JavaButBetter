@@ -13,8 +13,8 @@ public class CompResult {
         this . endTemplate = endTemplate;
     }
     public String constructClassString(String className) {
-        var code = classes.getOrDefault(className , "");
-        var accessMod = classAccess.getOrDefault(className , AccessMod.DEFAULT);
+        var code = classes.getOrDefault(className, "");
+        var accessMod = classAccess.getOrDefault(className, AccessMod.DEFAULT);
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }
         var accessModStr = MethodAccess.accessModToString(accessMod);
         var separator = (LangUtil.isTruthy(accessModStr.length() > 0) ? (" ") : (""));

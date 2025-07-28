@@ -11,7 +11,7 @@ public class StringParser {
                 ++ i;
                 if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (i + 4 < str.length()) : (Extensions.operEq(next, 'u')))) {
                     try {
-                        var code = Integer.parseInt(str.substring(i + 1, i + 5), 16);
+                        var code = Integer.parseInt(str.substring (i + 1 , i + 5), 16);
                         out += (char) code;
                         i += 4;
                     }
@@ -40,7 +40,7 @@ public class StringParser {
         return out;
     }
     public static String escapeDoubleQuotes(String str) {
-        return str.replace("\"", "\\\"");
+        return str.replace("\"" , "\\\"");
     }
 }
 

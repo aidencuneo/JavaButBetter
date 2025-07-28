@@ -2,17 +2,6 @@ import java.io.*;
 import java.util.*;
 
 public class Extensions {
-    public static int len(String s) {
-        return s.length();
-    }
-    public static <T> int len(Iterable < T > v) {
-        var c = 0;
-        for (var _ : LangUtil.asIterable(v)) { ++ c; }
-        return c;
-    }
-    public static <T> int len(T [] v) {
-        return v.length;
-    }
     public static int operAdd(int a , int b) {
         return a + b;
     }
@@ -41,9 +30,6 @@ public class Extensions {
         return a.equals(b);
     }
     public static boolean operEq(Object a , Object b) {
-        return a.equals(b);
-    }
-public static boolean operEq(String a , String b) {
         return a.equals(b);
     }
 }

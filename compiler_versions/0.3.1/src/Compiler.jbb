@@ -70,7 +70,7 @@ CompResult compileFile(string className, string code):
 
         lastIndent = indent
 
-        println tok
+        // println Util.d(tok)
 
     // After the final line of a class, reset indentation
     while lastIndent > 0
@@ -235,7 +235,7 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         // Add all of the following tokens
         let s = ""
-        s += t.value + " " for t in Util.select(tok, 1)
+        s += t + " " for t in tok
         s .= trim()
 
         out += s + ")"
@@ -638,10 +638,11 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     // Function calls
     elif tok.get(tok.size() - 1).type == Token.Type.EXPR
         string name = compileExpr(Util.select(tok, 0, tok.size() - 1))
+        println name
 
         // Name replacements
         if name == "len"
-            name = "Extensions.len"
+            name = "LangUtil.len"
 
         Token t = tok.get(tok.size() - 1)
         string args = t.value.substring(1, t.value.length() - 1)
@@ -656,24 +657,9 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     // Expressions (parentheses)
     elif tok.get(0).type == Token.Type.EXPR
-        let expr = tok.get(0).value
-        expr = expr.substring(1, expr.length() - 1)
-        out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
-
-    // List expressions (square brackets)
-    elif tok.get(0).type == Token.Type.SQUARE_EXPR
-        let expr = tok.get(0).value
-        expr = expr.substring(1, expr.length() - 1)
-        let exprTok = Tokeniser.tokLine(expr)
-
-        println exprTok
-        System.exit(0)
-
-    // Brace expressions (curly brackets)
-    elif tok.get(0).type == Token.Type.BRACE_EXPR
         string expr = tok.get(0).value
         expr = expr.substring(1, expr.length() - 1)
-        out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
+        out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
 
     // Fallback - add tokens as they are
     else

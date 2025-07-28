@@ -23,7 +23,7 @@ static string unescapeString(string str):
                     let code = Int.parseInt(str.substring(i + 1, i + 5), 16)
                     inline(out += (char) code;)
                     i += 4
-                catch NumberFormatException e
+                catch (NumberFormatException e)
                     out += "\\u"
             else
                 inline(switch (next))

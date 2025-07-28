@@ -171,7 +171,7 @@ public class Compiler {
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.CATCH))) {
             out += "catch (";
             var s = "";
-            for (var t : LangUtil.asIterable(Util.select(tok, 1))) { s += t.value + " "; }
+            for (var t : LangUtil.asIterable(tok)) { s += t + " "; }
             s = s.trim();
             out += s + ")";
         }
@@ -504,7 +504,7 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.EXPR))) {
             String name = compileExpr(Util.select(tok , 0 , tok.size() - 1));
-            // LangUtil.println(name);
+            LangUtil.println(name);
             if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
                 name = "LangUtil.len";
             }

@@ -44,7 +44,7 @@ public class Parser {
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Bool"))) {
                     t . value = "Boolean";
                 }
-                tok.set(i , t);
+                tok.set(i, t);
                 if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
                     var alias = Compiler.aliases.get(t.value);
                     var aliasTokens = alias.tokens;
@@ -52,10 +52,10 @@ public class Parser {
                     tok.remove(i);
                     if (LangUtil.isTruthy(hasArgs)) {
                         var argTokens = Tokeniser.extractCommaExpr(nextTok.value);
-                        aliasTokens = replaceIdentifiers(aliasTokens , alias.args , argTokens);
+                        aliasTokens = replaceIdentifiers(aliasTokens, alias.args, argTokens);
                         tok.remove(i);
                     }
-                    tok.addAll(i , aliasTokens);
+                    tok.addAll(i, aliasTokens);
                     i += aliasTokens.size() - 1;
                 }
             }
@@ -78,8 +78,8 @@ public class Parser {
                 }
             }
             else if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.EXPR))) {
-                var exprStr = t.value.substring(1 , t.value.length() - 1);
-                var replaced = replaceIdentifiers(Tokeniser.tokLine (exprStr), names , values);
+                var exprStr = t.value.substring(1, t.value.length() - 1);
+                var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
                 var newExpr = "";
                 for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
                 t . value = "(" + newExpr + ")";

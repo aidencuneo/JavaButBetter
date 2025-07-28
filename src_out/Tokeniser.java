@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Tokeniser {
     public enum CharType {
-        A , D , S , W ,
+        A, D, S, W,
     }
     public static CharType charType(char c) {
         if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(c >= 'a')) ? (c <= 'z') : (c >= 'a')))) ? (((LangUtil.isTruthy(c >= 'a')) ? (c <= 'z') : (c >= 'a'))) : ((LangUtil.isTruthy(((LangUtil.isTruthy(c >= 'A')) ? (c <= 'Z') : (c >= 'A')))) ? (((LangUtil.isTruthy(c >= 'A')) ? (c <= 'Z') : (c >= 'A'))) : (Extensions.operEq(c, '_'))))) {
@@ -92,7 +92,7 @@ public class Tokeniser {
             }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(c, '/')))) {
                 if (LangUtil.isTruthy(++ comment >= 2)) {
-                    current = current.substring(0 , current.length() - 2);
+                    current = current.substring(0, current.length() - 2);
                 }
             }
             if (LangUtil.isTruthy(Extensions.operEq(c, '\n'))) {
@@ -125,7 +125,7 @@ public class Tokeniser {
                 break;
             }
         }
-        tok.add(new Token(Token.Type.INDENT , indent));
+        tok.add(new Token(Token.Type.INDENT, indent));
         if (LangUtil.isTruthy(Extensions.operEq(i, line.length()))) {
             return tok;
         }
@@ -196,7 +196,7 @@ public class Tokeniser {
     }
     public static ArrayList < String > extractArgsFromExpr(String s) {
         var args = new ArrayList < String > ();
-        var tok = Tokeniser.tokLine(s.substring(1 , s.length() - 1));
+        var tok = Tokeniser.tokLine(s.substring(1, s.length() - 1));
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) { args.add(t.value); }
         }
@@ -204,7 +204,7 @@ public class Tokeniser {
     }
     public static ArrayList < ArrayList < Token > > extractCommaExpr(String s) {
         var elems = new ArrayList < ArrayList < Token > > ();
-        var tok = Tokeniser.tokLine(s.substring(1 , s.length() - 1));
+        var tok = Tokeniser.tokLine(s.substring(1, s.length() - 1));
         var current = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) {

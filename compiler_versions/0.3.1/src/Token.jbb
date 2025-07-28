@@ -5,8 +5,6 @@ inline(public enum Type)
     SCOPE,
     SYMBOL,
     EXPR,
-    SQUARE_EXPR,
-    BRACE_EXPR,
     OPTION,
     NULL,
     TRUE,
@@ -105,10 +103,6 @@ static Token fromString(string v):
         t = Type.TEMPLATE_STRING
     elif f == '(' && l == ')'
         t = Type.EXPR
-    elif f == '[' && l == ']'
-        t = Type.SQUARE_EXPR
-    elif f == '{' && l == '}'
-        t = Type.BRACE_EXPR
     elif (List.of(
         "+", "-", "*", "/", "%", "&", "|",
         "and", "or", "xor", "nor",

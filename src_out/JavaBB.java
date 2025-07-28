@@ -10,9 +10,21 @@ public class JavaBB {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir , String name)-> name.endsWith(".jbb"));
-        var extensionsClassRes = Compiler.compileFile("Extensions" , """
+        var files = new File(compDir).list((File dir, String name)-> name.endsWith(".jbb"));
+        var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
+
+// len
+int len(string s):
+    ret s.length()
+
+(T) int len(Iterable<T> v):
+    let c = 0
+    ++c for _ in v
+    ret c
+
+(T) int len(T[] v):
+    ret v.length
 
 // +
 int operAdd(int a, int b):
@@ -57,11 +69,11 @@ bool operEq(object a, object b):
             catch (FileNotFoundException e) {
                 
             }
-            var res = Compiler.compileFile(className , fileContent);
+            var res = Compiler.compileFile(className, fileContent);
             if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
                 var curCode = extensionsClassRes.classes.get("Extensions");
                 var newCode = res.classes.get("Extensions");
-                extensionsClassRes.classes.put("Extensions" , "    " + curCode + newCode);
+                extensionsClassRes.classes.put("Extensions", "    " + curCode + newCode);
                 res.classes.remove("Extensions");
             }
             var compiled = res.getCompiledCode(className);
@@ -82,7 +94,7 @@ bool operEq(object a, object b):
             
         }
         LangUtil.println("\n\nCompiling LangUtil...");
-        var res = Compiler.compileFile("LangUtil" , """
+        var res = Compiler.compileFile("LangUtil", """
 // import java.lang.reflect.*
 
 public static class LangUtil
@@ -94,6 +106,7 @@ println(object ... args):
     System.out.print('' + x) for x in args
     System.out.println('')
 
+// isTruthy
 bool isTruthy(bool v):
     ret v
 
@@ -122,6 +135,7 @@ bool isTruthy(object v):
     inline(if (v instanceof List x) return x == null ? false : !x.isEmpty();)
     ret v != null
 
+// asIterable
 (T) T[] asIterable(T[] v):
     ret v
 

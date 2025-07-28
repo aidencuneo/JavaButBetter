@@ -6,7 +6,7 @@ static <T> T get(ArrayList<T> lst, int index):
     try
         index = indexConvert(index, lst.size())
         return lst.get(index)
-    catch IndexOutOfBoundsException e
+    catch (IndexOutOfBoundsException e)
         return null
 
 static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
@@ -14,7 +14,7 @@ static <T> ArrayList<T> select(ArrayList<T> lst, int start, int end):
         start = indexConvert(start, lst.size())
         end = indexConvert(end, lst.size())
         return new ArrayList<>(lst.subList(start, end))
-    catch IndexOutOfBoundsException | IllegalArgumentException e
+    catch (IndexOutOfBoundsException | IllegalArgumentException e)
         return new ArrayList<T>()
     
 static <T> ArrayList<T> select(ArrayList<T> lst, int start):
@@ -26,7 +26,7 @@ static string select(string str, int start, int end):
         end = indexConvert(end, str.length())
 
         return str.substring(start, end)
-    catch IndexOutOfBoundsException | IllegalArgumentException e
+    catch (IndexOutOfBoundsException | IllegalArgumentException e)
         return ""
 
 static string select(string str, int start):

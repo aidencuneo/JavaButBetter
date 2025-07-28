@@ -100,9 +100,6 @@ public class Compiler {
             currentClass = tok.get(f + 1).value;
             out = outClasses.getOrDefault(currentClass , "");
             AccessMod accessMod = AccessMod.DEFAULT;
-            LangUtil.println("before: " , tok);
-            tok = Parser.parseAccessMods(tok);
-            LangUtil.println("after: " , tok);
             for (int j = 0; j < f && accessMod == AccessMod.DEFAULT; ++j) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }
@@ -199,47 +196,42 @@ public class Compiler {
                 
             }
             else {
-                Integer end = tok.size() - 2;
-                String args = "()";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(end >= 0)) ? (tok.get(end).type == Token.Type.EXPR) : (end >= 0))) {
-                    args = compileMethodArgs(tok.get(end).value);
-                    -- end;
+                var methodAccess = getMethodAccess(tok);
+                tok = stripMethodAccess(tok);
+                if (LangUtil.isTruthy(methodAccess.accessMod == AccessMod.NONE)) {
+                    methodAccess . accessMod = AccessMod.PUBLIC;
                 }
-                String methodName = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(end >= 0)) ? (tok.get(end).type == Token.Type.ID) : (end >= 0))) {
-                    methodName = tok.get(end).value;
-                    -- end;
+                var typeArgs = "";
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(0).type == Token.Type.EXPR) : (tok.size() > 0))) {
+                    var v = tok.get(0).value;
+                    typeArgs = "<" + v.substring(1 , v.length() - 1) + "> ";
+                    tok.remove(0);
+                }
+                tok.remove(tok.size() - 1);
+                var args = "()";
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(tok.size() - 1).type == Token.Type.EXPR) : (tok.size() > 0))) {
+                    args = compileMethodArgs(tok.get(tok.size() - 1).value);
+                    tok.remove(tok.size() - 1);
+                }
+                var methodName = "";
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 0)) ? (tok.get(tok.size() - 1).type == Token.Type.ID) : (tok.size() > 0))) {
+                    methodName = tok.get(tok.size() - 1).value;
+                    tok.remove(tok.size() - 1);
                 }
                 else {
                     
                 }
-                String typeArgs = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(end >= 0)) ? (tok.get(end).type == Token.Type.EXPR) : (end >= 0))) {
-                    String v = tok.get(end).value;
-                    typeArgs = "<" + v.substring(1 , v.length() - 1) + "> ";
-                    -- end;
-                }
                 String returnType = "";
-                for (int j = 0; j <= end; ++j) {
-                    Token t = tok.get(j);
-                    if (LangUtil.isTruthy(((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (t.type == Token.Type.ID) : ((LangUtil.isTruthy(t.type == Token.Type.SYMBOL)) ? (t.type == Token.Type.SYMBOL) : ((LangUtil.isTruthy(t.value.equals("<"))) ? (t.value.equals("<")) : ((LangUtil.isTruthy(t.value.equals(">"))) ? (t.value.equals(">")) : (t.value.equals(".")))))))) {
-                        returnType += t.value + " ";
-                    }
-                }
-                returnType = returnType.trim();
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void"; }
-                MethodAccess methodAccess = getMethodAccess(tok , end + 1);
-                if (LangUtil.isTruthy(methodAccess.accessMod == AccessMod.DEFAULT)) {
-                    methodAccess . accessMod = AccessMod.PUBLIC;
-                }
+                for (var t : LangUtil.asIterable(tok)) { returnType += t.value + " "; }
+                if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void "; }
                 if (LangUtil.isTruthy(methodName.equals("main"))) {
                     args = "(String[] args)";
                 }
                 if (LangUtil.isTruthy(methodName.equals(currentClass))) {
-                    out += methodAccess + " " + methodName + args;
+                    out += methodAccess + " " + typeArgs + methodName + args;
                 }
                 else {
-                    out += methodAccess + " " + typeArgs + returnType + " " + methodName + args;
+                    out += methodAccess + " " + typeArgs + returnType + methodName + args;
                 }
             }
         }
@@ -276,13 +268,13 @@ public class Compiler {
                 value = " = " + compileExpr(Util.select(tok , f + 1));
                 end = f - 1;
             }
+            MethodAccess methodAccess = getMethodAccess(tok , end);
+            if (LangUtil.isTruthy(methodAccess.accessMod == AccessMod.NONE)) {
+                methodAccess . accessMod = AccessMod.PUBLIC;
+            }
             String varname = tok.get(end).value;
             -- end;
             String vartype = tok.get(end).value;
-            MethodAccess methodAccess = getMethodAccess(tok , end);
-            if (LangUtil.isTruthy(methodAccess.accessMod == AccessMod.DEFAULT)) {
-                methodAccess . accessMod = AccessMod.PUBLIC;
-            }
             out += methodAccess + " " + vartype + " " + varname + value + ";";
         }
         else {
@@ -523,23 +515,32 @@ public class Compiler {
         return types;
     }
     public static MethodAccess getMethodAccess(ArrayList < Token > tok , Integer end) {
-        AccessMod accessMod = AccessMod.DEFAULT;
+        AccessMod accessMod = AccessMod.NONE;
         Boolean isStatic = false;
         for (var j : LangUtil.asIterable(end)) {
             Token . Type t = tok.get(j).type;
             String v = tok.get(j).value;
-            if (LangUtil.isTruthy(accessMod == AccessMod.DEFAULT)) {
+            if (LangUtil.isTruthy(accessMod == AccessMod.NONE)) {
                 accessMod = MethodAccess.accessModFromToken(tok.get(j));
             }
-            switch (v) {
-                case "+" -> accessMod = AccessMod.PUBLIC;
-                case "-" -> accessMod = AccessMod.PRIVATE;
-                case "*" -> accessMod = AccessMod.PROTECTED;
-                case "static" , "#" -> isStatic = true;
-                default -> {}
-            }
+            if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("static"))) ? (v.equals("static")) : (v.equals("#")))) { isStatic = true; }
         }
         return new MethodAccess(accessMod , isStatic);
+    }
+    public static MethodAccess getMethodAccess(ArrayList < Token > tok) {
+        return getMethodAccess(tok , tok.size());
+    }
+    public static ArrayList < Token > stripMethodAccess(ArrayList < Token > tok , Integer end) {
+        for (var i : LangUtil.asIterable(end)) {
+            var t = tok.get(i);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(MethodAccess.accessModFromToken(t) == AccessMod.NONE)) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(t.value.equals("static")))) ? (!LangUtil.isTruthy(t.value.equals("#"))) : (!LangUtil.isTruthy(t.value.equals("static")))) : (MethodAccess.accessModFromToken(t) == AccessMod.NONE))) {
+                return new ArrayList < Token > (tok.subList(i , tok.size()));
+            }
+        }
+        return tok;
+    }
+    public static ArrayList < Token > stripMethodAccess(ArrayList < Token > tok) {
+        return stripMethodAccess(tok , tok.size());
     }
 }
 

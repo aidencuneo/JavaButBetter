@@ -46,9 +46,6 @@ public class JavaBB {
 # bool isTruthy(bool v):
     ret v
 
-# bool isTruthy(object v):
-    ret v != null
-
 # bool isTruthy(int v):
     ret v != 0
 
@@ -57,16 +54,24 @@ public class JavaBB {
 
 # bool isTruthy(string v):
     ret false if v is null
-    ret !v.isEmpty()
+    inline(return !v.isEmpty();)
 
-# bool (T) isTruthy(T[] v):
+# (T) bool isTruthy(T[] v):
     ret v.length > 0
 
 # bool isTruthy(List v):
     ret false if v is null
-    ret !v.isEmpty()
+    inline(return !v.isEmpty();)
 
-# T[] (T) asIterable(T[] v):
+# bool isTruthy(object v):
+    inline(if (v instanceof Boolean x) return x;)
+    inline(if (v instanceof Integer x) return x != 0;)
+    inline(if (v instanceof Double x) return x != 0;)
+    inline(if (v instanceof String x) return x == null ? false : !x.isEmpty();)
+    inline(if (v instanceof List x) return x == null ? false : !x.isEmpty();)
+    ret v != null
+
+# (T) T[] asIterable(T[] v):
     ret v
 
 # List<Int> asIterable(int n):
@@ -75,7 +80,7 @@ public class JavaBB {
         lst.add(i)
     ret lst
 
-# Iterable<T> (T) asIterable(Iterable<T> v):
+# (T) Iterable<T> asIterable(Iterable<T> v):
     ret v
 
 # char[] asIterable(string s):

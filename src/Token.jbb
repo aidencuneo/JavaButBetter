@@ -38,6 +38,7 @@ inline(public enum Type)
     IN,
     TRY,
     CATCH,
+    DEFAULT,
     ACCESS_MOD,
     STATIC,
     IMPORT,
@@ -51,6 +52,10 @@ string value
 Token(Type type, string value):
     this.type = type
     this.value = value
+
+Token:
+    this.type = Type.BLANK
+    this.value = ""
 
 static Token fromString(string v):
     return new Token(Type.BLANK, v) if !v
@@ -155,6 +160,8 @@ static Token fromString(string v):
         t = Type.TRY
     elif v.equals("catch") || v.equals("except")
         t = Type.CATCH
+    elif v.equals("default")
+        t = Type.DEFAULT
     elif v.equals("public") || v.equals("private") || v.equals("protected") || v.equals("internal")
         t = Type.ACCESS_MOD
     elif v.equals("static")

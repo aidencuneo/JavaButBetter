@@ -1,23 +1,22 @@
-alias StrIntMap = HashMap<string, int>
+alias StrIntMap = HashMap<string, Int>
 alias max(a, b) = a > b ? a : b
 alias min(a, b, c) = a < b ? a : b < c ? b : c
 alias bigtype(a, b) = HashMap<a, b>
 alias balls = max(1, 2)
 
-public class Code
-+ static StrIntMap name1
-+ static StrIntMap name2 = new StrIntMap()
-+ static StrIntMap name3:
-    ...
++ static StrIntMap (T) name1
++ static StrIntMap (T) name2 = new StrIntMap()
++ static StrIntMap (T) name3:
+    return null
 
-#main:
+?#main:
     println balls + 10
     min(5, 6.9, 2) if "something" && max("h", "w")
     let ages = new StrIntMap()
     StrIntMap ages2 = new StrIntMap()
 
-+# (T) HashMap<string, string> method(string[] args):
-    ...
++# HashMap<string, string> (T) method(string[] args):
+    return null
 
 // int field = 10
 // int age = 21

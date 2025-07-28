@@ -3,7 +3,7 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
 
     inline(for (int i = 0; i < tok.size(); ++i))
         let t = tok.get(i)
-        let nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token(Token.Type.BLANK, "")
+        let nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token()
 
         // println i + ": " + tok
 
@@ -30,11 +30,13 @@ static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
             elif t.value.equals("Character")
                 t.value = "Char"
             elif t.value.equals("bool")
-                t.value = "Boolean"
-            elif t.value.equals("Boolean")
-                t.value = "bool"
+                t.value = "boolean"
             elif t.value.equals("boolean")
                 t.value = "_boolean"
+            elif t.value.equals("Boolean")
+                t.value = "Bool"
+            elif t.value.equals("Bool")
+                t.value = "Boolean"
 
             // Apply to the token
             tok.set(i, t)
@@ -90,37 +92,65 @@ static ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<strin
 
     return newTok
 
-static ArrayList<Token> parseAccessMods(ArrayList<Token> tok):
-    let accessMod = AccessMod.DEFAULT
-    let isStatic = false
+// static ArrayList<Token> parseAccessMods(ArrayList<Token> tok):
+//     let accessMod = AccessMod.DEFAULT
+//     let isStatic = false
 
-    while tok
-        let v = tok.get(0).value
+//     while tok
+//         let v = tok.get(0).value
 
-        if v.equals("+") || v.equals("public")
-            accessMod = AccessMod.PUBLIC
-        elif v.equals("-") || v.equals("private")
-            accessMod = AccessMod.PRIVATE
-        elif v.equals("*") || v.equals("protected")
-            accessMod = AccessMod.PROTECTED
-        elif v.equals("#") || v.equals("static")
-            isStatic = true
-        else
-            break
+//         if v.equals("+") || v.equals("public")
+//             accessMod = AccessMod.PUBLIC
+//         elif v.equals("-") || v.equals("private")
+//             accessMod = AccessMod.PRIVATE
+//         elif v.equals("*") || v.equals("protected")
+//             accessMod = AccessMod.PROTECTED
+//         elif v.equals("#") || v.equals("static")
+//             isStatic = true
+//         else
+//             break
 
-        // Remove token
-        tok.remove(0)
+//         // Remove token
+//         tok.remove(0)
 
-    println tok
+//     println tok
 
-    let newTok = new ArrayList<Token>()
+//     let newTok = new ArrayList<Token>()
 
-    newTok.add(new Token(Token.Type.ACCESS_MOD, ("" + accessMod).toLowerCase()))
-    newTok.add(new Token(Token.Type.STATIC, "static")) if isStatic
-    newTok.add(t) for t in tok
+//     newTok.add(new Token(Token.Type.ACCESS_MOD, ("" + accessMod).toLowerCase()))
+//     if isStatic
+//         newTok.add(new Token(Token.Type.STATIC, "static"))
+//     else
+//         newTok.add(new Token())
+//     newTok.add(t) for t in tok
 
-    return newTok
+//     return newTok
 
-static ArrayList<Token> parseDeclaration(ArrayList<Token> tok):
-    println tok
-    return null
+// static ArrayList<Token> parseDeclaration(ArrayList<Token> tok):
+//     // Parse access modifiers
+//     tok = Parser.parseAccessMods(tok)
+
+//     // Declare 'end' to be either the equals sign or the end of the line
+//     let end = Compiler.findTokenType(tok, Token.Type.ASSIGN)
+//     end = tok.size() if end == -1
+
+//     // Find name
+//     let nameIndex = end - 1
+//     while end >= 0
+//         break if tok.get(nameIndex).type == Token.Type.ID
+//         --nameIndex
+
+//     // Get position of the first token after access modifiers
+//     let i = 0
+//     while i < end
+//         let t = tok.get(i).type
+//         break if t != Token.Type.ACCESS_MOD && t != Token.Type.STATIC
+//         ++i
+
+//     // Check for type arguments
+//     if 
+
+//     // Seek past access modifiers, then start taking tokens as the type
+
+//     println tok, end, nameIndex
+//     return null

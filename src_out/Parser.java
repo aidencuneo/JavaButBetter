@@ -6,7 +6,7 @@ public class Parser {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
-            var nextTok = i + 1 < tok.size ()? tok.get (i + 1): new Token(Token.Type.BLANK , "");
+            var nextTok = i + 1 < tok.size ()? tok.get (i + 1): new Token();
             if (LangUtil.isTruthy((LangUtil.isTruthy(t.type == Token.Type.ID)) ? (!LangUtil.isTruthy(lastWasDot)) : (t.type == Token.Type.ID))) {
                 if (LangUtil.isTruthy(t.value.equals("string"))) {
                     t . value = "String";
@@ -33,13 +33,16 @@ public class Parser {
                     t . value = "Char";
                 }
                 else if (LangUtil.isTruthy(t.value.equals("bool"))) {
-                    t . value = "Boolean";
-                }
-                else if (LangUtil.isTruthy(t.value.equals("Boolean"))) {
-                    t . value = "bool";
+                    t . value = "boolean";
                 }
                 else if (LangUtil.isTruthy(t.value.equals("boolean"))) {
                     t . value = "_boolean";
+                }
+                else if (LangUtil.isTruthy(t.value.equals("Boolean"))) {
+                    t . value = "Bool";
+                }
+                else if (LangUtil.isTruthy(t.value.equals("Bool"))) {
+                    t . value = "Boolean";
                 }
                 tok.set(i , t);
                 if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
@@ -77,39 +80,6 @@ public class Parser {
             newTok.add(t);
         }
         return newTok;
-    }
-    public static ArrayList < Token > parseAccessMods(ArrayList < Token > tok) {
-        var accessMod = AccessMod.DEFAULT;
-        var isStatic = false;
-        while (LangUtil.isTruthy(tok)) {
-            var v = tok.get(0).value;
-            if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("+"))) ? (v.equals("+")) : (v.equals("public")))) {
-                accessMod = AccessMod.PUBLIC;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("-"))) ? (v.equals("-")) : (v.equals("private")))) {
-                accessMod = AccessMod.PRIVATE;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("*"))) ? (v.equals("*")) : (v.equals("protected")))) {
-                accessMod = AccessMod.PROTECTED;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("#"))) ? (v.equals("#")) : (v.equals("static")))) {
-                isStatic = true;
-            }
-            else {
-                break;
-            }
-            tok.remove(0);
-        }
-        LangUtil.println(tok);
-        var newTok = new ArrayList < Token > ();
-        newTok.add(new Token(Token.Type.ACCESS_MOD ,("" + accessMod).toLowerCase()));
-        if (LangUtil.isTruthy(isStatic)) { newTok.add(new Token(Token.Type.STATIC , "static")); }
-        for (var t : LangUtil.asIterable(tok)) { newTok.add(t); }
-        return newTok;
-    }
-    public static ArrayList < Token > parseDeclaration(ArrayList < Token > tok) {
-        LangUtil.println(tok);
-        return null;
     }
 }
 

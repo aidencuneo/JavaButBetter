@@ -140,11 +140,6 @@ static string compileStatement(ArrayList<Token> tok, string out):
         out = outClasses.getOrDefault(currentClass, "")
         AccessMod accessMod = AccessMod.DEFAULT
 
-        // Parse access modifiers
-        println "before: ", tok
-        tok = Parser.parseAccessMods(tok)
-        println "after: ", tok
-
         // out = out.trim()
         // out += "\n}\n\n"
 
@@ -265,61 +260,46 @@ static string compileStatement(ArrayList<Token> tok, string out):
 
         // Methods
         else
-            // access?, static?, returntype|void, name, expr?, scope
-            // This points to the next token to process from the end
-            int end = tok.size() - 2
+            // access?, static?, typeargs?, [returntype|void], name, args?, scope
 
-            // Check for an expression before scope token
-            string args = "()"
+            // Eat access tokens
+            let methodAccess = getMethodAccess(tok)
+            tok = stripMethodAccess(tok)
 
-            if end >= 0 && tok.get(end).type == Token.Type.EXPR
+            // Default access modifier for methods is public
+            if methodAccess.accessMod == AccessMod.NONE
+                methodAccess.accessMod = AccessMod.PUBLIC
+
+            // Eat type args
+            let typeArgs = ""
+            if tok.size() > 0 && tok.get(0).type == Token.Type.EXPR
+                let v = tok.get(0).value
+                typeArgs = "<" + v.substring(1, v.length() - 1) + "> "
+                tok.remove(0)
+
+            // Eat scope token
+            tok.remove(tok.size() - 1)
+
+            // Eat method args
+            let args = "()"
+            if tok.size() > 0 && tok.get(tok.size() - 1).type == Token.Type.EXPR
                 // Compile method arguments
-                args = compileMethodArgs(tok.get(end).value)
+                args = compileMethodArgs(tok.get(tok.size() - 1).value)
+                tok.remove(tok.size() - 1)
 
-                // Look to the next token for the name
-                --end
-
-            // Get method name
-            string methodName = ""
-
-            if end >= 0 && tok.get(end).type == Token.Type.ID
-                methodName = tok.get(end).value
-                --end
+            // Eat method name
+            let methodName = ""
+            if tok.size() > 0 && tok.get(tok.size() - 1).type == Token.Type.ID
+                methodName = tok.get(tok.size() - 1).value
+                tok.remove(tok.size() - 1)
             else
                 // Error! Method name not given
                 ...
 
-            // Get type arguments
-            string typeArgs = ""
-
-            if end >= 0 && tok.get(end).type == Token.Type.EXPR
-                string v = tok.get(end).value
-                typeArgs = "<" + v.substring(1, v.length() - 1) + "> "
-                --end
-
-            // Get return type
+            // Everything remaining is part of the return type
             string returnType = ""
-
-            inline(for (int j = 0; j <= end; ++j))
-                Token t = tok.get(j)
-
-                if (t.type == Token.Type.ID ||
-                    t.type == Token.Type.SYMBOL ||
-                    t.value.equals("<") ||
-                    t.value.equals(">") ||
-                    t.value.equals(".")
-                )
-                    returnType += t.value + " "
-
-            returnType .= trim()
-            returnType = "void" if !returnType
-
-            // Get method access
-            MethodAccess methodAccess = getMethodAccess(tok, end + 1)
-
-            // Default access modifier for methods is public
-            if methodAccess.accessMod == AccessMod.DEFAULT
-                methodAccess.accessMod = AccessMod.PUBLIC
+            returnType += t.value + " " for t in tok
+            returnType = "void " if !returnType
 
             // If method name is 'main', args must be (String[] args)
             if methodName.equals("main")
@@ -328,9 +308,9 @@ static string compileStatement(ArrayList<Token> tok, string out):
             // If method name is the same as the class name,
             // it's a constructor, so don't include the return type
             if methodName.equals(currentClass)
-                out += methodAccess + " " + methodName + args
+                out += methodAccess + " " + typeArgs + methodName + args
             else
-                out += methodAccess + " " + typeArgs + returnType + " " + methodName + args
+                out += methodAccess + " " + typeArgs + returnType + methodName + args
 
     // Keywords
     elif startTok == Token.Type.RETURN
@@ -373,17 +353,17 @@ static string compileStatement(ArrayList<Token> tok, string out):
             value = " = " + compileExpr(Util.select(tok, f + 1))
             end = f - 1
 
-        // Get variable name and type
-        string varname = tok.get(end).value
-        --end
-        string vartype = tok.get(end).value
-
         // Get method access
         MethodAccess methodAccess = getMethodAccess(tok, end)
 
         // Default access modifier for fields is public
-        if methodAccess.accessMod == AccessMod.DEFAULT
+        if methodAccess.accessMod == AccessMod.NONE
             methodAccess.accessMod = AccessMod.PUBLIC
+
+        // Get variable name and type
+        string varname = tok.get(end).value
+        --end
+        string vartype = tok.get(end).value
 
         out += methodAccess + " " + vartype + " " + varname + value + ";"
 
@@ -687,7 +667,7 @@ static ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):
     return types
 
 static MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
-    AccessMod accessMod = AccessMod.DEFAULT
+    AccessMod accessMod = AccessMod.NONE
     bool isStatic = false
 
     // Fetch access modifier and static from line
@@ -697,14 +677,33 @@ static MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
         // System.out.println(j + ": " + v)
 
         // Attempt to get access modifier from every token (if not found already)
-        if accessMod == AccessMod.DEFAULT
+        if accessMod == AccessMod.NONE
             accessMod = MethodAccess.accessModFromToken(tok.get(j))
 
-        inline(switch (v))
-            case "+" -> accessMod = AccessMod.PUBLIC
-            case "-" -> accessMod = AccessMod.PRIVATE
-            case "*" -> accessMod = AccessMod.PROTECTED
-            case "static", "#" -> isStatic = true
-            inline(default -> {})
+        isStatic = true if v.equals("static") || v.equals("#")
+
+        // inline(switch (v))
+        //     case "+" -> accessMod = AccessMod.PUBLIC
+        //     case "-" -> accessMod = AccessMod.PRIVATE
+        //     case "*" -> accessMod = AccessMod.PROTECTED
+        //     case "?" -> accessMod = AccessMod.DEFAULT
+        //     case "static", "#" -> isStatic = true
+        //     inline(default -> {})
 
     return new MethodAccess(accessMod, isStatic)
+
+static MethodAccess getMethodAccess(ArrayList<Token> tok):
+    return getMethodAccess(tok, tok.size())
+
+static ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
+    for i in end
+        let t = tok.get(i)
+
+        // Start list from first non-access token
+        if MethodAccess.accessModFromToken(t) == AccessMod.NONE && !t.value.equals("static") && !t.value.equals("#")
+            return new ArrayList<Token>(tok.subList(i, tok.size()))
+
+    return tok
+
+static ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
+    return stripMethodAccess(tok, tok.size())

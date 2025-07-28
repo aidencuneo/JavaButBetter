@@ -42,6 +42,7 @@ public class Token {
         IN ,
         TRY ,
         CATCH ,
+        DEFAULT ,
         ACCESS_MOD ,
         STATIC ,
         IMPORT ,
@@ -54,6 +55,10 @@ public class Token {
     public Token(Type type , String value) {
         this . type = type;
         this . value = value;
+    }
+    public Token() {
+        this . type = Type.BLANK;
+        this . value = "";
     }
     public static Token fromString(String v) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK , v); }
@@ -186,6 +191,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("catch"))) ? (v.equals("catch")) : (v.equals("except")))) {
             t = Type.CATCH;
+        }
+        else if (LangUtil.isTruthy(v.equals("default"))) {
+            t = Type.DEFAULT;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.equals("public"))) ? (v.equals("public")) : ((LangUtil.isTruthy(v.equals("private"))) ? (v.equals("private")) : ((LangUtil.isTruthy(v.equals("protected"))) ? (v.equals("protected")) : (v.equals("internal")))))) {
             t = Type.ACCESS_MOD;

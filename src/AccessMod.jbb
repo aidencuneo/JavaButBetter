@@ -1,5 +1,6 @@
 class null
 inline(public enum AccessMod)
+    NONE,
     DEFAULT,
     PUBLIC,
     PRIVATE,

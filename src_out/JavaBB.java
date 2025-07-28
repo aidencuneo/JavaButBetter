@@ -14,14 +14,37 @@ public class JavaBB {
         var extensionsClassRes = Compiler.compileFile("Extensions" , """
 public static class Extensions
 
+// +
 int operAdd(int a, int b):
-    return a + b
+    inline(return a + b;)
 
 long operAdd(long a, long b):
-    return a + b
+    inline(return a + b;)
 
 double operAdd(double a, double b):
-    return a + b
+    inline(return a + b;)
+
+int operAdd(bool a, bool b):
+    inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// ==
+bool operEq(int a, int b):
+    inline(return a == b;)
+
+bool operEq(long a, long b):
+    inline(return a == b;)
+
+bool operEq(double a, double b):
+    inline(return a == b;)
+
+bool operEq(bool a, bool b):
+    inline(return a == b;)
+
+bool operEq(string a, string b):
+    return a.equals(b)
+
+bool operEq(object a, object b):
+    return a.equals(b)
     """.trim());
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
@@ -50,7 +73,7 @@ double operAdd(double a, double b):
                 
             }
         }
-        LangUtil.println("\n\nCreating Extensions...");
+        LangUtil.println("\n\nCompiling Extensions...");
         try (var writer = new PrintWriter(outDir + "/Extensions.java")) {
             new File(outDir + "/Extensions.java").createNewFile();
             writer.println(extensionsClassRes.getCompiledCode("Extensions"));
@@ -144,7 +167,7 @@ char[] asIterable(string s):
         catch (IOException e) {
             
         }
-        LangUtil.println("\nDone.");
+        LangUtil.println("\n\nDone.");
     }
 }
 

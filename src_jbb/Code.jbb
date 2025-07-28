@@ -5,12 +5,17 @@ alias max(a, b) = (a > b ? a : b)
 alias balls(a, b) = max(a, b)
 
 main:
+    let ending = endTok == Token.Type.COMMA ? "" : ";"
+    if "hi" == "hi"
+        println "yes"
+    if "hi2" == "hi"
+        println "yes"
     println balls(4, 5) + 10
 
-public class Extensions
+static class Extensions
 
-instance string newOperAdd(string a, string b):
-    return a + b
+bool operEq(string a, int b):
+    return a.equals("" + b)
 
 // int field = 10
 // int age = 21

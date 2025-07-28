@@ -144,6 +144,9 @@ string compileStatement(ArrayList<Token> tok, string out):
         currentClass = tok.get(f + 1).value
         out = outClasses.getOrDefault(currentClass, "")
 
+        // Default static should be reset to false
+        defaultStatic = false
+
         // Eat access tokens
         let access = getMethodAccess(tok)
         tok = stripMethodAccess(tok)
@@ -466,6 +469,11 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += ")" if nested
 
     // Ternary conditional operator
+    elif (f = findToken(tok, "?")) != -1 && (f2 = findToken(tok, ":")) != -1
+        string cond = compileExpr(Util.select(tok, 0, f))
+        string lhs = compileExpr(Util.select(tok, f + 1, f2))
+        string rhs = compileExpr(Util.select(tok, f2 + 1))
+        out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
 
     // Null coalescing
     elif (f = findToken(tok, "??")) != -1
@@ -520,7 +528,11 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         string lhs = compileExpr(Util.select(tok, 0, f))
         string rhs = compileExpr(Util.select(tok, f + 1))
-        out += lhs + " " + oper + " " + rhs
+
+        if oper.equals("==")
+            out += "Extensions.operEq(" + lhs + ", " + rhs + ")"
+        else
+            out += lhs + " " + oper + " " + rhs
 
     // Relational and type testing operators
     elif (f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is"))) != -1

@@ -100,6 +100,7 @@ public class Compiler {
             outClasses.put(currentClass , out);
             currentClass = tok.get(f + 1).value;
             out = outClasses.getOrDefault(currentClass , "");
+            defaultStatic = false;
             var access = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             outClassAccess.put(currentClass , access.accessMod);
@@ -344,6 +345,12 @@ public class Compiler {
             out += compileExpr(exprTok);
             if (LangUtil.isTruthy(nested)) { out += ")"; }
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findToken(tok , "?"))) != - 1)) ? (((f2 = findToken(tok , ":"))) != - 1) : (((f = findToken(tok , "?"))) != - 1))) {
+            String cond = compileExpr(Util.select(tok , 0 , f));
+            String lhs = compileExpr(Util.select(tok , f + 1 , f2));
+            String rhs = compileExpr(Util.select(tok , f2 + 1));
+            out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
+        }
         else if (LangUtil.isTruthy(((f = findToken(tok , "??"))) != - 1)) {
             String lhs = compileExpr(Util.select(tok , 0 , f));
             String rhs = compileExpr(Util.select(tok , f + 1));
@@ -390,7 +397,12 @@ public class Compiler {
             }
             String lhs = compileExpr(Util.select(tok , 0 , f));
             String rhs = compileExpr(Util.select(tok , f + 1));
-            out += lhs + " " + oper + " " + rhs;
+            if (LangUtil.isTruthy(oper.equals("=="))) {
+                out += "Extensions.operEq(" + lhs + ", " + rhs + ")";
+            }
+            else {
+                out += lhs + " " + oper + " " + rhs;
+            }
         }
         else if (LangUtil.isTruthy(((f = findAnyToken(tok , List.of("<" , ">" , "<=" , ">=" , "is")))) != - 1)) {
             String oper = tok.get(f).value;

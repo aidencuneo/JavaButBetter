@@ -17,14 +17,37 @@ static main:
     let extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
 
+// +
 int operAdd(int a, int b):
-    return a + b
+    inline(return a + b;)
 
 long operAdd(long a, long b):
-    return a + b
+    inline(return a + b;)
 
 double operAdd(double a, double b):
-    return a + b
+    inline(return a + b;)
+
+int operAdd(bool a, bool b):
+    inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// ==
+bool operEq(int a, int b):
+    inline(return a == b;)
+
+bool operEq(long a, long b):
+    inline(return a == b;)
+
+bool operEq(double a, double b):
+    inline(return a == b;)
+
+bool operEq(bool a, bool b):
+    inline(return a == b;)
+
+bool operEq(string a, string b):
+    return a.equals(b)
+
+bool operEq(object a, object b):
+    return a.equals(b)
     """.trim())
 
     for i in files.length
@@ -63,7 +86,7 @@ double operAdd(double a, double b):
             ...
 
     // System.exit(0)
-    println "\n\nCreating Extensions..."
+    println "\n\nCompiling Extensions..."
 
     // Write Extensions.java
     try let writer = new PrintWriter(outDir + "/Extensions.java")
@@ -160,7 +183,7 @@ char[] asIterable(string s):
     catch (IOException e)
         ...
 
-    println "\nDone."
+    println "\n\nDone."
     // dot(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.")
     // var f = a.b.c.d.e("hello")
     // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello")

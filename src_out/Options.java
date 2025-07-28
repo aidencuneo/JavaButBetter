@@ -12,11 +12,11 @@ public class Options {
     public static void setOption(String name , String value) {
         name = name.toLowerCase();
         var valueLower = value.toLowerCase();
-        if (LangUtil.isTruthy((LangUtil.isTruthy(name.equals("decimal"))) ? (name.equals("decimal")) : (name.equals("default_decimal")))) {
-            if (LangUtil.isTruthy((LangUtil.isTruthy(valueLower.equals("float"))) ? (valueLower.equals("float")) : (valueLower.equals("f")))) {
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(name, "decimal"))) ? (Extensions.operEq(name, "decimal")) : (Extensions.operEq(name, "default_decimal")))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(valueLower, "float"))) ? (Extensions.operEq(valueLower, "float")) : (Extensions.operEq(valueLower, "f")))) {
                 defaultDecimal = "f";
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(valueLower.equals("double"))) ? (valueLower.equals("double")) : (valueLower.equals("d")))) {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(valueLower, "double"))) ? (Extensions.operEq(valueLower, "double")) : (Extensions.operEq(valueLower, "d")))) {
                 defaultDecimal = "d";
             }
         }

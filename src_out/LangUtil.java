@@ -77,6 +77,20 @@ public class LangUtil {
     public static String slice(String s , int start , Object end , int step) {
         return slice(s, start, LangUtil.isTruthy(step > 0) ? (s.length()) : (- 1), step);
     }
+    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , int end , int step) {
+        start = indexConvert(start, v.size());
+        end = indexConvert(end, v.size());
+        return new ArrayList < > (v.subList(start, end));
+    }
+    public static <T> ArrayList < T > slice(ArrayList < T > v , Object start , Object end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), LangUtil.isTruthy(step > 0) ? (v.size()) : (- v.size() - 1), step);
+    }
+    public static <T> ArrayList < T > slice(ArrayList < T > v , Object start , int end , int step) {
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), end, step);
+    }
+    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , Object end , int step) {
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (- 1), step);
+    }
     public static <T> List < T > slice(List < T > v , int start , int end , int step) {
         start = indexConvert(start, v.size());
         end = indexConvert(end, v.size());

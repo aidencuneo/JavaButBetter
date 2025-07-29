@@ -2,15 +2,15 @@ import java.io.*;
 import java.util.*;
 
 public class JavaBB {
-    public static void main(String[] args) {
+    public static static main(String[] args) {
         var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = args [0]; }
+        if (LangUtil.isTruthy(args)) { compDir = Extensions.operGetIndex(args, 0); }
         var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = args [1]; }
+        if (LangUtil.isTruthy(args.length > 1)) { outDir = Extensions.operGetIndex(args, 1); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir, String name)-> name.endsWith(".jbb"));
+        var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
 
@@ -33,7 +33,7 @@ char operGetIndex(string s, int i):
 
 (T) T operGetIndex(T[] v, int i):
     i = LangUtil.indexConvert(i, v.length)
-    ret v[i]
+    inline(return v[i];)
 
 (T) T operGetIndex(List<T> v, int i):
     i = LangUtil.indexConvert(i, v.size())
@@ -73,9 +73,9 @@ bool operEq(object a, object b):
     """.trim());
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
-            var fromPath = compDir + "/" + files [i];
-            var toPath = outDir + "/" + files [i].split ("\\.")[0] + ".java";
-            var className = files [i].split ("\\.")[0];
+            var fromPath = compDir + "/" + Extensions.operGetIndex(files, i);
+            var toPath = outDir + "/" + Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0) + ".java";
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
             }
@@ -188,6 +188,21 @@ string slice(string s, object start, int end, int step):
 
 string slice(string s, int start, object end, int step):
     return slice(s, start, step > 0 ? s.length() : -1, step)
+
+// slice (ArrayList)
+(T) ArrayList<T> slice(ArrayList<T> v, int start, int end, int step):
+    start = indexConvert(start, v.size())
+    end = indexConvert(end, v.size())
+    return new ArrayList<>(v.subList(start, end))
+
+(T) ArrayList<T> slice(ArrayList<T> v, object start, object end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
+
+(T) ArrayList<T> slice(ArrayList<T> v, object start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
+
+(T) ArrayList<T> slice(ArrayList<T> v, int start, object end, int step):
+    return slice(v, start, step > 0 ? v.size() : -1, step)
 
 // slice (List)
 (T) List<T> slice(List<T> v, int start, int end, int step):

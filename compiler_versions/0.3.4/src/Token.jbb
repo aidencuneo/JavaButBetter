@@ -1,0 +1,204 @@
+inline(public enum Type)
+    BLANK,
+    INDENT,
+    ID,
+    SCOPE,
+    SYMBOL,
+    EXPR,
+    SQUARE_EXPR,
+    BRACE_EXPR,
+    OPTION,
+    NULL,
+    TRUE,
+    FALSE,
+    NUM,
+    STRING,
+    CHAR,
+    TEMPLATE_STRING,
+    UNARY_OPER,
+    BIN_OPER,
+    ASSIGN,
+    COMP_ASSIGN,
+    DOT,
+    COMMA,
+    RANGE,
+    LAMBDA, // =>
+    ARROW,  // ->
+    INCREMENT,
+    DECREMENT,
+    INLINE,
+    RETURN,
+    BREAK,
+    CONTINUE,
+    PASS,
+    IF,
+    ELIF,
+    ELSE,
+    WHILE,
+    UNTIL,
+    FOR,
+    IN,
+    TRY,
+    CATCH,
+    DEFAULT,
+    ACCESS_MOD,
+    STATIC,
+    INSTANCE,
+    IMPORT,
+    CLASS,
+    ENUM,
+    ALIAS,
+
+Type type
+string value
+
+Token(Type type, string value):
+    this.type = type
+    this.value = value
+
+Token:
+    this.type = Type.BLANK
+    this.value = ""
+
+static Token fromString(string v):
+    return new Token(Type.BLANK, v) if !v
+
+    Type t
+    char f = v.charAt(0)
+    char l = v.charAt(v.length() - 1)
+    // System.out.println(f + ", " + l)
+
+    if v.length() == 0
+        t = Type.BLANK
+    elif v.length() > 0 && v.isBlank()
+        t = Type.INDENT
+    elif v == ":"
+        t = Type.SCOPE
+    elif v == "option"
+        t = Type.OPTION
+    elif v == "null"
+        t = Type.NULL
+    elif v == "true"
+        t = Type.TRUE
+    elif v == "false"
+        t = Type.FALSE
+    elif f == '"' && l == '"'
+        t = Type.STRING
+    elif v.startsWith("'''") && v.endsWith("'''")
+        string vNoQuotes = v.substring(3, v.length() - 3)
+        string realStr = StringParser.unescapeString(vNoQuotes)
+
+        if realStr.length() != 1
+            t = Type.STRING
+            v = "\"\"\"" + vNoQuotes + "\"\"\""
+        else
+            t = Type.CHAR
+    elif f == '\'' && l == '\''
+        string vNoQuotes = v.substring(1, v.length() - 1)
+        string realStr = StringParser.unescapeString(vNoQuotes)
+
+        if realStr.length() != 1
+            t = Type.STRING
+            v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"'
+        else
+            t = Type.CHAR
+    elif f == '`' && l == '`'
+        t = Type.TEMPLATE_STRING
+    elif f == '(' && l == ')'
+        t = Type.EXPR
+    elif f == '[' && l == ']'
+        t = Type.SQUARE_EXPR
+    elif f == '{' && l == '}'
+        t = Type.BRACE_EXPR
+    elif (List.of(
+        "+", "-", "*", "/", "%", "&", "|",
+        "and", "or", "xor", "nor",
+        "&&", "||", "^",
+        ">", "<", ">=", "<=",
+        "==", "!=", "is").contains(v)
+    )
+        t = Type.BIN_OPER
+    elif (List.of(
+        "!", "~", "not").contains(v))
+        t = Type.UNARY_OPER
+    elif v == "="
+        t = Type.ASSIGN
+    elif v.endsWith("=")
+        t = Type.COMP_ASSIGN
+    elif v == "."
+        t = Type.DOT
+    elif v == ","
+        t = Type.COMMA
+    elif v == ".."
+        t = Type.RANGE
+    elif v == "=>"
+        t = Type.LAMBDA
+    elif v == "->"
+        t = Type.ARROW
+    elif v == "++"
+        t = Type.INCREMENT
+    elif v == "--"
+        t = Type.DECREMENT
+    elif v == "inline"
+        t = Type.INLINE
+    elif v == "ret" || v == "return"
+        t = Type.RETURN
+    elif v == "break"
+        t = Type.BREAK
+    elif v == "continue" || v == "next"
+        t = Type.CONTINUE
+    elif v == "pass" || v == "..."
+        t = Type.PASS
+    elif v == "if"
+        t = Type.IF
+    elif v == "elif"
+        t = Type.ELIF
+    elif v == "else"
+        t = Type.ELSE
+    elif v == "while"
+        t = Type.WHILE
+    elif v == "until"
+        t = Type.UNTIL
+    elif v == "for"
+        t = Type.FOR
+    elif v == "in"
+        t = Type.IN
+    elif v == "try"
+        t = Type.TRY
+    elif v == "catch" || v == "except"
+        t = Type.CATCH
+    elif v == "default"
+        t = Type.DEFAULT
+    elif v == "public" || v == "private" || v == "protected" || v == "internal"
+        t = Type.ACCESS_MOD
+    elif v == "static"
+        t = Type.STATIC
+    elif v == "instance"
+        t = Type.INSTANCE
+    elif v == "import" || v == "include" || v == "require" || v == "use"
+        t = Type.IMPORT
+    elif v == "class"
+        t = Type.CLASS
+    elif v == "enum"
+        t = Type.ENUM
+    elif v == "alias"
+        t = Type.ALIAS
+    elif isAlpha(v)
+        t = Type.ID
+    elif isNum(v)
+        if v.contains(".") && !(v.endsWith("f") || v.endsWith("d"))
+            v += Options.defaultDecimal
+        t = Type.NUM
+    else
+        t = Type.SYMBOL
+
+    return new Token(t, v)
+
+static bool isAlpha(string s):
+    return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+static bool isNum(string s):
+    return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$")
+
+string toString:
+    return type + ":" + value

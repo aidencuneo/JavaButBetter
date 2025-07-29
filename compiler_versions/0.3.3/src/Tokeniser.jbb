@@ -104,7 +104,7 @@ ArrayList<string> splitFile(string file):
     lines.add(current) if current
     return lines
 
-ArrayList<Token> tokLine(string line):
+ArrayList<Token> tokLine(string line, bool keepIndent):
     let tok = new ArrayList<Token>()
     return tok if !line
 
@@ -123,7 +123,7 @@ ArrayList<Token> tokLine(string line):
             break
 
     // Add indent as the first token
-    tok.add(new Token(Token.Type.INDENT, indent))
+    tok.add(new Token(Token.Type.INDENT, indent)) if keepIndent
 
     if i == line.length()
         return tok
@@ -250,6 +250,9 @@ ArrayList<Token> tokLine(string line):
     tok = Parser.convertIdentifiers(tok)
 
     return tok
+
+ArrayList<Token> tokLine(string line):
+    return tokLine(line, false)
 
 ArrayList<string> extractArgsFromExpr(string s):
     let args = new ArrayList<string>()

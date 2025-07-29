@@ -37,7 +37,7 @@ CompResult compileFile(string className, string code):
         // System.out.println(i + "/" + (lines.size() - 1) + ": " + lines.get(i))
         string out = outClasses.getOrDefault(currentClass, "")
 
-        ArrayList<Token> tok = Tokeniser.tokLine(lines.get(i))
+        ArrayList<Token> tok = Tokeniser.tokLine(lines.get(i), true)
 
         // Nothing in the line?
         next if !tok
@@ -70,7 +70,8 @@ CompResult compileFile(string className, string code):
 
         lastIndent = indent
 
-        // println tok
+        // if currentClass != "LangUtil" && currentClass != "Extensions"
+        //     println tok
 
     // After the final line of a class, reset indentation
     while lastIndent > 0
@@ -509,6 +510,22 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         out += ")" if nested
 
+    // Arrow function (Java lambda)
+    elif (f = findTokenType(tok, Token.Type.ARROW)) != -1
+        // args, ->, [body]
+
+        // Eat and compile args
+        let args = tok.get(0).value
+        if tok.get(0).type == Token.Type.EXPR
+            args = compileMethodArgs(args)
+            tok.remove(0)
+        else
+            // Error! (?)
+            return ""
+
+        // Compile body (from 1 onwards)
+        out += args + " -> " + compileExpr(Util.select(tok, 1))
+
     // Ternary conditional operator
     elif (f = findToken(tok, "?")) != -1 && (f2 = findToken(tok, ":")) != -1
         string cond = compileExpr(Util.select(tok, 0, f))
@@ -635,24 +652,81 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     //     out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\").invoke(" + compileExpr(Tokeniser.tokLine(args)) + ")"
     // }
 
-    // Function calls
-    elif tok.get(tok.size() - 1).type == Token.Type.EXPR
-        string name = compileExpr(Util.select(tok, 0, tok.size() - 1))
+    // Last occurrence of function call, dot or slice/index
+    elif tok.size() > 1 && (f = findAnyTokenTypeRev(
+        tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR))) > 0
 
-        // Name replacements
-        if name == "len"
-            name = "Extensions.len"
+        // Function calls
+        if tok.get(f).type == Token.Type.EXPR
+            string name = compileExpr(Util.select(tok, 0, tok.size() - 1))
 
-        Token t = tok.get(tok.size() - 1)
-        string args = t.value.substring(1, t.value.length() - 1)
-        out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
+            // Name replacements
+            if name == "len"
+                name = "Extensions.len"
 
-    // Dot operator
-    elif (f = findTokenRev(tok, ".")) > 0
-        string lhs = compileExpr(Util.select(tok, 0, f))
-        string rhs = compileExpr(Util.select(tok, f + 1))
-        out += lhs + "." + rhs
-        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+            Token t = tok.get(tok.size() - 1)
+            string args = t.value.substring(1, t.value.length() - 1)
+            out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
+
+        // Dot operator
+        elif tok.get(f).type == Token.Type.DOT
+            string lhs = compileExpr(Util.select(tok, 0, f))
+            string rhs = compileExpr(Util.select(tok, f + 1))
+            out += lhs + "." + rhs
+            // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+
+        // Index/slice expressions ([tokens], square brackets)
+        elif tok.get(f).type == Token.Type.SQUARE_EXPR
+            println tok
+            // Get the iterable expression and replace tok with the tokens from this slice
+            let iterable = compileExpr(Util.select(tok, 0, f))
+            let expr = tok.get(f).value
+            expr = expr.substring(1, expr.length() - 1)
+            tok = Tokeniser.tokLine(expr)
+
+            // Slice
+            if findToken(tok, ":") != -1
+                // start?, :?, end?, :?, step?
+
+                let startTokens = new ArrayList<Token>()
+                let endTokens = new ArrayList<Token>()
+                let stepTokens = new ArrayList<Token>()
+
+                // Eat start
+                while tok && tok.get(0).value != ":"
+                    startTokens.add(tok.get(0))
+                    tok.remove(0)
+
+                // Eat :
+                tok.remove(0)
+
+                // Eat end
+                while tok && tok.get(0).value != ":"
+                    endTokens.add(tok.get(0))
+                    tok.remove(0)
+
+                // Eat step (and :)
+                if tok && tok.get(0).value == ":"
+                    // Step becomes the remaining tokens
+                    stepTokens = tok
+                    tok.remove(0)
+
+                // Compile tokens
+                let start = compileExpr(startTokens)
+                let end = compileExpr(endTokens)
+                let step = compileExpr(stepTokens)
+
+                start = "null" if !start
+                end = "null" if !end
+                step = "1" if !step
+
+                out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
+                // println iterable + "[" + start + ':' + end + ':' + step + "]"
+
+            // Index
+            else
+                out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
+                // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
 
     // Expressions (parentheses)
     elif len(tok) == 1 && tok.get(0).type == Token.Type.EXPR
@@ -667,10 +741,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         expr = expr.substring(1, expr.length() - 1)
         tok = Tokeniser.tokLine(expr)
 
-        // Eat indent
-        if tok && tok.get(0).type == Token.Type.INDENT
-            tok.remove(0)
-
         // Range
         if findTokenType(tok, Token.Type.RANGE) != -1
             out += compileRange(tok)
@@ -678,58 +748,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         // List
         else
             out += "List.of(" + compileExpr(tok) + ")"
-
-    // Index/slice expressions ([tokens], square brackets)
-    elif (f = findTokenType(tok, Token.Type.SQUARE_EXPR)) > 0
-        // Get the iterable expression and replace tok with the tokens from this slice
-        let iterable = compileExpr(Util.select(tok, 0, f))
-        let expr = tok.get(f).value
-        expr = expr.substring(1, expr.length() - 1)
-        tok = Tokeniser.tokLine(expr)
-
-        // Slice
-        if findToken(tok, ":") != -1
-            // start?, :?, end?, :?, step?
-
-            let startTokens = new ArrayList<Token>()
-            let endTokens = new ArrayList<Token>()
-            let stepTokens = new ArrayList<Token>()
-
-            // Eat start
-            while tok && tok.get(0).value != ":"
-                startTokens.add(tok.get(0))
-                tok.remove(0)
-
-            // Eat :
-            tok.remove(0)
-
-            // Eat end
-            while tok && tok.get(0).value != ":"
-                endTokens.add(tok.get(0))
-                tok.remove(0)
-
-            // Eat step (and :)
-            if tok && tok.get(0).value == ":"
-                // Step becomes the remaining tokens
-                stepTokens = tok
-                tok.remove(0)
-
-            // Compile tokens
-            let start = compileExpr(startTokens)
-            let end = compileExpr(endTokens)
-            let step = compileExpr(stepTokens)
-
-            start = "null" if !start
-            end = "null" if !end
-            step = "1" if !step
-
-            out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
-            println iterable + "[" + start + ':' + end + ':' + step + "]"
-
-        // Index
-        else
-            out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
-            println "Index: " + iterable + "[" + compileExpr(tok) + "]"
 
     // Brace expressions (curly brackets)
     elif len(tok) == 1 && tok.get(0).type == Token.Type.BRACE_EXPR
@@ -771,8 +789,8 @@ string compileMethodArgs(string expr):
     if expr.startsWith("(") && expr.endsWith(")")
         expr .= substring(1, expr.length() - 1)
 
-    string out = ""
-    ArrayList<Token> tok = Tokeniser.tokLine(expr)
+    let out = ""
+    let tok = Tokeniser.tokLine(expr)
     out += t.value + " " for t in tok
     return "(" + out.trim() + ")"
 
@@ -846,6 +864,16 @@ int findTokenType(ArrayList<Token> tok, Token.Type type):
 int findTokenTypeRev(ArrayList<Token> tok, Token.Type type):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if tok.get(i).type == type
+    return -1
+
+int findAnyTokenType(ArrayList<Token> tok, List<Token.Type> types):
+    for i in tok.size()
+        return i if types.contains(tok.get(i).type)
+    return -1
+
+int findAnyTokenTypeRev(ArrayList<Token> tok, List<Token.Type> types):
+    inline(for (int i = tok.size() - 1; i >= 0; --i))
+        return i if types.contains(tok.get(i).type)
     return -1
 
 ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):

@@ -10,7 +10,7 @@ public class JavaBB {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir, String name)-> name.endsWith(".jbb"));
+        var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
 
@@ -33,7 +33,7 @@ char operGetIndex(string s, int i):
 
 (T) T operGetIndex(T[] v, int i):
     i = LangUtil.indexConvert(i, v.length)
-    ret v[i]
+    inline(return v[i];)
 
 (T) T operGetIndex(List<T> v, int i):
     i = LangUtil.indexConvert(i, v.size())
@@ -74,8 +74,8 @@ bool operEq(object a, object b):
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
             var fromPath = compDir + "/" + Extensions.operGetIndex(files, i);
-            var toPath = outDir + "/" + Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0) + ".java";
-            var className = Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0);
+            var toPath = outDir + "/" + Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0) + ".java";
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
             }

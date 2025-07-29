@@ -19,7 +19,7 @@ public class Extensions {
     }
     public static <T> T operGetIndex(T [] v , int i) {
         i = LangUtil.indexConvert(i, v.length);
-        return Extensions.operGetIndex(v, i);
+        return v[i];
     }
     public static <T> T operGetIndex(List < T > v , int i) {
         i = LangUtil.indexConvert(i, v.size());

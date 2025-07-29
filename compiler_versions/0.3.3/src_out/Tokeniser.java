@@ -108,7 +108,7 @@ public class Tokeniser {
         if (LangUtil.isTruthy(current)) { lines.add(current); }
         return lines;
     }
-    public static ArrayList < Token > tokLine(String line) {
+    public static ArrayList < Token > tokLine(String line , boolean keepIndent) {
         var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
         String indent = "";
@@ -125,7 +125,7 @@ public class Tokeniser {
                 break;
             }
         }
-        tok.add(new Token(Token.Type.INDENT, indent));
+        if (LangUtil.isTruthy(keepIndent)) { tok.add(new Token(Token.Type.INDENT, indent)); }
         if (LangUtil.isTruthy(Extensions.operEq(i, line.length()))) {
             return tok;
         }
@@ -201,6 +201,9 @@ public class Tokeniser {
         if (LangUtil.isTruthy(current)) { tok.add(Token.fromString(current.trim())); }
         tok = Parser.convertIdentifiers(tok);
         return tok;
+    }
+    public static ArrayList < Token > tokLine(String line) {
+        return tokLine(line, false);
     }
     public static ArrayList < String > extractArgsFromExpr(String s) {
         var args = new ArrayList < String > ();

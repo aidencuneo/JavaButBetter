@@ -25,11 +25,11 @@ public class Compiler {
         defaultStatic = false;
         ArrayList < String > lines = Tokeniser.splitFile(code);
         int lastIndent = 0;
-        for (var i : LangUtil.asIterable(lines.size())) {
-            String out = outClasses.getOrDefault(currentClass, "");
-            ArrayList < Token > tok = Tokeniser.tokLine(lines.get(i));
+        for (var i : LangUtil.asIterable(Extensions.len(lines))) {
+            var out = outClasses.getOrDefault(currentClass, "");
+            var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
-            indent = tok.get(0).value.length();
+            indent = Extensions.len(Extensions.operGetIndex(tok, 0).value);
             tok.remove(0);
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             while (LangUtil.isTruthy(indent > lastIndent)) {
@@ -57,30 +57,30 @@ public class Compiler {
     public static String compileStatement(ArrayList < Token > tok , String out) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return ""; }
         var types = getTokenTypes(tok);
-        var startTok = types.get(0);
-        var endTok = Util.get(types, - 1);
+        var startTok = Extensions.operGetIndex(types, 0);
+        var endTok = Extensions.operGetIndex(types, - 1);
         var f = - 1;
         var f2 = - 1;
         if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IMPORT))) {
             var importStr = "import ";
-            for (int j = 1; j < tok.size(); ++j) {
-                importStr += tok.get(j).value;
+            for (var j : LangUtil.asIterable(LangUtil.range(1, Extensions.len(tok), null))) {
+                importStr += Extensions.operGetIndex(tok, j).value;
             }
             startTemplate += importStr + ";\n";
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.OPTION))) {
-            if (LangUtil.isTruthy(tok.size() < 2)) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
                 return "";
             }
-            if (LangUtil.isTruthy(tok.size() < 3)) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 3)) {
                 return "";
             }
-            var optionName = tok.get(1).value;
-            var optionValue = tok.get(2).value;
+            var optionName = Extensions.operGetIndex(tok, 1).value;
+            var optionValue = Extensions.operGetIndex(tok, 2).value;
             Options.setOption(optionName, optionValue);
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ALIAS))) {
-            if (LangUtil.isTruthy(tok.size() < 2)) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
                 return "";
             }
             if (LangUtil.isTruthy(Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), - 1))) {
@@ -89,17 +89,17 @@ public class Compiler {
             if (LangUtil.isTruthy(f < 2)) {
                 return "";
             }
-            var name = tok.get(1).value;
+            var name = Extensions.operGetIndex(tok, 1).value;
             var args = new ArrayList < String > ();
             if (LangUtil.isTruthy(f > 2)) {
-                args = Tokeniser.extractArgsFromExpr(tok.get(2).value);
+                args = Tokeniser.extractArgsFromExpr(Extensions.operGetIndex(tok, 2).value);
             }
-            var tokens = Util.select(tok, f + 1);
+            var tokens = LangUtil.slice(tok, f + 1, null, 1);
             aliases.put(name, new Alias(tokens, args));
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1))) ? (f + 1 < tok.size()) : (!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1))) ? (f + 1 < Extensions.len(tok)) : (!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1)))) {
             outClasses.put(currentClass, out);
-            currentClass = tok.get(f + 1).value;
+            currentClass = Extensions.operGetIndex(tok, f + 1).value;
             out = outClasses.getOrDefault(currentClass, "");
             defaultStatic = false;
             var access = getMethodAccess(tok);
@@ -115,73 +115,71 @@ public class Compiler {
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNTIL))) { out += "while (!("; }
             if (LangUtil.isTruthy(!Extensions.operEq(startTok, Token.Type.ELSE))) {
                 out += "LangUtil.isTruthy(";
-                out += compileExpr(Util.select(tok, 1));
+                out += compileExpr(LangUtil.slice(tok, 1, null, 1));
                 out += "))";
                 if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNTIL))) { out += ")"; }
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.FOR))) ? (!Extensions.operEq(((f = findTokenType(tok, Token.Type.IN))), - 1)) : (Extensions.operEq(startTok, Token.Type.FOR)))) {
             out += "for (";
-            String varname = tok.get(1).value;
+            String varname = Extensions.operGetIndex(tok, 1).value;
             out += "var " + varname + " : LangUtil.asIterable(";
-            out += compileExpr(Util.select(tok, f + 1));
+            out += compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += ")) ";
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.IF))), - 1))) ? (Extensions.operEq(findTokenTypeRev(tok, Token.Type.ELSE), - 1)) : (!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.IF))), - 1)))) {
             out += "if (LangUtil.isTruthy(";
-            String cond = compileExpr(Util.select(tok, f + 1));
+            String cond = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
             out += ")) { ";
-            out = compileStatement(Util.select(tok, 0, f), out);
+            out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
             out += " }";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.WHILE))), - 1))) {
             out += "while (LangUtil.isTruthy(";
-            String cond = compileExpr(Util.select(tok, f + 1));
+            String cond = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
             out += ")) { ";
-            out = compileStatement(Util.select(tok, 0, f), out);
+            out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
             out += " }";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.UNTIL))), - 1))) {
             out += "while (!LangUtil.isTruthy(";
-            String cond = compileExpr(Util.select(tok, f + 1));
+            String cond = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += LangUtil.isTruthy(cond.isEmpty()) ? ("false") : (cond);
             out += ")) { ";
-            out = compileStatement(Util.select(tok, 0, f), out);
+            out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
             out += " }";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.FOR))), - 1))) {
             int f_in = findTokenTypeRev(tok, Token.Type.IN);
             if (LangUtil.isTruthy(!Extensions.operEq(f_in, - 1))) {
                 out += "for (";
-                String varname = tok.get(f + 1).value;
+                String varname = Extensions.operGetIndex(tok, f + 1).value;
                 out += "var " + varname + " : LangUtil.asIterable(";
-                out += compileExpr(Util.select(tok, f_in + 1));
+                out += compileExpr(LangUtil.slice(tok, f_in + 1, null, 1));
                 out += ")) { ";
-                out = compileStatement(Util.select(tok, 0, f), out);
+                out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
                 out += " }";
             }
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.TRY))) {
             out += "try ";
-            String resources = compileExpr(Util.select(tok, 1), false);
+            String resources = compileExpr(LangUtil.slice(tok, 1, null, 1), false);
             if (LangUtil.isTruthy(resources)) { out += "(" + resources + ") "; }
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.CATCH))) {
             out += "catch (";
             var s = "";
-            for (var t : LangUtil.asIterable(Util.select(tok, 1))) { s += t.value + " "; }
+            for (var t : LangUtil.asIterable(LangUtil.slice(tok, 1, null, 1))) { s += t.value + " "; }
             s = s.trim();
             out += s + ")";
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.INLINE))) {
-            if (LangUtil.isTruthy(tok.size() < 2)) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
                 return "";
             }
-            String code = tok.get(1).value;
-            code = code.substring(1, code.length() - 1);
-            out += code;
+            out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, - 1, 1);
         }
         else if (LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.SCOPE))) {
             if (LangUtil.isTruthy(false)) {
@@ -194,21 +192,21 @@ public class Compiler {
                     methodAccess . accessMod = AccessMod.PUBLIC;
                 }
                 var typeArgs = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.EXPR)) : (tok))) {
-                    var v = tok.get(0).value;
-                    typeArgs = "<" + v.substring(1, v.length() - 1) + "> ";
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (tok))) {
+                    var v = Extensions.operGetIndex(tok, 0).value;
+                    typeArgs = "<" + LangUtil.slice(v, 1, - 1, 1) + "> ";
                     tok.remove(0);
                 }
-                tok.remove(tok.size() - 1);
+                tok.remove(Extensions.len(tok) - 1);
                 var args = "()";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.EXPR)) : (tok))) {
-                    args = compileMethodArgs(tok.get(tok.size() - 1).value);
-                    tok.remove(tok.size() - 1);
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, - 1).type, Token.Type.EXPR)) : (tok))) {
+                    args = compileMethodArgs(Extensions.operGetIndex(tok, - 1).value);
+                    tok.remove(Extensions.len(tok) - 1);
                 }
                 var methodName = "";
                 if (LangUtil.isTruthy(tok)) {
-                    methodName = tok.get(tok.size() - 1).value;
-                    tok.remove(tok.size() - 1);
+                    methodName = Extensions.operGetIndex(tok, - 1).value;
+                    tok.remove(Extensions.len(tok) - 1);
                     if (LangUtil.isTruthy(Extensions.operEq(methodName, "+"))) {
                         methodName = "operAdd";
                     }
@@ -270,7 +268,7 @@ public class Compiler {
                 else {
                     
                 }
-                String returnType = "";
+                var returnType = "";
                 for (var t : LangUtil.asIterable(tok)) { returnType += t.value + " "; }
                 if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void "; }
                 if (LangUtil.isTruthy(Extensions.operEq(methodName, "main"))) {
@@ -286,8 +284,8 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.RETURN))) {
             out += "return ";
-            if (LangUtil.isTruthy(tok.size() > 1)) {
-                out += compileExpr(Util.select(tok, 1));
+            if (LangUtil.isTruthy(Extensions.len(tok) > 1)) {
+                out += compileExpr(LangUtil.slice(tok, 1, null, 1));
             }
             else {
                 out += "null";
@@ -303,14 +301,14 @@ public class Compiler {
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.PASS))) {
             
         }
-        else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ID))) ? (((LangUtil.isTruthy(Extensions.operEq(tok.get(0).value, "print"))) ? (Extensions.operEq(tok.get(0).value, "print")) : (Extensions.operEq(tok.get(0).value, "println")))) : (Extensions.operEq(startTok, Token.Type.ID))))) {
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.get(0).value, "print"))) ? (Extensions.operEq(tok.get(0).value, "print")) : (Extensions.operEq(tok.get(0).value, "println")))) {
-                out += "LangUtil." + tok.get(0).value + "(";
-                out += compileExpr(Util.select(tok, 1));
+        else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ID))) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "println")))) : (Extensions.operEq(startTok, Token.Type.ID))))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "println")))) {
+                out += "LangUtil." + Extensions.operGetIndex(tok, 0).value + "(";
+                out += compileExpr(LangUtil.slice(tok, 1, null, 1));
                 out += ");";
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() >= 2)) ? (!LangUtil.isTruthy(indent)) : (tok.size() >= 2))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) >= 2)) ? (!LangUtil.isTruthy(indent)) : (Extensions.len(tok) >= 2))) {
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
@@ -318,13 +316,13 @@ public class Compiler {
             }
             var value = "";
             if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), - 1))) {
-                value = " = " + compileExpr(Util.select(tok, f + 1));
-                tok = Util.select(tok, 0, f);
+                value = " = " + compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+                tok = LangUtil.slice(tok, null, f, 1);
             }
             var name = "";
-            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.ID)) : (tok))) {
-                name = tok.get(tok.size() - 1).value;
-                tok.remove(tok.size() - 1);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, - 1).type, Token.Type.ID)) : (tok))) {
+                name = Extensions.operGetIndex(tok, - 1).value;
+                tok.remove(Extensions.len(tok) - 1);
             }
             else {
                 
@@ -348,23 +346,23 @@ public class Compiler {
         int f2 = - 1;
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return out; }
         if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.COMMA))), - 1))) {
-            out += compileExpr(Util.select(tok, 0, f));
+            out += compileExpr(LangUtil.slice(tok, null, f, 1));
             out += ", ";
-            out += compileExpr(Util.select(tok, f + 1));
+            out += compileExpr(LangUtil.slice(tok, f + 1, null, 1));
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), - 1))) {
             String vartype = "";
             String varname = "";
             if (LangUtil.isTruthy(Extensions.operEq(f, 2))) {
-                vartype = tok.get(0).value;
-                varname = tok.get(1).value;
+                vartype = Extensions.operGetIndex(tok, 0).value;
+                varname = Extensions.operGetIndex(tok, 1).value;
             }
             else if (LangUtil.isTruthy(Extensions.operEq(f, 1))) {
-                varname = tok.get(0).value;
+                varname = Extensions.operGetIndex(tok, 0).value;
             }
             else {
                 for (int j = 0; j < f; ++j) {
-                    varname += tok.get(j).value + " ";
+                    varname += Extensions.operGetIndex(tok, j).value + " ";
                 }
                 varname = varname.trim();
             }
@@ -376,77 +374,88 @@ public class Compiler {
             else {
                 out += varname + " = ";
             }
-            out += compileExpr(Util.select(tok, f + 1));
+            out += compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             if (LangUtil.isTruthy(nested)) { out += ")"; }
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.COMP_ASSIGN))), - 1))) {
-            String varname = "";
-            String oper = tok.get(f).value.substring(0, tok.get(f).value.length() - 1);
+            var varname = "";
+            var oper = LangUtil.slice(Extensions.operGetIndex(tok, f).value, null, - 1, 1);
             if (LangUtil.isTruthy(Extensions.operEq(f, 1))) {
-                varname = tok.get(0).value;
+                varname = Extensions.operGetIndex(tok, 0).value;
             }
             else {
                 
             }
             if (LangUtil.isTruthy(nested)) { out += "("; }
-            ArrayList < Token > exprTok = Util.select(tok, f + 1);
+            ArrayList < Token > exprTok = LangUtil.slice(tok, f + 1, null, 1);
             if (LangUtil.isTruthy(List.of(".", "**", "??").contains(oper))) {
                 exprTok.add(0, Token.fromString(varname));
                 exprTok.add(1, Token.fromString(oper));
                 out += varname + " = ";
             }
             else {
-                out += varname + " " + tok.get(f).value + " ";
+                out += varname + " " + Extensions.operGetIndex(tok, f).value + " ";
             }
             out += compileExpr(exprTok);
             if (LangUtil.isTruthy(nested)) { out += ")"; }
         }
+        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.ARROW))), - 1))) {
+            var args = Extensions.operGetIndex(tok, 0).value;
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR))) {
+                args = compileMethodArgs(args);
+                tok.remove(0);
+            }
+            else {
+                return "";
+            }
+            out += args + " -> " + compileExpr(LangUtil.slice(tok, 1, null, 1));
+        }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "?"))), - 1))) ? (!Extensions.operEq(((f2 = findToken(tok, ":"))), - 1)) : (!Extensions.operEq(((f = findToken(tok, "?"))), - 1)))) {
-            String cond = compileExpr(Util.select(tok, 0, f));
-            String lhs = compileExpr(Util.select(tok, f + 1, f2));
-            String rhs = compileExpr(Util.select(tok, f2 + 1));
+            String cond = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String lhs = compileExpr(LangUtil.slice(tok, f + 1, f2, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f2 + 1, null, 1));
             out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "if"))), - 1))) ? (!Extensions.operEq(((f2 = findToken(tok, "else"))), - 1)) : (!Extensions.operEq(((f = findToken(tok, "if"))), - 1)))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String cond = compileExpr(Util.select(tok, f + 1, f2));
-            String rhs = compileExpr(Util.select(tok, f2 + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String cond = compileExpr(LangUtil.slice(tok, f + 1, f2, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f2 + 1, null, 1));
             out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "??"))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("||", "or")))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("&&", "and")))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "|"))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " | " + rhs;
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "^"))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " ^ " + rhs;
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "&"))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " & " + rhs;
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("==", "!=", "===", "!==")))), - 1))) {
-            String oper = tok.get(f).value;
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String oper = Extensions.operGetIndex(tok, f).value;
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             if (LangUtil.isTruthy(Extensions.operEq(oper, "=="))) {
                 out += "Extensions.operEq(" + lhs + ", " + rhs + ")";
             }
@@ -461,68 +470,106 @@ public class Compiler {
             }
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is")))), - 1))) {
-            String oper = tok.get(f).value;
+            String oper = Extensions.operGetIndex(tok, f).value;
             if (LangUtil.isTruthy(Extensions.operEq(oper, "is"))) {
                 oper = "==";
             }
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " " + oper + " " + rhs;
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("+", "-")))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
-            out += lhs + " " + tok.get(f).value + " " + rhs;
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+            out += lhs + " " + Extensions.operGetIndex(tok, f).value + " " + rhs;
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("*", "/", "%")))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
-            out += lhs + " " + tok.get(f).value + " " + rhs;
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+            out += lhs + " " + Extensions.operGetIndex(tok, f).value + " " + rhs;
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 1)) ? (Extensions.operEq(tok.get(0).type, Token.Type.UNARY_OPER)) : (tok.size() > 1))) {
-            String oper = tok.get(0).value;
-            String expr = compileExpr(Util.select(tok, 1));
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (Extensions.len(tok) > 1))) {
+            String oper = Extensions.operGetIndex(tok, 0).value;
+            String expr = compileExpr(LangUtil.slice(tok, 1, null, 1));
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "not"))) ? (Extensions.operEq(oper, "not")) : (Extensions.operEq(oper, "!")))) {
                 out += "!LangUtil.isTruthy(" + expr + ")";
             }
             else {
-                out += tok.get(0).value + expr;
+                out += Extensions.operGetIndex(tok, 0).value + expr;
             }
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "**"))), - 1))) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
+            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "Math.pow(" + lhs + ", " + rhs + ")";
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 1)) ? (Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.INCREMENT)) : (tok.size() > 1))) {
-            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, - 1).type, Token.Type.INCREMENT)) : (Extensions.len(tok) > 1))) {
+            String name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
             out += name + "++";
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(tok.size() > 1)) ? (Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.DECREMENT)) : (tok.size() > 1))) {
-            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, - 1).type, Token.Type.DECREMENT)) : (Extensions.len(tok) > 1))) {
+            String name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
             out += name + "--";
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(tok.get(tok.size() - 1).type, Token.Type.EXPR))) {
-            String name = compileExpr(Util.select(tok, 0, tok.size() - 1));
-            if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
-                name = "Extensions.len";
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (((f = findAnyTokenTypeRev(tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR)))) > 0) : (Extensions.len(tok) > 1))) {
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.EXPR))) {
+                var name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
+                if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
+                    name = "Extensions.len";
+                }
+                var t = Extensions.operGetIndex(tok, - 1);
+                var args = LangUtil.slice(t.value, 1, - 1, 1);
+                out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")";
             }
-            Token t = tok.get(tok.size() - 1);
-            String args = t.value.substring(1, t.value.length() - 1);
-            out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")";
+            else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.DOT))) {
+                var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+                var rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+                out += lhs + "." + rhs;
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.SQUARE_EXPR))) {
+                var iterable = compileExpr(LangUtil.slice(tok, null, f, 1));
+                var expr = Extensions.operGetIndex(tok, f).value;
+                expr = LangUtil.slice(expr, 1, - 1, 1);
+                tok = Tokeniser.tokLine(expr);
+                if (LangUtil.isTruthy(!Extensions.operEq(findToken(tok, ":"), - 1))) {
+                    var startTokens = new ArrayList < Token > ();
+                    var endTokens = new ArrayList < Token > ();
+                    var stepTokens = new ArrayList < Token > ();
+                    while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(Extensions.operGetIndex(tok, 0).value, ":")) : (tok))) {
+                        startTokens.add(Extensions.operGetIndex(tok, 0));
+                        tok.remove(0);
+                    }
+                    tok.remove(0);
+                    while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(Extensions.operGetIndex(tok, 0).value, ":")) : (tok))) {
+                        endTokens.add(Extensions.operGetIndex(tok, 0));
+                        tok.remove(0);
+                    }
+                    if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, ":")) : (tok))) {
+                        stepTokens = tok;
+                        tok.remove(0);
+                    }
+                    var start = compileExpr(startTokens);
+                    var end = compileExpr(endTokens);
+                    var step = compileExpr(stepTokens);
+                    if (LangUtil.isTruthy(!LangUtil.isTruthy(start))) { start = "null"; }
+                    if (LangUtil.isTruthy(!LangUtil.isTruthy(end))) { end = "null"; }
+                    if (LangUtil.isTruthy(!LangUtil.isTruthy(step))) { step = "1"; }
+                    out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")";
+                }
+                else {
+                    out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")";
+                }
+            }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(tok.get(0).type, Token.Type.EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
-            var expr = tok.get(0).value;
-            expr = expr.substring(1, expr.length() - 1);
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
+            var expr = Extensions.operGetIndex(tok, 0).value;
+            expr = LangUtil.slice(expr, 1, - 1, 1);
             out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")";
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(tok.get(0).type, Token.Type.SQUARE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
-            var expr = tok.get(0).value;
-            expr = expr.substring(1, expr.length() - 1);
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.SQUARE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
+            var expr = Extensions.operGetIndex(tok, 0).value;
+            expr = LangUtil.slice(expr, 1, - 1, 1);
             tok = Tokeniser.tokLine(expr);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.INDENT)) : (tok))) {
-                tok.remove(0);
-            }
             if (LangUtil.isTruthy(!Extensions.operEq(findTokenType(tok, Token.Type.RANGE), - 1))) {
                 out += compileRange(tok);
             }
@@ -530,63 +577,21 @@ public class Compiler {
                 out += "List.of(" + compileExpr(tok) + ")";
             }
         }
-        else if (LangUtil.isTruthy(((f = findTokenTypeRev(tok, Token.Type.SQUARE_EXPR))) > 0)) {
-            LangUtil.println(tok);
-            var iterable = compileExpr(Util.select(tok, 0, f));
-            var expr = tok.get(f).value;
-            expr = expr.substring(1, expr.length() - 1);
-            tok = Tokeniser.tokLine(expr);
-            if (LangUtil.isTruthy(!Extensions.operEq(findToken(tok, ":"), - 1))) {
-                var startTokens = new ArrayList < Token > ();
-                var endTokens = new ArrayList < Token > ();
-                var stepTokens = new ArrayList < Token > ();
-                while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).value, ":")) : (tok))) {
-                    startTokens.add(tok.get(0));
-                    tok.remove(0);
-                }
-                tok.remove(0);
-                while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).value, ":")) : (tok))) {
-                    endTokens.add(tok.get(0));
-                    tok.remove(0);
-                }
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).value, ":")) : (tok))) {
-                    stepTokens = tok;
-                    tok.remove(0);
-                }
-                var start = compileExpr(startTokens);
-                var end = compileExpr(endTokens);
-                var step = compileExpr(stepTokens);
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(start))) { start = "null"; }
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(end))) { end = "null"; }
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(step))) { step = "1"; }
-                out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")";
-                LangUtil.println(iterable + "[" + start + ':' + end + ':' + step + "]");
-            }
-            else {
-                out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")";
-                LangUtil.println("Index: " + iterable + "[" + compileExpr(tok) + "]");
-            }
-        }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(tok.get(0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
-            String expr = tok.get(0).value;
-            expr = expr.substring(1, expr.length() - 1);
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
+            String expr = Extensions.operGetIndex(tok, 0).value;
+            expr = LangUtil.slice(expr, 1, - 1, 1);
             out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}";
         }
-        else if (LangUtil.isTruthy(((f = findTokenRev(tok, "."))) > 0)) {
-            String lhs = compileExpr(Util.select(tok, 0, f));
-            String rhs = compileExpr(Util.select(tok, f + 1));
-            out += lhs + "." + rhs;
-        }
         else {
-            for (var j : LangUtil.asIterable(tok.size())) {
-                var t = tok.get(j);
+            for (var j : LangUtil.asIterable(Extensions.len(tok))) {
+                var t = Extensions.operGetIndex(tok, j);
                 if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.EXPR))) {
-                    String raw = t.value.substring(1, t.value.length() - 1);
+                    String raw = LangUtil.slice(t.value, 1, - 1, 1);
                     ArrayList < Token > tokens = Tokeniser.tokLine(raw);
                     out += "(" + compileExpr(tokens) + ")";
                 }
                 else {
-                    out += tok.get(j).value + " ";
+                    out += Extensions.operGetIndex(tok, j).value + " ";
                 }
             }
         }
@@ -597,28 +602,27 @@ public class Compiler {
     }
     public static String compileMethodArgs(String expr) {
         if (LangUtil.isTruthy((LangUtil.isTruthy(expr.startsWith("("))) ? (expr.endsWith(")")) : (expr.startsWith("(")))) {
-            expr = expr.substring(1, expr.length() - 1);
+            expr = LangUtil.slice(expr, 1, - 1, 1);
         }
-        String out = "";
-        ArrayList < Token > tok = Tokeniser.tokLine(expr);
+        var out = "";
+        var tok = Tokeniser.tokLine(expr);
         for (var t : LangUtil.asIterable(tok)) { out += t.value + " "; }
         return "(" + out.trim() + ")";
     }
     public static String compileRange(ArrayList < Token > tok) {
-        LangUtil.println(tok);
         var startTokens = new ArrayList < Token > ();
         var endTokens = new ArrayList < Token > ();
         var stepTokens = new ArrayList < Token > ();
-        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
-            startTokens.add(tok.get(0));
+        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.RANGE)) : (tok))) {
+            startTokens.add(Extensions.operGetIndex(tok, 0));
             tok.remove(0);
         }
         tok.remove(0);
-        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
-            endTokens.add(tok.get(0));
+        while (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (!Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.RANGE)) : (tok))) {
+            endTokens.add(Extensions.operGetIndex(tok, 0));
             tok.remove(0);
         }
-        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(tok.get(0).type, Token.Type.RANGE)) : (tok))) {
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.RANGE)) : (tok))) {
             stepTokens = tok;
             tok.remove(0);
         }
@@ -634,38 +638,50 @@ public class Compiler {
         return "_temp" + nextTempVar++;
     }
     public static int findToken(ArrayList < Token > tok , String value) {
-        for (var i : LangUtil.asIterable(tok.size())) {
-            if (LangUtil.isTruthy(Extensions.operEq(tok.get(i).value, value))) { return i; }
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, i).value, value))) { return i; }
         }
         return - 1;
     }
     public static int findTokenRev(ArrayList < Token > tok , String value) {
         for (int i = tok.size() - 1; i >= 0; --i) {
-            if (LangUtil.isTruthy(Extensions.operEq(tok.get(i).value, value))) { return i; }
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, i).value, value))) { return i; }
         }
         return - 1;
     }
     public static int findAnyToken(ArrayList < Token > tok , List < String > values) {
-        for (var i : LangUtil.asIterable(tok.size())) {
-            if (LangUtil.isTruthy(values.contains(tok.get(i).value))) { return i; }
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
+            if (LangUtil.isTruthy(values.contains(Extensions.operGetIndex(tok, i).value))) { return i; }
         }
         return - 1;
     }
     public static int findAnyTokenRev(ArrayList < Token > tok , List < String > values) {
         for (int i = tok.size() - 1; i >= 0; --i) {
-            if (LangUtil.isTruthy(values.contains(tok.get(i).value))) { return i; }
+            if (LangUtil.isTruthy(values.contains(Extensions.operGetIndex(tok, i).value))) { return i; }
         }
         return - 1;
     }
     public static int findTokenType(ArrayList < Token > tok , Token . Type type) {
-        for (var i : LangUtil.asIterable(tok.size())) {
-            if (LangUtil.isTruthy(Extensions.operEq(tok.get(i).type, type))) { return i; }
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, i).type, type))) { return i; }
         }
         return - 1;
     }
     public static int findTokenTypeRev(ArrayList < Token > tok , Token . Type type) {
         for (int i = tok.size() - 1; i >= 0; --i) {
-            if (LangUtil.isTruthy(Extensions.operEq(tok.get(i).type, type))) { return i; }
+            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, i).type, type))) { return i; }
+        }
+        return - 1;
+    }
+    public static int findAnyTokenType(ArrayList < Token > tok , List < Token . Type > types) {
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
+            if (LangUtil.isTruthy(types.contains(Extensions.operGetIndex(tok, i).type))) { return i; }
+        }
+        return - 1;
+    }
+    public static int findAnyTokenTypeRev(ArrayList < Token > tok , List < Token . Type > types) {
+        for (int i = tok.size() - 1; i >= 0; --i) {
+            if (LangUtil.isTruthy(types.contains(Extensions.operGetIndex(tok, i).type))) { return i; }
         }
         return - 1;
     }
@@ -678,10 +694,10 @@ public class Compiler {
         var accessMod = AccessMod.NONE;
         var isStatic = defaultStatic;
         for (var j : LangUtil.asIterable(end)) {
-            var t = tok.get(j).type;
-            var v = tok.get(j).value;
+            var t = Extensions.operGetIndex(tok, j).type;
+            var v = Extensions.operGetIndex(tok, j).value;
             if (LangUtil.isTruthy(Extensions.operEq(accessMod, AccessMod.NONE))) {
-                accessMod = MethodAccess.accessModFromToken(tok.get(j));
+                accessMod = MethodAccess.accessModFromToken(Extensions.operGetIndex(tok, j));
             }
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(v, "static"))) ? (Extensions.operEq(v, "static")) : (Extensions.operEq(v, "#")))) { isStatic = true; }
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(v, "instance"))) ? (Extensions.operEq(v, "instance")) : (Extensions.operEq(v, "^")))) { isStatic = false; }
@@ -689,20 +705,20 @@ public class Compiler {
         return new MethodAccess(accessMod, isStatic);
     }
     public static MethodAccess getMethodAccess(ArrayList < Token > tok) {
-        return getMethodAccess(tok, tok.size());
+        return getMethodAccess(tok, Extensions.len(tok));
     }
     public static ArrayList < Token > stripMethodAccess(ArrayList < Token > tok , int end) {
         for (var i : LangUtil.asIterable(end)) {
-            var t = tok.get(i);
+            var t = Extensions.operGetIndex(tok, i);
             var v = t.value;
             if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(MethodAccess.accessModFromToken(t), AccessMod.NONE))) ? ((LangUtil.isTruthy(!Extensions.operEq(v, "static"))) ? ((LangUtil.isTruthy(!Extensions.operEq(v, "#"))) ? ((LangUtil.isTruthy(!Extensions.operEq(v, "instance"))) ? (!Extensions.operEq(v, "^")) : (!Extensions.operEq(v, "instance"))) : (!Extensions.operEq(v, "#"))) : (!Extensions.operEq(v, "static"))) : (Extensions.operEq(MethodAccess.accessModFromToken(t), AccessMod.NONE))))) {
-                return new ArrayList < Token > (tok.subList(i, tok.size()));
+                return LangUtil.slice(tok, i, null, 1);
             }
         }
         return tok;
     }
     public static ArrayList < Token > stripMethodAccess(ArrayList < Token > tok) {
-        return stripMethodAccess(tok, tok.size());
+        return stripMethodAccess(tok, Extensions.len(tok));
     }
 }
 

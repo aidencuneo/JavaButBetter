@@ -36,7 +36,7 @@ char operGetIndex(string s, int i):
 
 (T) T operGetIndex(T[] v, int i):
     i = LangUtil.indexConvert(i, v.length)
-    ret v[i]
+    inline(return v[i];)
 
 (T) T operGetIndex(List<T> v, int i):
     i = LangUtil.indexConvert(i, v.size())

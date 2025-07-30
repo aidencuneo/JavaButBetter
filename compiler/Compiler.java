@@ -308,6 +308,21 @@ public class Compiler {
                 out += ");";
             }
         }
+        else if (LangUtil.isTruthy(!Extensions.operEq(findTokenType(tok, Token.Type.ENUM), - 1))) {
+            var methodAccess = getMethodAccess(tok);
+            tok = stripMethodAccess(tok);
+            if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
+                methodAccess . accessMod = AccessMod.PUBLIC;
+            }
+            var name = "";
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, - 1).type, Token.Type.ID)) : (tok))) {
+                name = Extensions.operGetIndex(tok, - 1).value;
+            }
+            else {
+                
+            }
+            out += methodAccess + " enum " + name;
+        }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) >= 2)) ? (!LangUtil.isTruthy(indent)) : (Extensions.len(tok) >= 2))) {
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
@@ -591,7 +606,7 @@ public class Compiler {
                     out += "(" + compileExpr(tokens) + ")";
                 }
                 else {
-                    out += Extensions.operGetIndex(tok, j).value + " ";
+                    out += t.value + " ";
                 }
             }
         }

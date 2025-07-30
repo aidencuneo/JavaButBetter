@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class StringParser {
-    public static static String unescapeString(String str) {
+    public static String unescapeString(String str) {
         var out = "";
         for (int i = 0; i < str.length(); ++i) {
             var c = str.charAt(i);
@@ -39,7 +39,7 @@ public class StringParser {
         }
         return out;
     }
-    public static static String escapeDoubleQuotes(String str) {
+    public static String escapeDoubleQuotes(String str) {
         return str.replace("\"", "\\\"");
     }
 }

@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Parser {
-    public static static ArrayList < Token > convertIdentifiers(ArrayList < Token > tok) {
+    public static ArrayList < Token > convertIdentifiers(ArrayList < Token > tok) {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
@@ -66,7 +66,7 @@ public class Parser {
         }
         return tok;
     }
-    public static static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
+    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
         var lastWasDot = false;
         var newTok = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {

@@ -255,7 +255,7 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         // Methods
         else
-            // access?, static?, typeargs?, [returntype|void], name, args?, scope
+            // access?, typeargs?, [returntype|void], name, args?, scope
 
             // Eat access tokens
             let methodAccess = getMethodAccess(tok)
@@ -377,6 +377,28 @@ string compileStatement(ArrayList<Token> tok, string out):
             out += "LangUtil." + tok[0].value + "("
             out += compileExpr(tok[1:])
             out += ");"
+
+    // Enum declarations
+    elif findTokenType(tok, Token.Type.ENUM) != -1
+        // access?, enum, name
+
+        // Eat access tokens
+        let methodAccess = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
+
+        // Default access modifier for enums is public
+        if methodAccess.accessMod == AccessMod.NONE
+            methodAccess.accessMod = AccessMod.PUBLIC
+
+        // Get name
+        let name = ""
+        if tok && tok[-1].type == Token.Type.ID
+            name = tok[-1].value
+        else
+            // Error! Enum name not given
+            ...
+
+        out += methodAccess + " enum " + name
 
     // Field declarations (two tokens minimum with no indentation)
     elif len(tok) >= 2 && !indent
@@ -768,7 +790,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             // }
 
             else
-                out += tok[j].value + " "
+                out += t.value + " "
 
     // if findTokenType(tok, Token.Type.STRING) != -1
     //     System.out.println("String: " + Util.d(tok))

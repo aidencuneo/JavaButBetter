@@ -2,6 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    {
+        
+    }
+}
+public class Code2 {
     public static void main(String[] args) {
         var empty = List.of();
         var lst = List.of(1, 2, 3, "hello");

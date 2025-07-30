@@ -1,5 +1,5 @@
 class null
-inline(public enum AccessMod)
+public enum AccessMod
     NONE,
     DEFAULT,
     PUBLIC,

@@ -1,0 +1,10 @@
+MethodAccess access
+string returnType
+string args
+
+HashMap<string, Local> locals = new HashMap<>()
+
+Method(MethodAccess access, string returnType, string args):
+    this.access = access
+    this.returnType = returnType
+    this.args = args

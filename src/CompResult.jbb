@@ -11,26 +11,13 @@ CompResult(
     this.startTemplate = startTemplate
     this.endTemplate = endTemplate
 
-string constructClassString(string className):
-    let cl = classes.getOrDefault(className, new Class())
-    return "" if cl.code.isBlank()
-
-    let accessModStr = MethodAccess.accessModToString(cl.access)
-    let separator = accessModStr ? " " : ""
-
-    let out = accessModStr + separator + "class " + className + " {\n"
-    out += "    " + cl.code.trim()
-    out += "\n}\n"
-
-    return out
-
 string getCompiledCode(string mainClassName):
     // Construct classes
     let out = ""
 
     // File class goes first
     if classes.containsKey(mainClassName)
-        out += constructClassString(mainClassName)
+        out += classes.get(mainClassName)
 
     // Construct other classes
     for c in classes.keySet()
@@ -38,6 +25,6 @@ string getCompiledCode(string mainClassName):
         if c == "null"
             out += classes.get(c).code
         elif c != mainClassName
-            out += constructClassString(c)
+            out += classes.get(c)
 
     return startTemplate + "\n" + out + endTemplate

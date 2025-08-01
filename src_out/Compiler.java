@@ -4,6 +4,7 @@ import java.util.*;
 public class Compiler {
     public static String mainClassName;
     public static String currentClass;
+    public static String currentMethod;
     public static String startTemplate;
     public static String endTemplate;
     public static HashMap < String , Class > classes;
@@ -14,6 +15,7 @@ public class Compiler {
     public static CompResult compileFile(String className , String code) {
         mainClassName = className;
         currentClass = className;
+        currentMethod = "";
         startTemplate = "import java.io.*;\nimport java.util.*;\n";
         endTemplate = "";
         classes = new HashMap < > ();
@@ -45,10 +47,9 @@ public class Compiler {
             cl = getOrCreateClass(currentClass);
             cl . code = out + "\n";
             lastIndent = indent;
-            classes.put(currentClass, cl);
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
-            var cl = classes.getOrDefault(currentClass, new Class());
+            var cl = getOrCreateClass(currentClass);
             cl . code = cl.code + " ".repeat(lastIndent) + "}\n";
             lastIndent -= 4;
         }
@@ -56,7 +57,7 @@ public class Compiler {
     }
     public static Class getOrCreateClass(String name) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(classes.containsKey(name)))) {
-            classes.put(name, new Class());
+            classes.put(name, new Class(name));
         }
         return classes.get(currentClass);
     }
@@ -107,14 +108,28 @@ public class Compiler {
             var cl = getOrCreateClass(currentClass);
             cl . code = out;
             classes.put(currentClass, cl);
-            currentClass = Extensions.operGetIndex(tok, f + 1).value;
-            cl = getOrCreateClass(currentClass);
-            out = cl.code;
             var access = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
-            cl . access = access.accessMod;
-            defaultStatic = access.isStatic;
+            tok.remove(0);
+            var typeArgs = "";
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (tok))) {
+                typeArgs = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, - 1, 1);
+                tok.remove(0);
+            }
+            currentClass = Extensions.operGetIndex(tok, 0).value;
+            cl = getOrCreateClass(currentClass);
             classes.put(currentClass, cl);
+            out = cl.code;
+            tok.remove(0);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "extends")) : (tok))) {
+                cl . extendsType = compileExpr(LangUtil.slice(tok, 1, null, 1));
+            }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "implements")) : (tok))) {
+                cl . implementsType = compileExpr(LangUtil.slice(tok, 1, null, 1));
+            }
+            cl . access = access.accessMod;
+            cl . typeArgs = typeArgs;
+            defaultStatic = access.isStatic;
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) ? (Extensions.operEq(startTok, Token.Type.IF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELIF))) ? (Extensions.operEq(startTok, Token.Type.ELIF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELSE))) ? (Extensions.operEq(startTok, Token.Type.ELSE)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.WHILE))) ? (Extensions.operEq(startTok, Token.Type.WHILE)) : (Extensions.operEq(startTok, Token.Type.UNTIL)))))))) {
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) { out += "if ("; }

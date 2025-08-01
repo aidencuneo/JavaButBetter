@@ -1,11 +1,27 @@
-string name = ""
-string code = ""
 AccessMod access = AccessMod.PUBLIC
+string name = ""
+string typeArgs = ""
+string implementsType = ""
+string extendsType = ""
+string code = ""
+HashMap<string, Field> fields = new HashMap<>()
+HashMap<string, Method> methods = new HashMap<>()
 
-Class():
-    ...
-
-Class(string name, string code, AccessMod access):
+Class(string name):
     this.name = name
-    this.code = code
-    this.access = access
+
+string toString():
+    return "" if code.isBlank()
+
+    let accessModStr = MethodAccess.accessModToString(access)
+    accessModStr += accessModStr ? " " : ""
+
+    let extendsStr = " extends " + extendsType if extendsType else ""
+    let implementsStr = " implements " + implementsType if implementsType else ""
+    let typeArgStr = "<" + typeArgs + ">" if typeArgs else ""
+
+    let out = accessModStr + "class " + name + typeArgStr + extendsStr + implementsStr + " {\n"
+    out += "    " + code.trim()
+    out += "\n}\n"
+
+    return out

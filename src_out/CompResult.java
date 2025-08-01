@@ -10,27 +10,17 @@ public class CompResult {
         this . startTemplate = startTemplate;
         this . endTemplate = endTemplate;
     }
-    public String constructClassString(String className) {
-        var cl = classes.getOrDefault(className, new Class());
-        if (LangUtil.isTruthy(cl.code.isBlank())) { return ""; }
-        var accessModStr = MethodAccess.accessModToString(cl.access);
-        var separator = LangUtil.isTruthy(accessModStr) ? (" ") : ("");
-        var out = accessModStr + separator + "class " + className + " {\n";
-        out += "    " + cl.code.trim();
-        out += "\n}\n";
-        return out;
-    }
     public String getCompiledCode(String mainClassName) {
         var out = "";
         if (LangUtil.isTruthy(classes.containsKey(mainClassName))) {
-            out += constructClassString(mainClassName);
+            out += classes.get(mainClassName);
         }
         for (var c : LangUtil.asIterable(classes.keySet())) {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
                 out += classes.get(c).code;
             }
             else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
-                out += constructClassString(c);
+                out += classes.get(c);
             }
         }
         return startTemplate + "\n" + out + endTemplate;

@@ -6,6 +6,7 @@ alias INDENT_SIZE = 4
 // These fields persist only for the current file
 string mainClassName
 string currentClass
+string currentMethod
 string startTemplate
 string endTemplate
 HashMap<string, Class> classes
@@ -19,6 +20,7 @@ CompResult compileFile(string className, string code):
     // Allow all methods to use these variables
     mainClassName = className
     currentClass = className
+    currentMethod = ""
     startTemplate = "import java.io.*;\nimport java.util.*;\n"
     endTemplate = ""
 
@@ -70,15 +72,12 @@ CompResult compileFile(string className, string code):
 
         lastIndent = indent
 
-        // Push class to map
-        classes.put(currentClass, cl)
-
         // if currentClass != "LangUtil" && currentClass != "Extensions"
         //     println tok
 
     // After the final line of a class, reset indentation
     while lastIndent > 0
-        let cl = classes.getOrDefault(currentClass, new Class())
+        let cl = getOrCreateClass(currentClass)
         cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
         lastIndent -= INDENT_SIZE
 
@@ -87,7 +86,7 @@ CompResult compileFile(string className, string code):
 
 Class getOrCreateClass(string name):
     if !classes.containsKey(name)
-        classes.put(name, new Class())
+        classes.put(name, new Class(name))
 
     return classes.get(currentClass)
 
@@ -149,28 +148,47 @@ string compileStatement(ArrayList<Token> tok, string out):
 
     // Classes
     elif (f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < len(tok)
+        // access?, class, typeargs?, name, extends | implements, [type]
+
         // Set code for previous class before moving to new one
         let cl = getOrCreateClass(currentClass)
         cl.code = out
         classes.put(currentClass, cl)
 
-        // Change current class
-        currentClass = tok[f + 1].value
-        cl = getOrCreateClass(currentClass)
-        out = cl.code
-
         // Eat access tokens
         let access = getMethodAccess(tok)
         tok = stripMethodAccess(tok)
 
-        // Set access modifier for this class
+        // Eat class
+        tok.remove(0)
+
+        // Eat type args
+        let typeArgs = ""
+        if tok && tok[0].type == Token.Type.EXPR
+            typeArgs = tok[0].value[1:-1]
+            tok.remove(0)
+
+        // Change current class and push to classes map
+        currentClass = tok[0].value
+        cl = getOrCreateClass(currentClass)
+        classes.put(currentClass, cl)
+        out = cl.code
+
+        // Eat name
+        tok.remove(0)
+
+        // extends | implements
+        if tok && tok[0].value == "extends"
+            cl.extendsType = compileExpr(tok[1:])
+        elif tok && tok[0].value == "implements"
+            cl.implementsType = compileExpr(tok[1:])
+
+        // Set access modifier and type args for this class
         cl.access = access.accessMod
+        cl.typeArgs = typeArgs
 
         // Set default static modifier for this class
         defaultStatic = access.isStatic
-
-        // Push class to map
-        classes.put(currentClass, cl)
 
     // Control flow
     elif (startTok == Token.Type.IF

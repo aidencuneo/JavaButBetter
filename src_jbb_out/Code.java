@@ -1,12 +1,27 @@
 import java.io.*;
 import java.util.*;
 
-public class Code {
+class Code implements Iterable < T > {
+    {
+        
+    } {
+        
+    }
+}
+class Code2 extends Iterable < T > {
     {
         
     }
 }
-public class Code2 {
+public class Code3<T> implements Iterable < T > {
+    {
+        
+    }
+}
+public class Code4<T> extends Iterable < T > {
+    {
+        
+    }
     public static void main(String[] args) {
         var empty = List.of();
         var lst = List.of(1, 2, 3, "hello");

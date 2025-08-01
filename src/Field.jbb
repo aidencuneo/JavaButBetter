@@ -1,0 +1,6 @@
+MethodAccess access
+string type
+
+Field(MethodAccess access, string type):
+    this.access = access
+    this.type = type

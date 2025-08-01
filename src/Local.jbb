@@ -1,0 +1,6 @@
+string type
+string name
+
+Local(string type, string name):
+    this.type = type
+    this.name = name

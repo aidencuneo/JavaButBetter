@@ -60,7 +60,7 @@ CompResult compileFile(string className, string code):
 
         // Indentation defines scope
         let scope = indent / INDENT_SIZE
-        println scope, tok
+        // println scope, tok
 
         // Add indentation for every line
         cl.code = cl.code + " ".repeat(indent + INDENT_SIZE)

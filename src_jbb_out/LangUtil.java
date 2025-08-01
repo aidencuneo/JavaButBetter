@@ -286,4 +286,9 @@ static class IteratorToIterable<T> implements Iterable<T> {
     }
 }
 }
+class Null {
+    {
+        
+    }
+}
 

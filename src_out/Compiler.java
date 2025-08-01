@@ -41,7 +41,6 @@ public class Compiler {
                 lastIndent -= 4;
             }
             var scope = indent / 4;
-            LangUtil.println(scope, tok);
             cl . code = cl.code + " ".repeat(indent + 4);
             var out = compileStatement(tok, cl.code);
             cl = getOrCreateClass(currentClass);

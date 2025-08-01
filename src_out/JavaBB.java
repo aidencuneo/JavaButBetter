@@ -111,6 +111,7 @@ bool operEq(object a, object b):
 // import java.lang.reflect.*
 
 class Null
+    ...
 
 public static class LangUtil
 

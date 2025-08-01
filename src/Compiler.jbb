@@ -1,12 +1,14 @@
 public static class Compiler
 
+// Definitions
+alias INDENT_SIZE = 4
+
 // These fields persist only for the current file
 string mainClassName
 string currentClass
 string startTemplate
 string endTemplate
-HashMap<string, string> outClasses
-HashMap<string, AccessMod> outClassAccess
+HashMap<string, Class> classes
 HashMap<string, Alias> aliases
 
 int nextTempVar = 0
@@ -21,20 +23,18 @@ CompResult compileFile(string className, string code):
     endTemplate = ""
 
     // Reset class data
-    outClasses = new HashMap<>()
-    outClassAccess = new HashMap<>()
-    outClassAccess.put(mainClassName, AccessMod.PUBLIC)
+    classes = new HashMap<>()
     aliases = new HashMap<>()
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
     defaultStatic = false
 
-    ArrayList<string> lines = Tokeniser.splitFile(code)
-    int lastIndent = 0
+    let lines = Tokeniser.splitFile(code)
+    let lastIndent = 0
 
     for i in len(lines)
-        let out = outClasses.getOrDefault(currentClass, "")
+        let cl = getOrCreateClass(currentClass)
         let tok = Tokeniser.tokLine(lines[i], true)
 
         // Nothing in the line?
@@ -48,37 +48,48 @@ CompResult compileFile(string className, string code):
 
         // Indentation controls braces
         while indent > lastIndent
-            lastIndent += 4
-            out = out.trim()
-            out += " {\n"
+            lastIndent += INDENT_SIZE
+            cl.code = cl.code.trim()
+            cl.code = cl.code + " {\n"
 
         while indent < lastIndent
-            out += " ".repeat(lastIndent) + "}\n"
-            lastIndent -= 4
+            cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+            lastIndent -= INDENT_SIZE
+
+        // Indentation defines scope
+        let scope = indent / INDENT_SIZE
+        println scope, tok
 
         // Add indentation for every line
-        out += " ".repeat(indent + 4)
+        cl.code = cl.code + " ".repeat(indent + INDENT_SIZE)
 
         // Add compiled statement
-        out = compileStatement(tok, out)
-        out += "\n"
-
-        // Push to current class
-        outClasses.put(currentClass, out)
+        let out = compileStatement(tok, cl.code)
+        cl = getOrCreateClass(currentClass)
+        cl.code = out + "\n"
 
         lastIndent = indent
+
+        // Push class to map
+        classes.put(currentClass, cl)
 
         // if currentClass != "LangUtil" && currentClass != "Extensions"
         //     println tok
 
     // After the final line of a class, reset indentation
     while lastIndent > 0
-        string curOut = outClasses.getOrDefault(currentClass, "")
-        outClasses.put(currentClass, curOut + " ".repeat(lastIndent) + "}\n")
-        lastIndent -= 4
+        let cl = classes.getOrDefault(currentClass, new Class())
+        cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+        lastIndent -= INDENT_SIZE
 
     // Return compilation result
-    return new CompResult(outClasses, outClassAccess, startTemplate, endTemplate)
+    return new CompResult(classes, startTemplate, endTemplate)
+
+Class getOrCreateClass(string name):
+    if !classes.containsKey(name)
+        classes.put(name, new Class())
+
+    return classes.get(currentClass)
 
 string compileStatement(ArrayList<Token> tok, string out):
     return "" if !tok
@@ -139,24 +150,27 @@ string compileStatement(ArrayList<Token> tok, string out):
     // Classes
     elif (f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < len(tok)
         // Set code for previous class before moving to new one
-        outClasses.put(currentClass, out)
+        let cl = getOrCreateClass(currentClass)
+        cl.code = out
+        classes.put(currentClass, cl)
 
         // Change current class
         currentClass = tok[f + 1].value
-        out = outClasses.getOrDefault(currentClass, "")
-
-        // Default static should be reset to false
-        defaultStatic = false
+        cl = getOrCreateClass(currentClass)
+        out = cl.code
 
         // Eat access tokens
         let access = getMethodAccess(tok)
         tok = stripMethodAccess(tok)
 
         // Set access modifier for this class
-        outClassAccess.put(currentClass, access.accessMod)
+        cl.access = access.accessMod
 
         // Set default static modifier for this class
         defaultStatic = access.isStatic
+
+        // Push class to map
+        classes.put(currentClass, cl)
 
     // Control flow
     elif (startTok == Token.Type.IF
@@ -336,9 +350,10 @@ string compileStatement(ArrayList<Token> tok, string out):
             returnType += t.value + " " for t in tok
             returnType = "void " if !returnType
 
-            // If method name is 'main', args must be (String[] args)
+            // If method name is 'main', args must be (String[] args) and method must be static
             if methodName == "main"
                 args = "(String[] args)"
+                methodAccess.isStatic = true
 
             // If method name is the same as the class name,
             // it's a constructor, so don't include the return type
@@ -346,6 +361,10 @@ string compileStatement(ArrayList<Token> tok, string out):
                 out += methodAccess + " " + typeArgs + methodName + args
             else
                 out += methodAccess + " " + typeArgs + returnType + methodName + args
+
+    // Static block
+    elif startTok == Token.Type.STATIC
+        out += "static"
 
     // Keywords
     elif startTok == Token.Type.RETURN

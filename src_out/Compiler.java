@@ -6,8 +6,7 @@ public class Compiler {
     public static String currentClass;
     public static String startTemplate;
     public static String endTemplate;
-    public static HashMap < String , String > outClasses;
-    public static HashMap < String , AccessMod > outClassAccess;
+    public static HashMap < String , Class > classes;
     public static HashMap < String , Alias > aliases;
     public static int nextTempVar = 0;
     public static int indent = 0;
@@ -17,16 +16,14 @@ public class Compiler {
         currentClass = className;
         startTemplate = "import java.io.*;\nimport java.util.*;\n";
         endTemplate = "";
-        outClasses = new HashMap < > ();
-        outClassAccess = new HashMap < > ();
-        outClassAccess.put(mainClassName, AccessMod.PUBLIC);
+        classes = new HashMap < > ();
         aliases = new HashMap < > ();
         nextTempVar = 0;
         defaultStatic = false;
-        ArrayList < String > lines = Tokeniser.splitFile(code);
-        int lastIndent = 0;
+        var lines = Tokeniser.splitFile(code);
+        var lastIndent = 0;
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
-            var out = outClasses.getOrDefault(currentClass, "");
+            var cl = getOrCreateClass(currentClass);
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             indent = Extensions.len(Extensions.operGetIndex(tok, 0).value);
@@ -34,25 +31,34 @@ public class Compiler {
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             while (LangUtil.isTruthy(indent > lastIndent)) {
                 lastIndent += 4;
-                out = out.trim();
-                out += " {\n";
+                cl . code = cl.code.trim();
+                cl . code = cl.code + " {\n";
             }
             while (LangUtil.isTruthy(indent < lastIndent)) {
-                out += " ".repeat(lastIndent) + "}\n";
+                cl . code = cl.code + " ".repeat(lastIndent) + "}\n";
                 lastIndent -= 4;
             }
-            out += " ".repeat(indent + 4);
-            out = compileStatement(tok, out);
-            out += "\n";
-            outClasses.put(currentClass, out);
+            var scope = indent / 4;
+            LangUtil.println(scope, tok);
+            cl . code = cl.code + " ".repeat(indent + 4);
+            var out = compileStatement(tok, cl.code);
+            cl = getOrCreateClass(currentClass);
+            cl . code = out + "\n";
             lastIndent = indent;
+            classes.put(currentClass, cl);
         }
         while (LangUtil.isTruthy(lastIndent > 0)) {
-            String curOut = outClasses.getOrDefault(currentClass, "");
-            outClasses.put(currentClass, curOut + " ".repeat(lastIndent) + "}\n");
+            var cl = classes.getOrDefault(currentClass, new Class());
+            cl . code = cl.code + " ".repeat(lastIndent) + "}\n";
             lastIndent -= 4;
         }
-        return new CompResult(outClasses, outClassAccess, startTemplate, endTemplate);
+        return new CompResult(classes, startTemplate, endTemplate);
+    }
+    public static Class getOrCreateClass(String name) {
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(classes.containsKey(name)))) {
+            classes.put(name, new Class());
+        }
+        return classes.get(currentClass);
     }
     public static String compileStatement(ArrayList < Token > tok , String out) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return ""; }
@@ -98,14 +104,17 @@ public class Compiler {
             aliases.put(name, new Alias(tokens, args));
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1))) ? (f + 1 < Extensions.len(tok)) : (!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), - 1)))) {
-            outClasses.put(currentClass, out);
+            var cl = getOrCreateClass(currentClass);
+            cl . code = out;
+            classes.put(currentClass, cl);
             currentClass = Extensions.operGetIndex(tok, f + 1).value;
-            out = outClasses.getOrDefault(currentClass, "");
-            defaultStatic = false;
+            cl = getOrCreateClass(currentClass);
+            out = cl.code;
             var access = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
-            outClassAccess.put(currentClass, access.accessMod);
+            cl . access = access.accessMod;
             defaultStatic = access.isStatic;
+            classes.put(currentClass, cl);
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) ? (Extensions.operEq(startTok, Token.Type.IF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELIF))) ? (Extensions.operEq(startTok, Token.Type.ELIF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELSE))) ? (Extensions.operEq(startTok, Token.Type.ELSE)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.WHILE))) ? (Extensions.operEq(startTok, Token.Type.WHILE)) : (Extensions.operEq(startTok, Token.Type.UNTIL)))))))) {
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) { out += "if ("; }
@@ -273,6 +282,7 @@ public class Compiler {
                 if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void "; }
                 if (LangUtil.isTruthy(Extensions.operEq(methodName, "main"))) {
                     args = "(String[] args)";
+                    methodAccess . isStatic = true;
                 }
                 if (LangUtil.isTruthy(Extensions.operEq(methodName, currentClass))) {
                     out += methodAccess + " " + typeArgs + methodName + args;
@@ -281,6 +291,9 @@ public class Compiler {
                     out += methodAccess + " " + typeArgs + returnType + methodName + args;
                 }
             }
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.STATIC))) {
+            out += "static";
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.RETURN))) {
             out += "return ";

@@ -84,9 +84,9 @@ bool operEq(object a, object b):
             }
             var res = Compiler.compileFile(className, fileContent);
             if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
-                var curCode = extensionsClassRes.classes.get("Extensions");
-                var newCode = res.classes.get("Extensions");
-                extensionsClassRes.classes.put("Extensions", "    " + curCode + newCode);
+                var newCode = res.classes.get("Extensions").code;
+                var extensionsClass = extensionsClassRes.classes.get("Extensions");
+                extensionsClass . code = extensionsClass.code + newCode;
                 res.classes.remove("Extensions");
             }
             var compiled = res.getCompiledCode(className);
@@ -111,7 +111,6 @@ bool operEq(object a, object b):
 // import java.lang.reflect.*
 
 class Null
-    ...
 
 public static class LangUtil
 

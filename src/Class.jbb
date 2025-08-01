@@ -1,0 +1,11 @@
+string name = ""
+string code = ""
+AccessMod access = AccessMod.PUBLIC
+
+Class():
+    ...
+
+Class(string name, string code, AccessMod access):
+    this.name = name
+    this.code = code
+    this.access = access

@@ -2,24 +2,21 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    public HashMap < String , String > classes;
-    public HashMap < String , AccessMod > classAccess;
+    public HashMap < String , Class > classes;
     public String startTemplate;
     public String endTemplate;
-    public CompResult(HashMap < String , String > classes , HashMap < String , AccessMod > classAccess , String startTemplate , String endTemplate) {
+    public CompResult(HashMap < String , Class > classes , String startTemplate , String endTemplate) {
         this . classes = classes;
-        this . classAccess = classAccess;
         this . startTemplate = startTemplate;
         this . endTemplate = endTemplate;
     }
     public String constructClassString(String className) {
-        var code = classes.getOrDefault(className, "");
-        var accessMod = classAccess.getOrDefault(className, AccessMod.DEFAULT);
-        if (LangUtil.isTruthy(code.isBlank())) { return ""; }
-        var accessModStr = MethodAccess.accessModToString(accessMod);
-        var separator = (LangUtil.isTruthy(accessModStr.length() > 0) ? (" ") : (""));
+        var cl = classes.getOrDefault(className, new Class());
+        if (LangUtil.isTruthy(cl.code.isBlank())) { return ""; }
+        var accessModStr = MethodAccess.accessModToString(cl.access);
+        var separator = LangUtil.isTruthy(accessModStr) ? (" ") : ("");
         var out = accessModStr + separator + "class " + className + " {\n";
-        out += "    " + code.trim();
+        out += "    " + cl.code.trim();
         out += "\n}\n";
         return out;
     }
@@ -30,7 +27,7 @@ public class CompResult {
         }
         for (var c : LangUtil.asIterable(classes.keySet())) {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
-                out += classes.get(c);
+                out += classes.get(c).code;
             }
             else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
                 out += constructClassString(c);

@@ -1,30 +1,25 @@
-HashMap<string, string> classes
-HashMap<string, AccessMod> classAccess
+HashMap<string, Class> classes
 string startTemplate
 string endTemplate
 
 CompResult(
-    HashMap<string, string> classes,
-    HashMap<string, AccessMod> classAccess,
+    HashMap<string, Class> classes,
     string startTemplate,
     string endTemplate
 ):
     this.classes = classes
-    this.classAccess = classAccess
     this.startTemplate = startTemplate
     this.endTemplate = endTemplate
 
 string constructClassString(string className):
-    let code = classes.getOrDefault(className, "")
-    let accessMod = classAccess.getOrDefault(className, AccessMod.DEFAULT)
+    let cl = classes.getOrDefault(className, new Class())
+    return "" if cl.code.isBlank()
 
-    return "" if code.isBlank()
-
-    let accessModStr = MethodAccess.accessModToString(accessMod)
-    let separator = (accessModStr.length() > 0 ? " " : "")
+    let accessModStr = MethodAccess.accessModToString(cl.access)
+    let separator = accessModStr ? " " : ""
 
     let out = accessModStr + separator + "class " + className + " {\n"
-    out += "    " + code.trim()
+    out += "    " + cl.code.trim()
     out += "\n}\n"
 
     return out
@@ -41,7 +36,7 @@ string getCompiledCode(string mainClassName):
     for c in classes.keySet()
         // The null class is used to write code without a class
         if c == "null"
-            out += classes.get(c)
+            out += classes.get(c).code
         elif c != mainClassName
             out += constructClassString(c)
 

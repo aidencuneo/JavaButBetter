@@ -9,7 +9,7 @@ public class Parser {
             var nextTok = LangUtil.isTruthy(i + 1 < tok.size()) ? (tok.get(i + 1)) : (new Token());
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
-                    t . value = "String";
+                    var t . value = "String";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "String"))) {
                     t . value = "string";
@@ -82,7 +82,7 @@ public class Parser {
                 var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
                 var newExpr = "";
                 for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
-                t . value = "(" + newExpr + ")";
+                var t . value = "(" + newExpr + ")";
             }
             newTok.add(t);
         }

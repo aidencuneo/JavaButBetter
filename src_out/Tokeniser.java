@@ -20,25 +20,25 @@ public class Tokeniser {
         }
     }
     public static ArrayList < String > splitFile(String file) {
-        ArrayList < String > lines = new ArrayList < > ();
+        var ArrayList < String > lines = new ArrayList < > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(file))) { return lines; }
-        String current = "";
-        CharType type = charType(file.charAt(0));
+        var current = "";
+        var type = charType(file.charAt(0));
         CharType lastType;
-        char lastChar = 0;
-        int comment = 0;
-        boolean backslash = false;
-        boolean sq = false;
-        boolean dq = false;
-        boolean bt = false;
-        int rb = 0;
-        int sb = 0;
-        int cb = 0;
-        int lastIndent = 0;
-        int indent = 0;
+        var lastChar = 0;
+        var comment = 0;
+        var backslash = false;
+        var sq = false;
+        var dq = false;
+        var bt = false;
+        var rb = 0;
+        var sb = 0;
+        var cb = 0;
+        var lastIndent = 0;
+        var indent = 0;
         for (var i : LangUtil.asIterable(file.length())) {
-            char c = file.charAt(i);
-            lastType = type;
+            var c = file.charAt(i);
+            var lastType = type;
             type = charType(c);
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ' '))) ? (Extensions.operEq(lastType, CharType.W)) : (Extensions.operEq(c, ' ')))) {
                 ++ indent;
@@ -112,7 +112,7 @@ public class Tokeniser {
         var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
         String indent = "";
-        int i = 0;
+        var i = 0;
         for (; i < line.length(); ++i) {
             var c = line.charAt(i);
             if (LangUtil.isTruthy(Extensions.operEq(c, ' '))) {
@@ -131,12 +131,12 @@ public class Tokeniser {
         }
         String current = "";
         CharType type = charType(line.charAt(i));
-        CharType lastType = CharType.W;
-        CharType nextType = CharType.W;
+        var lastType = CharType.W;
+        var nextType = CharType.W;
         CharType lastLastType;
         char lastChar = 0;
-        char lastLastChar = 0;
-        char nextChar = 0;
+        var lastLastChar = 0;
+        var nextChar = 0;
         int comment = 0;
         boolean backslash = false;
         boolean sq = false;
@@ -149,7 +149,7 @@ public class Tokeniser {
             char c = line.charAt(i);
             nextChar = LangUtil.isTruthy(i + 1 < line.length()) ? (line.charAt(i + 1)) : (0);
             nextType = LangUtil.isTruthy(i + 1 < line.length()) ? (charType(nextChar)) : (CharType.W);
-            lastLastType = lastType;
+            var lastLastType = lastType;
             lastType = type;
             type = charType(c);
             if (LangUtil.isTruthy(((LangUtil.isTruthy(((LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(type, lastType))) ? (!Extensions.operEq(type, CharType.W)) : (!Extensions.operEq(type, lastType)))) ? ((LangUtil.isTruthy(!Extensions.operEq(type, lastType))) ? (!Extensions.operEq(type, CharType.W)) : (!Extensions.operEq(type, lastType))) : (Extensions.operEq(type, CharType.S))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(("+-*/=><!.?".contains("" + lastChar)))) ? (Extensions.operEq(c, '=')) : (("+-*/=><!.?".contains("" + lastChar))))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '_'))) ? (Extensions.operEq(type, CharType.A)) : (Extensions.operEq(lastChar, '_')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.A))) ? (Extensions.operEq(c, '_')) : (Extensions.operEq(lastType, CharType.A)))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.A))) ? (Extensions.operEq(type, CharType.D)) : (Extensions.operEq(lastType, CharType.A)))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(type, CharType.A))) ? (Extensions.operEq(lastType, CharType.D)) : (Extensions.operEq(type, CharType.A)))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.D))) ? ((LangUtil.isTruthy(Extensions.operEq(c, '.'))) ? (Extensions.operEq(nextType, CharType.D)) : (Extensions.operEq(c, '.'))) : (Extensions.operEq(lastType, CharType.D)))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastLastType, CharType.D))) ? ((LangUtil.isTruthy(Extensions.operEq(lastChar, '.'))) ? (Extensions.operEq(type, CharType.D)) : (Extensions.operEq(lastChar, '.'))) : (Extensions.operEq(lastLastType, CharType.D)))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '-'))) ? (Extensions.operEq(c, '>')) : (Extensions.operEq(lastChar, '-')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '='))) ? (Extensions.operEq(c, '>')) : (Extensions.operEq(lastChar, '=')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '_'))) ? (Extensions.operEq(c, '_')) : (Extensions.operEq(lastChar, '_')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '+'))) ? (Extensions.operEq(c, '+')) : (Extensions.operEq(lastChar, '+')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '-'))) ? (Extensions.operEq(c, '-')) : (Extensions.operEq(lastChar, '-')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '*'))) ? (Extensions.operEq(c, '*')) : (Extensions.operEq(lastChar, '*')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '?'))) ? (Extensions.operEq(c, '?')) : (Extensions.operEq(lastChar, '?')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '.'))) ? (Extensions.operEq(c, '.')) : (Extensions.operEq(lastChar, '.')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '&'))) ? (Extensions.operEq(c, '&')) : (Extensions.operEq(lastChar, '&')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '|'))) ? (Extensions.operEq(c, '|')) : (Extensions.operEq(lastChar, '|')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '\''))) ? (Extensions.operEq(c, '\'')) : (Extensions.operEq(lastChar, '\'')))))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '"'))) ? (Extensions.operEq(c, '"')) : (Extensions.operEq(lastChar, '"')))))) ? (!LangUtil.isTruthy(current.isBlank())) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '"'))) ? (Extensions.operEq(c, '"')) : (Extensions.operEq(lastChar, '"')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '\''))) ? (Extensions.operEq(c, '\'')) : (Extensions.operEq(lastChar, '\'')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '|'))) ? (Extensions.operEq(c, '|')) : (Extensions.operEq(lastChar, '|')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '&'))) ? (Extensions.operEq(c, '&')) : (Extensions.operEq(lastChar, '&')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '.'))) ? (Extensions.operEq(c, '.')) : (Extensions.operEq(lastChar, '.')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '?'))) ? (Extensions.operEq(c, '?')) : (Extensions.operEq(lastChar, '?')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '*'))) ? (Extensions.operEq(c, '*')) : (Extensions.operEq(lastChar, '*')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '-'))) ? (Extensions.operEq(c, '-')) : (Extensions.operEq(lastChar, '-')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '+'))) ? (Extensions.operEq(c, '+')) : (Extensions.operEq(lastChar, '+')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '_'))) ? (Extensions.operEq(c, '_')) : (Extensions.operEq(lastChar, '_')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '='))) ? (Extensions.operEq(c, '>')) : (Extensions.operEq(lastChar, '=')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '-'))) ? (Extensions.operEq(c, '>')) : (Extensions.operEq(lastChar, '-')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastLastType, CharType.D))) ? ((LangUtil.isTruthy(Extensions.operEq(lastChar, '.'))) ? (Extensions.operEq(type, CharType.D)) : (Extensions.operEq(lastChar, '.'))) : (Extensions.operEq(lastLastType, CharType.D)))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.D))) ? ((LangUtil.isTruthy(Extensions.operEq(c, '.'))) ? (Extensions.operEq(nextType, CharType.D)) : (Extensions.operEq(c, '.'))) : (Extensions.operEq(lastType, CharType.D)))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(type, CharType.A))) ? (Extensions.operEq(lastType, CharType.D)) : (Extensions.operEq(type, CharType.A)))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.A))) ? (Extensions.operEq(type, CharType.D)) : (Extensions.operEq(lastType, CharType.A)))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastType, CharType.A))) ? (Extensions.operEq(c, '_')) : (Extensions.operEq(lastType, CharType.A)))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(lastChar, '_'))) ? (Extensions.operEq(type, CharType.A)) : (Extensions.operEq(lastChar, '_')))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(("+-*/=><!.?".contains("" + lastChar)))) ? (Extensions.operEq(c, '=')) : (("+-*/=><!.?".contains("" + lastChar))))))) : (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))))) : (((LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(type, lastType))) ? (!Extensions.operEq(type, CharType.W)) : (!Extensions.operEq(type, lastType)))) ? ((LangUtil.isTruthy(!Extensions.operEq(type, lastType))) ? (!Extensions.operEq(type, CharType.W)) : (!Extensions.operEq(type, lastType))) : (Extensions.operEq(type, CharType.S))))))) {

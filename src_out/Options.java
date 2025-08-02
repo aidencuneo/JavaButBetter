@@ -4,7 +4,7 @@ import java.util.*;
 public class Options {
     public static String defaultDecimal;
     public static void reset() {
-        defaultDecimal = "f";
+        var defaultDecimal = "f";
     }
     static {
         reset();

@@ -13,6 +13,8 @@ static main:
     // Compile files one by one
     let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb"))
 
+    println "\nCompiling Extensions..."
+
     // Extensions code
     let extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
@@ -75,6 +77,8 @@ bool operEq(object a, object b):
     return a.equals(b)
     """.trim())
 
+    println "\n\nCompiling " + compDir + "..."
+
     for i in files.length
         let fileContent = ""
         let fromPath = compDir + "/" + files[i]
@@ -109,9 +113,6 @@ bool operEq(object a, object b):
             writer.println(compiled)
         catch IOException e
             ...
-
-    // System.exit(0)
-    println "\n\nCompiling Extensions..."
 
     // Write Extensions.java
     try let writer = new PrintWriter(outDir + "/Extensions.java")
@@ -182,6 +183,9 @@ List<Int> asIterable(int n):
 
 (T) Iterable<T> asIterable(Iterator<T> v):
     ret new IteratorToIterable<T>(v)
+
+(TK, TV) Set<TK> asIterable(HashMap<TK, TV> v):
+    ret v.keySet()
 
 char[] asIterable(string s):
     ret s.toCharArray()

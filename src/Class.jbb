@@ -4,8 +4,6 @@ string typeArgs = ""
 string implementsType = ""
 string extendsType = ""
 string code = ""
-HashMap<string, Field> fields = new HashMap<>()
-HashMap<string, Method> methods = new HashMap<>()
 
 Class(string name):
     this.name = name

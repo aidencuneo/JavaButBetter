@@ -6,27 +6,28 @@ alias INDENT_SIZE = 4
 // These fields persist only for the current file
 string mainClassName
 string currentClass
-string currentMethod
 string startTemplate
 string endTemplate
 HashMap<string, Class> classes
 HashMap<string, Alias> aliases
+HashMap<string, Int> locals // name -> scope
 
 int nextTempVar = 0
 int indent = 0
+int scope = 0
 bool defaultStatic = false
 
 CompResult compileFile(string className, string code):
     // Allow all methods to use these variables
     mainClassName = className
     currentClass = className
-    currentMethod = ""
     startTemplate = "import java.io.*;\nimport java.util.*;\n"
     endTemplate = ""
 
     // Reset class data
     classes = new HashMap<>()
     aliases = new HashMap<>()
+    locals = new HashMap<>()
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -50,17 +51,18 @@ CompResult compileFile(string className, string code):
 
         // Indentation controls braces
         while indent > lastIndent
+            // Open block
             lastIndent += INDENT_SIZE
             cl.code = cl.code.trim()
             cl.code = cl.code + " {\n"
 
         while indent < lastIndent
+            // Close block
             cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
             lastIndent -= INDENT_SIZE
 
         // Indentation defines scope
-        let scope = indent / INDENT_SIZE
-        // println scope, tok
+        scope = indent / INDENT_SIZE
 
         // Add indentation for every line
         cl.code = cl.code + " ".repeat(indent + INDENT_SIZE)
@@ -76,8 +78,10 @@ CompResult compileFile(string className, string code):
         //     println tok
 
     // After the final line of a class, reset indentation
+    let cl = getOrCreateClass(currentClass)
+
     while lastIndent > 0
-        let cl = getOrCreateClass(currentClass)
+        // Close block
         cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
         lastIndent -= INDENT_SIZE
 
@@ -217,6 +221,9 @@ string compileStatement(ArrayList<Token> tok, string out):
         out += compileExpr(tok[f + 1:])
         out += ")) "
 
+        // Declare local (inside the for loop)
+        declareLocal(varname, scope + 1)
+
     // Statement control flow (TODO: combine these together so precedence is the same)
     elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1 && findTokenTypeRev(tok, Token.Type.ELSE) == -1
         out += "if (LangUtil.isTruthy("
@@ -253,6 +260,9 @@ string compileStatement(ArrayList<Token> tok, string out):
             out += ")) { "
             out = compileStatement(tok[:f], out)
             out += " }"
+
+            // Declare local (inside the for loop)
+            declareLocal(varname, scope + 1)
 
     // Try
     elif startTok == Token.Type.TRY
@@ -386,12 +396,12 @@ string compileStatement(ArrayList<Token> tok, string out):
 
     // Keywords
     elif startTok == Token.Type.RETURN
-        out += "return "
+        out += "return"
 
         if len(tok) > 1
-            out += compileExpr(tok[1:])
-        else
-            out += "null"
+            out += " " + compileExpr(tok[1:])
+        // else
+        //     out += "null"
 
         out += ";"
 
@@ -503,8 +513,10 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     // Assignments
     elif (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
-        string vartype = ""
-        string varname = ""
+        // [type]?, name, =, [value]
+
+        let vartype = ""
+        let varname = ""
 
         // type name = value
         if f == 2
@@ -517,13 +529,18 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         // ... = value
         else
-            inline(for (int j = 0; j < f; ++j))
-                varname += tok[j].value + " "
-            varname = varname.trim()
+            // inline(for (int j = 0; j < f; ++j))
+            varname += tok[j].value + " " for j in [..f]
+            varname .= trim()
 
         vartype = "var" if vartype == "let"
 
         out += "(" if nested
+
+        // Declare if this name is not already in scope and this is not nested
+        if !localInScope(varname) && !nested
+            vartype = "var"
+            declareLocal(varname)
 
         if vartype
             out += vartype + " " + varname + " = "
@@ -968,3 +985,13 @@ ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
 
 ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
     return stripMethodAccess(tok, len(tok))
+
+declareLocal(string name, int scope):
+    // If scope is zero, this isn't a valid local declaration
+    locals.put(name, scope) if scope
+
+declareLocal(string name):
+    declareLocal(name, scope)
+
+bool localInScope(string name):
+    return scope >= locals.getOrDefault(name, scope + 1)

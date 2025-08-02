@@ -8,10 +8,8 @@ public class Class {
     public String implementsType = "";
     public String extendsType = "";
     public String code = "";
-    public HashMap < String , Field > fields = new HashMap < > ();
-    public HashMap < String , Method > methods = new HashMap < > ();
     public Class(String name) {
-        this . name = name;
+        var this . name = name;
     }
     public String toString() {
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }

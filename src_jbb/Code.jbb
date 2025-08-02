@@ -26,9 +26,15 @@ main:
     // println "4: " + i for i in range4
     // println "5: " + i for i in range5
 
-    let empty = []
-    let lst = [1, 2, 3, "hello"]
-    let ints = [0, 1, 2, 3]
+    empty = []
+    empty = [1, 2, 3]
+    for i in 10
+        i = 20
+            i = 30
+        i = 40
+    i = 50
+    lst = [1, 2, 3, "hello"]
+    ints = [0, 1, 2, 3]
     // println ints[0], ints[1], ints[2], ints[3], ints[-1], ints[-2], ints[-3], ints[-4]
     println ints[0:-1:1], ints[::-1], ints[::1], ints[:2:-1], ints[1:]
 

@@ -14,7 +14,7 @@ public class Extensions {
         return v.length;
     }
     public static char operGetIndex(String s , int i) {
-        i = LangUtil.indexConvert(i, s.length());
+        var i = LangUtil.indexConvert(i, s.length());
         return s.charAt(i);
     }
     public static <T> T operGetIndex(T [] v , int i) {

@@ -11,6 +11,7 @@ public class JavaBB {
             new File(outDir).mkdir();
         }
         var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
+        LangUtil.println("\nCompiling Extensions...");
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
 
@@ -71,6 +72,7 @@ bool operEq(string a, string b):
 bool operEq(object a, object b):
     return a.equals(b)
     """.trim());
+        LangUtil.println("\n\nCompiling " + compDir + "...");
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
             var fromPath = compDir + "/" + Extensions.operGetIndex(files, i);
@@ -86,7 +88,7 @@ bool operEq(object a, object b):
             if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
                 var newCode = res.classes.get("Extensions").code;
                 var extensionsClass = extensionsClassRes.classes.get("Extensions");
-                extensionsClass . code = extensionsClass.code + newCode;
+                var extensionsClass . code = extensionsClass.code + newCode;
                 res.classes.remove("Extensions");
             }
             var compiled = res.getCompiledCode(className);
@@ -98,7 +100,6 @@ bool operEq(object a, object b):
                 
             }
         }
-        LangUtil.println("\n\nCompiling Extensions...");
         try (var writer = new PrintWriter(outDir + "/Extensions.java")) {
             new File(outDir + "/Extensions.java").createNewFile();
             writer.println(extensionsClassRes.getCompiledCode("Extensions"));
@@ -166,6 +167,9 @@ List<Int> asIterable(int n):
 
 (T) Iterable<T> asIterable(Iterator<T> v):
     ret new IteratorToIterable<T>(v)
+
+(TK, TV) Set<TK> asIterable(HashMap<TK, TV> v):
+    ret v.keySet()
 
 char[] asIterable(string s):
     ret s.toCharArray()

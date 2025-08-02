@@ -6,16 +6,16 @@ public class CompResult {
     public String startTemplate;
     public String endTemplate;
     public CompResult(HashMap < String , Class > classes , String startTemplate , String endTemplate) {
-        this . classes = classes;
-        this . startTemplate = startTemplate;
-        this . endTemplate = endTemplate;
+        var this . classes = classes;
+        var this . startTemplate = startTemplate;
+        var this . endTemplate = endTemplate;
     }
     public String getCompiledCode(String mainClassName) {
         var out = "";
         if (LangUtil.isTruthy(classes.containsKey(mainClassName))) {
             out += classes.get(mainClassName);
         }
-        for (var c : LangUtil.asIterable(classes.keySet())) {
+        for (var c : LangUtil.asIterable(classes)) {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
                 out += classes.get(c).code;
             }

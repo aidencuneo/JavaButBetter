@@ -53,12 +53,15 @@ public class LangUtil {
     public static <T> Iterable < T > asIterable(Iterator < T > v) {
         return new IteratorToIterable < T > (v);
     }
+    public static <TK, TV> Set < TK > asIterable(HashMap < TK , TV > v) {
+        return v.keySet();
+    }
     public static char [] asIterable(String s) {
         return s.toCharArray();
     }
     public static String slice(String s , int start , int end , int step) {
-        start = indexConvert(start, s.length());
-        end = indexConvert(end, s.length());
+        var start = indexConvert(start, s.length());
+        var end = indexConvert(end, s.length());
         if (LangUtil.isTruthy(Extensions.operEq(step, 1))) {
             return s.substring(start, end);
         }

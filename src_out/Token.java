@@ -56,8 +56,8 @@ public class Token {
     public Type type;
     public String value;
     public Token(Type type , String value) {
-        this . type = type;
-        this . value = value;
+        var this . type = type;
+        var this . value = value;
     }
     public Token() {
         this . type = Type.BLANK;
@@ -66,10 +66,10 @@ public class Token {
     public static Token fromString(String v) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
         Type t;
-        char f = v.charAt(0);
-        char l = v.charAt(v.length() - 1);
+        var f = v.charAt(0);
+        var l = v.charAt(v.length() - 1);
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
-            t = Type.BLANK;
+            var t = Type.BLANK;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.length() > 0)) ? (v.isBlank()) : (v.length() > 0))) {
             t = Type.INDENT;
@@ -93,11 +93,11 @@ public class Token {
             t = Type.STRING;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith("'''"))) ? (v.endsWith("'''")) : (v.startsWith("'''")))) {
-            String vNoQuotes = v.substring(3, v.length() - 3);
-            String realStr = StringParser.unescapeString(vNoQuotes);
+            var vNoQuotes = v.substring(3, v.length() - 3);
+            var realStr = StringParser.unescapeString(vNoQuotes);
             if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
-                v = "\"\"\"" + vNoQuotes + "\"\"\"";
+                var v = "\"\"\"" + vNoQuotes + "\"\"\"";
             }
             else {
                 t = Type.CHAR;

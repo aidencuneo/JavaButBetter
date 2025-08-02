@@ -8,7 +8,7 @@ public class Util {
     }
     public static <T> T get(ArrayList < T > lst , int index) {
         try {
-            index = indexConvert(index, lst.size());
+            var index = indexConvert(index, lst.size());
             return lst.get(index);
         }
         catch (IndexOutOfBoundsException e) {
@@ -17,8 +17,8 @@ public class Util {
     }
     public static <T> ArrayList < T > select(ArrayList < T > lst , int start , int end) {
         try {
-            start = indexConvert(start, lst.size());
-            end = indexConvert(end, lst.size());
+            var start = indexConvert(start, lst.size());
+            var end = indexConvert(end, lst.size());
             return new ArrayList < > (lst.subList(start, end));
         }
         catch (IndexOutOfBoundsException | IllegalArgumentException e) {

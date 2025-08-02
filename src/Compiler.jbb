@@ -381,7 +381,7 @@ string compileStatement(ArrayList<Token> tok, string out):
                 out += methodAccess + " " + typeArgs + returnType + methodName + args
 
     // Static block
-    elif startTok == Token.Type.STATIC
+    elif len(tok) == 1 && startTok == Token.Type.STATIC
         out += "static"
 
     // Keywords
@@ -395,13 +395,13 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         out += ";"
 
-    elif startTok == Token.Type.BREAK
+    elif len(tok) == 1 && startTok == Token.Type.BREAK
         out += "break;"
 
-    elif startTok == Token.Type.CONTINUE
+    elif len(tok) == 1 && startTok == Token.Type.CONTINUE
         out += "continue;"
 
-    elif startTok == Token.Type.PASS
+    elif len(tok) == 1 && startTok == Token.Type.PASS
         // Do nothing
         ...
 

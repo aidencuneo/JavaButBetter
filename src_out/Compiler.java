@@ -306,7 +306,7 @@ public class Compiler {
                 }
             }
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.STATIC))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "static";
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.RETURN))) {
@@ -319,13 +319,13 @@ public class Compiler {
             }
             out += ";";
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.BREAK))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.BREAK)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "break;";
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.CONTINUE))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.CONTINUE)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "continue;";
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.PASS))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.PASS)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             
         }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ID))) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "println")))) : (Extensions.operEq(startTok, Token.Type.ID))))) {

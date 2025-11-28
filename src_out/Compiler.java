@@ -6,6 +6,7 @@ public class Compiler {
     public static String currentClass = "";
     public static String startTemplate = "";
     public static String endTemplate = "";
+    public static String packagePath = "";
     public static HashMap < String , Class > classes = null;
     public static HashMap < String , Alias > aliases = null;
     public static HashMap < String , Integer > locals = null;
@@ -69,11 +70,10 @@ public class Compiler {
         var f = - 1;
         var f2 = - 1;
         if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.PACKAGE))) {
-            var packageStr = "package ";
+            packagePath = "";
             for (var j : LangUtil.asIterable(LangUtil.range(1, Extensions.len(tok), null))) {
-                packageStr += Extensions.operGetIndex(tok, j).value;
+                packagePath += Extensions.operGetIndex(tok, j).value;
             }
-            startTemplate = packageStr + ";\n" + startTemplate;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IMPORT))) {
             var importStr = "import ";

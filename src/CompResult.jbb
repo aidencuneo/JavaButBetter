@@ -27,4 +27,8 @@ string getCompiledCode(string mainClassName):
         elif c != mainClassName
             out += classes.get(c)
 
-    return startTemplate + "\n" + out + endTemplate
+    packageStr = ""
+    if Compiler.packagePath
+        packageStr = "package " + Compiler.packagePath + ";\n\n"
+
+    return packageStr + startTemplate + "\n" + out + endTemplate

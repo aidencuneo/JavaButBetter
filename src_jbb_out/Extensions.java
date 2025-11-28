@@ -1,3 +1,5 @@
+package aidenbc;
+
 import java.io.*;
 import java.util.*;
 
@@ -7,7 +9,7 @@ public class Extensions {
     }
     public static <T> int len(Iterable < T > v) {
         var c = 0;
-        for (var _ : LangUtil.asIterable(v)) { ++ c; }
+        for (var x : LangUtil.asIterable(v)) { ++ c; }
         return c;
     }
     public static <T> int len(T [] v) {

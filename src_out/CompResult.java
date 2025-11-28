@@ -23,7 +23,11 @@ public class CompResult {
                 out += classes.get(c);
             }
         }
-        return startTemplate + "\n" + out + endTemplate;
+        var packageStr = "";
+        if (LangUtil.isTruthy(Compiler.packagePath)) {
+            packageStr = "package " + Compiler.packagePath + ";\n\n";
+        }
+        return packageStr + startTemplate + "\n" + out + endTemplate;
     }
 }
 

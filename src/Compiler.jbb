@@ -8,6 +8,7 @@ string mainClassName = ""
 string currentClass = ""
 string startTemplate = ""
 string endTemplate = ""
+string packagePath = ""
 HashMap<string, Class> classes = null
 HashMap<string, Alias> aliases = null
 HashMap<string, Int> locals = null // name -> scope
@@ -105,10 +106,10 @@ string compileStatement(ArrayList<Token> tok, string out):
 
     // Package
     if startTok == Token.Type.PACKAGE
-        let packageStr = "package "
+        packagePath = ""
         for j in [1..len(tok)]
-            packageStr += tok[j].value
-        startTemplate = packageStr + ";\n" + startTemplate
+            packagePath += tok[j].value
+        // startTemplate = packageStr + ";\n" + startTemplate
 
     // Imports
     elif startTok == Token.Type.IMPORT

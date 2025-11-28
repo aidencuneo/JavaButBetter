@@ -1,3 +1,5 @@
+package aidenbc
+
 // These fields persist only for the current file
 string mainClassName = ""
 string currentClass = ""

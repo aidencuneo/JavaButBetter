@@ -1,0 +1,1047 @@
+public static class Compiler
+
+// Definitions
+alias INDENT_SIZE = 4
+
+// These fields persist only for the current file
+string mainClassName = ""
+string currentClass = ""
+string startTemplate = ""
+string endTemplate = ""
+HashMap<string, Class> classes = null
+HashMap<string, Alias> aliases = null
+HashMap<string, Int> locals = null // name -> scope
+
+int nextTempVar = 0
+int indent = 0
+int scope = 0
+bool defaultStatic = false
+
+CompResult compileFile(string className, string code):
+    // Allow all methods to use these variables
+    mainClassName = className
+    currentClass = className
+    startTemplate = "import java.io.*;\nimport java.util.*;\n"
+    endTemplate = ""
+
+    // Reset class data
+    classes = new HashMap<>()
+    aliases = new HashMap<>()
+    locals = new HashMap<>()
+    // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
+
+    nextTempVar = 0
+    defaultStatic = false
+
+    let lines = Tokeniser.splitFile(code)
+    let lastIndent = 0
+
+    for i in len(lines)
+        let cl = getOrCreateClass(currentClass)
+        let tok = Tokeniser.tokLine(lines[i], true)
+
+        // Nothing in the line?
+        next if !tok
+
+        indent = len(tok[0].value)
+        tok.remove(0)
+
+        // Nothing but indentation in the line?
+        next if !tok
+
+        // Indentation controls braces
+        while indent > lastIndent
+            // Open block
+            lastIndent += INDENT_SIZE
+            cl.code = cl.code.trim()
+            cl.code = cl.code + " {\n"
+
+        while indent < lastIndent
+            // Close block
+            cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+            lastIndent -= INDENT_SIZE
+
+        // Indentation defines scope
+        scope = indent / INDENT_SIZE
+
+        // Add indentation for every line
+        cl.code = cl.code + " ".repeat(indent + INDENT_SIZE)
+
+        // Add compiled statement
+        let out = compileStatement(tok, cl.code)
+        cl = getOrCreateClass(currentClass)
+        cl.code = out + "\n"
+
+        lastIndent = indent
+
+        // if currentClass != "LangUtil" && currentClass != "Extensions"
+        //     println tok
+
+    // After the final line of a class, reset indentation
+    let cl = getOrCreateClass(currentClass)
+
+    while lastIndent > 0
+        // Close block
+        cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+        lastIndent -= INDENT_SIZE
+
+    // Return compilation result
+    return new CompResult(classes, startTemplate, endTemplate)
+
+Class getOrCreateClass(string name):
+    if !classes.containsKey(name)
+        classes.put(name, new Class(name))
+
+    return classes.get(currentClass)
+
+string compileStatement(ArrayList<Token> tok, string out):
+    return "" if !tok
+
+    let types = getTokenTypes(tok)
+    let startTok = types[0]
+    let endTok = types[-1]
+    let f = -1
+    let f2 = -1
+
+    // Package
+    if startTok == Token.Type.PACKAGE
+        let packageStr = "package "
+        for j in [1..len(tok)]
+            packageStr += tok[j].value
+        startTemplate = packageStr + ";\n" + startTemplate
+
+    // Imports
+    elif startTok == Token.Type.IMPORT
+        let importStr = "import "
+        for j in [1..len(tok)]
+            importStr += tok[j].value
+        startTemplate += importStr + ";\n"
+
+    // Options
+    elif startTok == Token.Type.OPTION
+        if len(tok) < 2
+            // Error!
+            return ""
+
+        if len(tok) < 3
+            // Error!
+            return ""
+
+        let optionName = tok[1].value
+        let optionValue = tok[2].value
+        Options.setOption(optionName, optionValue)
+
+    // Aliases
+    elif startTok == Token.Type.ALIAS
+        if len(tok) < 2
+            // Error!
+            return ""
+
+        // Find the equals sign
+        if (f = findTokenType(tok, Token.Type.ASSIGN)) == -1
+            // Error!
+            return ""
+
+        if f < 2
+            // Error!
+            return ""
+
+        let name = tok[1].value
+        let args = new ArrayList<string>()
+
+        if f > 2
+            args = Tokeniser.extractArgsFromExpr(tok[2].value)
+
+        let tokens = tok[f + 1:]
+
+        aliases.put(name, new Alias(tokens, args))
+        // println name + " = " + args + ", " + tokens
+
+    // Classes
+    elif (f = findTokenType(tok, Token.Type.CLASS)) != -1 && f + 1 < len(tok)
+        // access?, class, typeargs?, name, extends | implements, [type]
+
+        // Set code for previous class before moving to new one
+        let cl = getOrCreateClass(currentClass)
+        cl.code = out
+        classes.put(currentClass, cl)
+
+        // Eat access tokens
+        let access = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
+
+        // Eat class
+        tok.remove(0)
+
+        // Eat type args
+        let typeArgs = ""
+        if tok && tok[0].type == Token.Type.EXPR
+            typeArgs = tok[0].value[1:-1]
+            tok.remove(0)
+
+        // Change current class and push to classes map
+        currentClass = tok[0].value
+        cl = getOrCreateClass(currentClass)
+        classes.put(currentClass, cl)
+        out = cl.code
+
+        // Eat name
+        tok.remove(0)
+
+        // extends | implements
+        if tok && tok[0].value == "extends"
+            cl.extendsType = compileExpr(tok[1:])
+        elif tok && tok[0].value == "implements"
+            cl.implementsType = compileExpr(tok[1:])
+
+        // Set access modifier and type args for this class
+        cl.access = access.accessMod
+        cl.typeArgs = typeArgs
+
+        // Set default static modifier for this class
+        defaultStatic = access.isStatic
+
+    // Control flow
+    elif (startTok == Token.Type.IF
+        || startTok == Token.Type.ELIF
+        || startTok == Token.Type.ELSE
+        || startTok == Token.Type.WHILE
+        || startTok == Token.Type.UNTIL
+    )
+        out += "if (" if startTok == Token.Type.IF
+        out += "else if (" if startTok == Token.Type.ELIF
+        out += "else " if startTok == Token.Type.ELSE
+        out += "while (" if startTok == Token.Type.WHILE
+        out += "while (!(" if startTok == Token.Type.UNTIL
+
+        if startTok != Token.Type.ELSE
+            out += "LangUtil.isTruthy("
+            out += compileExpr(tok[1:])
+            out += "))"
+            out += ")" if startTok == Token.Type.UNTIL
+
+    // For-in loops
+    elif startTok == Token.Type.FOR && (f = findTokenType(tok, Token.Type.IN)) != -1
+        out += "for ("
+        string varname = tok[1].value
+        out += "var " + varname + " : LangUtil.asIterable("
+        out += compileExpr(tok[f + 1:])
+        out += ")) "
+
+        // Declare local (inside the for loop)
+        declareLocal(varname, scope + 1)
+
+    // Statement control flow (TODO: combine these together so precedence is the same)
+    elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1 && findTokenTypeRev(tok, Token.Type.ELSE) == -1
+        out += "if (LangUtil.isTruthy("
+        string cond = compileExpr(tok[f + 1:])
+        out += cond.isEmpty() ? "true" : cond
+        out += ")) { "
+        out = compileStatement(tok[:f], out)
+        out += " }"
+
+    elif (f = findTokenTypeRev(tok, Token.Type.WHILE)) != -1
+        out += "while (LangUtil.isTruthy("
+        string cond = compileExpr(tok[f + 1:])
+        out += cond.isEmpty() ? "true" : cond
+        out += ")) { "
+        out = compileStatement(tok[:f], out)
+        out += " }"
+
+    elif (f = findTokenTypeRev(tok, Token.Type.UNTIL)) != -1
+        out += "while (!LangUtil.isTruthy("
+        string cond = compileExpr(tok[f + 1:])
+        out += cond.isEmpty() ? "false" : cond
+        out += ")) { "
+        out = compileStatement(tok[:f], out)
+        out += " }"
+
+    elif (f = findTokenTypeRev(tok, Token.Type.FOR)) != -1
+        // For-in
+        int f_in = findTokenTypeRev(tok, Token.Type.IN)
+        if f_in != -1
+            out += "for ("
+            string varname = tok[f + 1].value
+            out += "var " + varname + " : LangUtil.asIterable("
+            out += compileExpr(tok[f_in + 1:])
+            out += ")) { "
+            out = compileStatement(tok[:f], out)
+            out += " }"
+
+            // Declare local (inside the for loop)
+            declareLocal(varname, scope + 1)
+
+    // Try
+    elif startTok == Token.Type.TRY
+        out += "try "
+        string resources = compileExpr(tok[1:], false)
+        out += "(" + resources + ") " if resources
+
+    // Catch
+    elif startTok == Token.Type.CATCH
+        out += "catch ("
+
+        // Add all of the following tokens
+        let s = ""
+        s += t.value + " " for t in tok[1:]
+        s .= trim()
+
+        out += s + ")"
+
+    // Inline code
+    elif startTok == Token.Type.INLINE
+        if len(tok) < 2
+            // Error!
+            return ""
+
+        out += tok[1].value[1:-1] // Strip backticks or brackets away
+
+    // Scoped statements - methods only (?)
+    elif endTok == Token.Type.SCOPE
+        // TODO: get/set
+        if false
+            ...
+
+        // Methods
+        else
+            // access?, typeargs?, [returntype|void], name, args?, scope
+
+            // Eat access tokens
+            let methodAccess = getMethodAccess(tok)
+            tok = stripMethodAccess(tok)
+
+            // Default access modifier for methods is public
+            if methodAccess.accessMod == AccessMod.NONE
+                methodAccess.accessMod = AccessMod.PUBLIC
+
+            // Eat type args
+            let typeArgs = ""
+            if tok && tok[0].type == Token.Type.EXPR
+                let v = tok[0].value
+                typeArgs = "<" + v[1:-1] + "> "
+                tok.remove(0)
+
+            // Eat scope token
+            tok.remove(len(tok) - 1)
+
+            // Eat method args
+            let args = "()"
+            if tok && tok[-1].type == Token.Type.EXPR
+                // Compile method arguments
+                args = compileMethodArgs(tok[-1].value, true)
+                tok.remove(len(tok) - 1)
+
+            // Eat method name (can be many different token types)
+            let methodName = ""
+            if tok
+                methodName = tok[-1].value
+                tok.remove(len(tok) - 1)
+
+                // Convert operator names
+                if methodName == "+"
+                    methodName = "operAdd"
+                elif methodName == "-"
+                    methodName = "operSub"
+                elif methodName == "*"
+                    methodName = "operMul"
+                elif methodName == "/"
+                    methodName = "operDiv"
+                elif methodName == "%"
+                    methodName = "operMod"
+                elif methodName == "++" || methodName == "_++"
+                    methodName = "operPostInc"
+                elif methodName == "--" || methodName == "_--"
+                    methodName = "operPostDec"
+                elif methodName == "++_"
+                    methodName = "operPreInc"
+                elif methodName == "--_"
+                    methodName = "operPreDec"
+                elif methodName == "!"
+                    methodName = "operNot"
+                elif methodName == "~"
+                    methodName = "operBitNot"
+                elif methodName == "=="
+                    methodName = "operEq"
+                elif methodName == "!="
+                    methodName = "operEq"
+                elif methodName == ">"
+                    methodName = "operGt"
+                elif methodName == "<"
+                    methodName = "operLt"
+                elif methodName == ">="
+                    methodName = "operGte"
+                elif methodName == "<="
+                    methodName = "operLte"
+                elif methodName == "&&"
+                    methodName = "operAnd"
+                elif methodName == "||"
+                    methodName = "operOr"
+            else
+                // Error! Method name not given
+                ...
+
+            // Everything remaining is part of the return type
+            let returnType = ""
+            returnType += t.value + " " for t in tok
+            returnType = "void " if !returnType
+
+            // If method name is 'main', args must be (String[] args) and method must be static
+            if methodName == "main"
+                args = "(String[] args)"
+                methodAccess.isStatic = true
+
+            // If method name is the same as the class name,
+            // it's a constructor, so don't include the return type
+            if methodName == currentClass
+                out += methodAccess + " " + typeArgs + methodName + args
+            else
+                out += methodAccess + " " + typeArgs + returnType + methodName + args
+
+    // Static block
+    elif len(tok) == 1 && startTok == Token.Type.STATIC
+        out += "static"
+
+    // Keywords
+    elif startTok == Token.Type.RETURN
+        out += "return"
+
+        if len(tok) > 1
+            out += " " + compileExpr(tok[1:])
+        // else
+        //     out += "null"
+
+        out += ";"
+
+    elif len(tok) == 1 && startTok == Token.Type.BREAK
+        out += "break;"
+
+    elif len(tok) == 1 && startTok == Token.Type.CONTINUE
+        out += "continue;"
+
+    elif len(tok) == 1 && startTok == Token.Type.PASS
+        // Do nothing
+        ...
+
+    // ID keywords
+    elif (startTok == Token.Type.ID && (
+        tok[0].value == "print" || tok[0].value == "println"
+    ))
+        // print, println
+        if tok[0].value == "print" || tok[0].value == "println"
+            out += "LangUtil." + tok[0].value + "("
+            out += compileExpr(tok[1:])
+            out += ");"
+
+    // Enum declarations
+    elif findTokenType(tok, Token.Type.ENUM) != -1
+        // access?, enum, name
+
+        // Eat access tokens
+        let methodAccess = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
+
+        // Default access modifier for enums is public
+        if methodAccess.accessMod == AccessMod.NONE
+            methodAccess.accessMod = AccessMod.PUBLIC
+
+        // Get name
+        let name = ""
+        if tok && tok[-1].type == Token.Type.ID
+            name = tok[-1].value
+        else
+            // Error! Enum name not given
+            ...
+
+        out += methodAccess + " enum " + name
+
+    // Field declarations (two tokens minimum with no indentation)
+    elif len(tok) >= 2 && !indent
+        // access?, static?, [type], name, (equals, [expr])?
+
+        // Eat access tokens
+        let methodAccess = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
+
+        // Default access modifier for fields is public
+        if methodAccess.accessMod == AccessMod.NONE
+            methodAccess.accessMod = AccessMod.PUBLIC
+
+        // Eat value
+        let value = ""
+        if (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
+            value = " = " + compileExpr(tok[f + 1:])
+            tok = tok[:f]
+
+        // Eat name
+        let name = ""
+        if tok && tok[-1].type == Token.Type.ID
+            name = tok[-1].value
+            tok.remove(len(tok) - 1)
+        else
+            // Error! Field name not given
+            ...
+
+        // Everything remaining is part of the type
+        let vartype = ""
+        vartype += t.value + " " for t in tok
+
+        if !vartype
+            // Error! Field missing type
+            ...
+
+        // Declare local
+        println "Declaring " + name
+        declareLocal(name)
+
+        out += methodAccess + " " + vartype + name + value + ";"
+
+    // Expressions
+    else
+        // string assignment = ""
+
+        // // Assign to temp if there is not already an assignment here
+        // if findTokenType(tok, Token.Type.ASSIGN) == -1 && findTokenType(tok, Token.Type.COMP_ASSIGN) == -1
+        //     assignment = "Object " + getNextTemp() + " = "
+
+        let ending = endTok == Token.Type.COMMA ? "" : ";"
+        out += compileExpr(tok, false) + ending
+
+    return out
+
+string compileExpr(ArrayList<Token> tok, bool nested):
+    string out = ""
+    int f = -1
+    int f2 = -1
+
+    // Empty expression
+    return out if !tok
+
+    // Comma (temporary?)
+    if (f = findTokenType(tok, Token.Type.COMMA)) != -1
+        out += compileExpr(tok[:f])
+        out += ", "
+        out += compileExpr(tok[f + 1:])
+
+    // Assignments (no dots)
+    elif (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
+        // [type]?, name, =, [value]
+
+        let vartype = ""
+        let varname = ""
+
+        // // name.attr.attr2... = value
+        // if (f2 = findTokenType(tok[:f], Token.Type.DOT)) != -1
+        //     for j in [..f]
+        //         varname += tok[j].value + " "
+        //     varname .= trim()
+
+        // type name = value
+        if f == 2
+            vartype = tok[0].value
+            varname = tok[1].value
+
+        // name = value
+        elif f == 1
+            varname = tok[0].value
+
+        // ... = value
+        else
+            // inline(for (int j = 0; j < f; ++j))
+            varname += tok[j].value + " " for j in [..f]
+            varname .= trim()
+
+        vartype = "var" if vartype == "let"
+
+        out += "(" if nested
+
+        // Declare if this name is not already in scope, this is not nested, and the var name is valid
+        if !localInScope(varname) && !nested && !varname.contains(" ") // TODO: use regex and parser.jbb and stringparser.jbb to check if this is an identifier
+            vartype = "var" if !vartype // Automatic var insertion
+            declareLocal(varname)
+
+        if vartype
+            out += vartype + " " + varname + " = "
+        else
+            out += varname + " = "
+
+        out += compileExpr(tok[f + 1:])
+
+        out += ")" if nested
+
+    // Compound assignments (no dots)
+    elif (f = findTokenType(tok, Token.Type.COMP_ASSIGN)) != -1
+        let varname = ""
+        let oper = tok[f].value[:-1]
+
+        // name = value
+        if f == 1
+            varname = tok[0].value
+
+        // Error!
+        else
+            ...
+
+        out += "(" if nested
+
+        ArrayList<Token> exprTok = tok[f + 1:]
+
+        // For custom operators, convert to 'name = (name oper value)'
+        if List.of(".", "**", "??").contains(oper)
+            exprTok.add(0, Token.fromString(varname))
+            exprTok.add(1, Token.fromString(oper))
+            out += varname + " = "
+
+        // Otherwise, use 'name oper= (value)'
+        else
+            out += varname + " " + tok[f].value + " "
+
+        out += compileExpr(exprTok)
+
+        out += ")" if nested
+
+    // Arrow function (Java lambda)
+    elif (f = findTokenType(tok, Token.Type.ARROW)) != -1
+        // args, ->, [body]
+
+        // Eat and compile args
+        let args = tok[0].value
+        if tok[0].type == Token.Type.EXPR
+            args = compileMethodArgs(args)
+            tok.remove(0)
+        else
+            // Error! (?)
+            return ""
+
+        // Compile body (from 1 onwards)
+        out += args + " -> " + compileExpr(tok[1:])
+
+    // Ternary conditional operator
+    elif (f = findToken(tok, "?")) != -1 && (f2 = findToken(tok, ":")) != -1
+        string cond = compileExpr(tok[:f])
+        string lhs = compileExpr(tok[f + 1:f2])
+        string rhs = compileExpr(tok[f2 + 1:])
+        out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
+
+    // Ternary conditional operator (word version)
+    elif (f = findToken(tok, "if")) != -1 && (f2 = findToken(tok, "else")) != -1
+        string lhs = compileExpr(tok[:f])
+        string cond = compileExpr(tok[f + 1:f2])
+        string rhs = compileExpr(tok[f2 + 1:])
+        out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
+
+    // Null coalescing
+    elif (f = findToken(tok, "??")) != -1
+        // name ?? '' => ((name) != null) ? (name) : ("")
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        // System.out.println("LHS: " + lhs + ", RHS: " + rhs)
+        out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")"
+
+    // Logical or
+    elif (f = findAnyToken(tok, List.of("||", "or"))) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
+
+    // Logical and
+    elif (f = findAnyToken(tok, List.of("&&", "and"))) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")"
+
+    // Bitwise or
+    elif (f = findToken(tok, "|")) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " | " + rhs
+
+    // Bitwise xor
+    elif (f = findToken(tok, "^")) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " ^ " + rhs
+
+    // Bitwise and
+    elif (f = findToken(tok, "&")) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " & " + rhs
+
+    // Equality operators
+    elif (f = findAnyToken(tok, List.of("==", "!=", "===", "!=="))) != -1
+        string oper = tok[f].value
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+
+        if oper == "=="
+            out += "Extensions.operEq(" + lhs + ", " + rhs + ")"
+        elif oper == "!="
+            out += "!Extensions.operEq(" + lhs + ", " + rhs + ")"
+        elif oper == "==="
+            out += lhs + " == " + rhs
+        elif oper == "!=="
+            out += lhs + " != " + rhs
+
+    // Relational and type testing operators
+    elif (f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is"))) != -1
+        string oper = tok[f].value
+
+        if oper == "is"
+            oper = "=="
+
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " " + oper + " " + rhs
+
+    // Additive binary operators
+    elif (f = findAnyToken(tok, List.of("+", "-"))) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " " + tok[f].value + " " + rhs
+
+    // Multiplicative binary operators
+    elif (f = findAnyToken(tok, List.of("*", "/", "%"))) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += lhs + " " + tok[f].value + " " + rhs
+
+    // Unary operators
+    elif len(tok) > 1 && tok[0].type == Token.Type.UNARY_OPER
+        string oper = tok[0].value
+        string expr = compileExpr(tok[1:])
+
+        // not, !
+        if oper == "not" || oper == "!"
+            out += "!LangUtil.isTruthy(" + expr + ")"
+        else
+            out += tok[0].value + expr
+
+    // Exponentiation
+    elif (f = findToken(tok, "**")) != -1
+        string lhs = compileExpr(tok[:f])
+        string rhs = compileExpr(tok[f + 1:])
+        out += "Math.pow(" + lhs + ", " + rhs + ")"
+
+    // Postfix increment
+    elif len(tok) > 1 && tok[-1].type == Token.Type.INCREMENT
+        string name = compileExpr(tok[:-1])
+        out += name + "++"
+
+    // Postfix decrement
+    elif len(tok) > 1 && tok[-1].type == Token.Type.DECREMENT
+        string name = compileExpr(tok[:-1])
+        out += name + "--"
+
+    // // Dotted function calls
+    // elif (f = findTokenTypeRev(tok, Token.Type.EXPR)) > 0 && (f2 = findTokenRev(tok, ".")) != -1
+    //     let lhs = compileExpr(tok[:f2])
+    //     let rhs = compileExpr(tok[f2 + 1:f])
+    //     let t = tok[f]
+    //     let args = t.value[1:-1]
+    //     out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\").invoke(" + compileExpr(Tokeniser.tokLine(args)) + ")"
+    // }
+
+    // Last occurrence of function call, dot or slice/index
+    elif len(tok) > 1 && (f = findAnyTokenTypeRev(
+        tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR))) > 0
+
+        // Function calls
+        if tok[f].type == Token.Type.EXPR
+            let name = compileExpr(tok[:-1])
+
+            // Name replacements
+            if name == "len"
+                name = "Extensions.len"
+
+            let t = tok[-1]
+            let args = t.value[1:-1]
+            out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
+
+        // Dot operator
+        elif tok[f].type == Token.Type.DOT
+            let lhs = compileExpr(tok[:f])
+            let rhs = compileExpr(tok[f + 1:])
+            out += lhs + "." + rhs
+            // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+
+        // Index/slice expressions ([tokens], square brackets)
+        elif tok[f].type == Token.Type.SQUARE_EXPR
+            // Get the iterable expression and replace tok with the tokens from this slice
+            let iterable = compileExpr(tok[:f])
+            let expr = tok[f].value
+            expr = expr[1:-1]
+            tok = Tokeniser.tokLine(expr)
+
+            // Slice
+            if findToken(tok, ":") != -1
+                // start?, :?, end?, :?, step?
+
+                let startTokens = new ArrayList<Token>()
+                let endTokens = new ArrayList<Token>()
+                let stepTokens = new ArrayList<Token>()
+
+                // Eat start
+                while tok && tok[0].value != ":"
+                    startTokens.add(tok[0])
+                    tok.remove(0)
+
+                // Eat :
+                tok.remove(0)
+
+                // Eat end
+                while tok && tok[0].value != ":"
+                    endTokens.add(tok[0])
+                    tok.remove(0)
+
+                // Eat step (and :)
+                if tok && tok[0].value == ":"
+                    // Step becomes the remaining tokens
+                    stepTokens = tok
+                    tok.remove(0)
+
+                // Compile tokens
+                let start = compileExpr(startTokens)
+                let end = compileExpr(endTokens)
+                let step = compileExpr(stepTokens)
+
+                start = "null" if !start
+                end = "null" if !end
+                step = "1" if !step
+
+                out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
+                // println iterable + "[" + start + ':' + end + ':' + step + "]"
+
+            // Index
+            else
+                out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
+                // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
+
+    // Expressions (parentheses)
+    elif len(tok) == 1 && tok[0].type == Token.Type.EXPR
+        let expr = tok[0].value
+        expr = expr[1:-1]
+        out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
+
+    // List expressions (square brackets)
+    elif len(tok) == 1 && tok[0].type == Token.Type.SQUARE_EXPR
+        // Replace tok with the tokens from this expression
+        let expr = tok[0].value
+        expr = expr[1:-1]
+        tok = Tokeniser.tokLine(expr)
+
+        // Range
+        if findTokenType(tok, Token.Type.RANGE) != -1
+            out += compileRange(tok)
+
+        // List
+        else
+            out += "List.of(" + compileExpr(tok) + ")"
+
+    // Brace expressions (curly brackets)
+    elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR
+        string expr = tok[0].value
+        expr = expr[1:-1]
+        out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
+
+    // Fallback - add tokens as they are
+    else
+        for j in len(tok)
+            let t = tok[j]
+            // Perform conversions for some tokens
+
+            // Compile expressions
+            if t.type == Token.Type.EXPR
+                string raw = t.value[1:-1]
+                ArrayList<Token> tokens = Tokeniser.tokLine(raw)
+                out += "(" + compileExpr(tokens) + ")"
+
+            // // Convert identifiers to get method calls
+            // elif t.type == Token.Type.ID
+            //     out += "LangUtil.get(" + currentClass + ".class, \"" + t.value + "\")"
+            // }
+
+            else
+                out += t.value + " "
+
+    // if findTokenType(tok, Token.Type.STRING) != -1
+    //     System.out.println("String: " + Util.d(tok))
+
+    // System.out.println("Just did expr: " + Util.d(tok))
+
+    return out.trim()
+
+string compileExpr(ArrayList<Token> tok):
+    return compileExpr(tok, true)
+
+string compileMethodArgs(string expr, bool declareLocals):
+    if expr.startsWith("(") && expr.endsWith(")")
+        expr = expr[1:-1]
+
+    let out = ""
+    let tok = Tokeniser.tokLine(expr)
+    let buffer = new ArrayList<Token>()
+    tok.add(Token.fromString(",")) // Comma to end last argument
+
+    ++scope // Increase scope for method arguments
+
+    // Add arguments one by one
+    for t in tok
+        if t.type == Token.Type.COMMA
+            // Buffer should be [name]
+            if len(buffer) == 1
+                declareLocal(buffer[0].value) if declareLocals
+                out += "Object " + buffer[0].value + ", "
+
+            // Buffer should be [type..., name]
+            elif len(buffer) > 1
+                declareLocal(buffer[-1].value) if declareLocals
+                out += buffer[j].value + " " for j in [..len(buffer)]
+                out += ", "
+
+            buffer.clear()
+        else
+            buffer.add(t)
+
+    --scope // Decrease scope again
+
+    out .= trim()
+
+    if out.endsWith(",")
+        out = out[:-1].trim()
+
+    return "(" + out.trim() + ")"
+
+string compileMethodArgs(string expr):
+    return compileMethodArgs(expr, false)
+
+string compileRange(ArrayList<Token> tok):
+    // [start]?, .., [end]?, (.., [step])?
+    let startTokens = new ArrayList<Token>()
+    let endTokens = new ArrayList<Token>()
+    let stepTokens = new ArrayList<Token>()
+
+    // Eat start
+    while tok && tok[0].type != Token.Type.RANGE
+        startTokens.add(tok[0])
+        tok.remove(0)
+
+    // Eat ..
+    tok.remove(0)
+
+    // Eat end
+    while tok && tok[0].type != Token.Type.RANGE
+        endTokens.add(tok[0])
+        tok.remove(0)
+
+    // Eat step (and ..)
+    if tok && tok[0].type == Token.Type.RANGE
+        // Step becomes the remaining tokens
+        stepTokens = tok
+        tok.remove(0)
+
+    // Compile tokens
+    let start = compileExpr(startTokens)
+    let end = compileExpr(endTokens)
+    let step = compileExpr(stepTokens)
+
+    start = "0" if !start
+    end = "null" if !end
+    step = "null" if !step
+
+    return "LangUtil.range(" + start + ", " + end + ", " + step + ")"
+
+string getNextTemp():
+    return "_temp" + nextTempVar++
+
+int findToken(ArrayList<Token> tok, string value):
+    // return i if t.value.equals(value) for t in tok
+    for i in len(tok)
+        return i if tok[i].value == value
+    return -1
+
+int findTokenRev(ArrayList<Token> tok, string value):
+    inline(for (int i = tok.size() - 1; i >= 0; --i))
+        return i if tok[i].value == value
+    return -1
+
+int findAnyToken(ArrayList<Token> tok, List<string> values):
+    for i in len(tok)
+        return i if values.contains(tok[i].value)
+    return -1
+
+int findAnyTokenRev(ArrayList<Token> tok, List<string> values):
+    inline(for (int i = tok.size() - 1; i >= 0; --i))
+        return i if values.contains(tok[i].value)
+    return -1
+
+int findTokenType(ArrayList<Token> tok, Token.Type type):
+    for i in len(tok)
+        return i if tok[i].type == type
+    return -1
+
+int findTokenTypeRev(ArrayList<Token> tok, Token.Type type):
+    inline(for (int i = tok.size() - 1; i >= 0; --i))
+        return i if tok[i].type == type
+    return -1
+
+int findAnyTokenType(ArrayList<Token> tok, List<Token.Type> types):
+    for i in len(tok)
+        return i if types.contains(tok[i].type)
+    return -1
+
+int findAnyTokenTypeRev(ArrayList<Token> tok, List<Token.Type> types):
+    inline(for (int i = tok.size() - 1; i >= 0; --i))
+        return i if types.contains(tok[i].type)
+    return -1
+
+ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):
+    let types = new ArrayList<Token.Type>()
+    types.add(t.type) for t in tok
+    return types
+
+MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
+    let accessMod = AccessMod.NONE
+    let isStatic = defaultStatic // Default static value for this class
+
+    // Fetch access modifier and static from line
+    for j in end
+        let t = tok[j].type
+        let v = tok[j].value
+
+        // Attempt to get access modifier from every token (if not found already)
+        if accessMod == AccessMod.NONE
+            accessMod = MethodAccess.accessModFromToken(tok[j])
+
+        isStatic = true if v == "static" || v == "#"
+        isStatic = false if v == "instance" || v == "^"
+
+    return new MethodAccess(accessMod, isStatic)
+
+MethodAccess getMethodAccess(ArrayList<Token> tok):
+    return getMethodAccess(tok, len(tok))
+
+ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
+    for i in end
+        let t = tok[i]
+        let v = t.value
+
+        // Start list from first non-access token
+        if (MethodAccess.accessModFromToken(t) == AccessMod.NONE &&
+            v != "static" && v != "#" && v != "instance" && v != "^")
+            return tok[i:]
+
+    return tok
+
+ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
+    return stripMethodAccess(tok, len(tok))
+
+declareLocal(string name, int scope):
+    // If scope is zero, this isn't a valid local declaration
+    // locals.put(name, scope) if scope
+    locals.put(name, scope)
+
+declareLocal(string name):
+    declareLocal(name, scope)
+
+bool localInScope(string name):
+    return scope >= locals.getOrDefault(name, scope + 1)

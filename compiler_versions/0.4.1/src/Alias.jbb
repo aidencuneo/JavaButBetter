@@ -1,0 +1,10 @@
+ArrayList<Token> tokens
+ArrayList<string> args
+
+Alias(ArrayList<Token> tokens, ArrayList<string> args):
+    this.tokens = tokens
+    this.args = args
+
+Alias(ArrayList<Token> tokens):
+    this.tokens = tokens
+    this.args = new ArrayList<string>()

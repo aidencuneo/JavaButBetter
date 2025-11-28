@@ -13,7 +13,7 @@ class Code implements Iterable < T > {
     public int indent = 0;
     public int scope = 0;
     public boolean defaultStatic = false;
-    public CompResult compileFile(String , String) {
+    public CompResult compileFile(String className , String code , Object b) {
         mainClassName = className;
         currentClass = className;
         startTemplate = "import java.io.*;\nimport java.util.*;\n";

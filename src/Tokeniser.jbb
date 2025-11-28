@@ -20,7 +20,7 @@ ArrayList<string> splitFile(string file):
     // State
     string current = ""
     CharType type = charType(file.charAt(0))
-    CharType lastType
+    CharType lastType = type
     char lastChar = 0
     int comment = 0
     
@@ -133,7 +133,7 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
     CharType type = charType(line.charAt(i))
     CharType lastType = CharType.W
     CharType nextType = CharType.W
-    CharType lastLastType
+    CharType lastLastType = lastType
     char lastChar = 0
     char lastLastChar = 0
     char nextChar = 0

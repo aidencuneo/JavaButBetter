@@ -56,7 +56,7 @@ public class Token {
     }
     public Type type;
     public String value;
-    public Token(Type type, String value) {
+    public Token(Type type , String value) {
         this . type = type;
         this . value = value;
     }
@@ -66,7 +66,7 @@ public class Token {
     }
     public static Token fromString(String v) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
-        Type t;
+        Type t = Type.BLANK;
         char f = v.charAt(0);
         char l = v.charAt(v.length() - 1);
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
@@ -98,7 +98,7 @@ public class Token {
             String realStr = StringParser.unescapeString(vNoQuotes);
             if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
-                var v = "\"\"\"" + vNoQuotes + "\"\"\"";
+                v = "\"\"\"" + vNoQuotes + "\"\"\"";
             }
             else {
                 t = Type.CHAR;

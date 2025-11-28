@@ -4,13 +4,13 @@ public static class Compiler
 alias INDENT_SIZE = 4
 
 // These fields persist only for the current file
-string mainClassName
-string currentClass
-string startTemplate
-string endTemplate
-HashMap<string, Class> classes
-HashMap<string, Alias> aliases
-HashMap<string, Int> locals // name -> scope
+string mainClassName = ""
+string currentClass = ""
+string startTemplate = ""
+string endTemplate = ""
+HashMap<string, Class> classes = null
+HashMap<string, Alias> aliases = null
+HashMap<string, Int> locals = null // name -> scope
 
 int nextTempVar = 0
 int indent = 0
@@ -454,17 +454,6 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         out += methodAccess + " enum " + name
 
-    // Variable declarations (exactly two identifiers with indentation)
-    elif len(tok) == 2 && tok[0].type == Token.Type.ID && tok[1].type == Token.Type.ID && indent
-        // type, name
-        let vartype = tok[0].value
-        let varname = tok[1].value
-
-        out += vartype + " " + varname + ";"
-
-        // Declare local
-        declareLocal(varname)
-
     // Field declarations (two tokens minimum with no indentation)
     elif len(tok) >= 2 && !indent
         // access?, static?, [type], name, (equals, [expr])?
@@ -501,6 +490,7 @@ string compileStatement(ArrayList<Token> tok, string out):
             ...
 
         // Declare local
+        println "Declaring " + name
         declareLocal(name)
 
         out += methodAccess + " " + vartype + name + value + ";"
@@ -892,22 +882,27 @@ string compileMethodArgs(string expr, bool declareLocals):
     let buffer = new ArrayList<Token>()
     tok.add(Token.fromString(",")) // Comma to end last argument
 
+    ++scope // Increase scope for method arguments
+
     // Add arguments one by one
     for t in tok
         if t.type == Token.Type.COMMA
             // Buffer should be [name]
             if len(buffer) == 1
                 declareLocal(buffer[0].value) if declareLocals
-                out += "Object " + compileExpr(buffer) + ", "
+                out += "Object " + buffer[0].value + ", "
 
             // Buffer should be [type..., name]
             elif len(buffer) > 1
                 declareLocal(buffer[-1].value) if declareLocals
-                out += compileExpr(buffer) + ", "
+                out += buffer[j].value + " " for j in [..len(buffer)]
+                out += ", "
 
             buffer.clear()
         else
             buffer.add(t)
+
+    --scope // Decrease scope again
 
     out .= trim()
 
@@ -1042,7 +1037,8 @@ ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
 
 declareLocal(string name, int scope):
     // If scope is zero, this isn't a valid local declaration
-    locals.put(name, scope) if scope
+    // locals.put(name, scope) if scope
+    locals.put(name, scope)
 
 declareLocal(string name):
     declareLocal(name, scope)

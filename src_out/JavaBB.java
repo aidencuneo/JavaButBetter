@@ -10,7 +10,7 @@ public class JavaBB {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir, String name) -> name.endsWith(".jbb"));
+        var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
         LangUtil.println("\nCompiling Extensions...");
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions

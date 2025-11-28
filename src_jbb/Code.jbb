@@ -1,3 +1,27 @@
+// These fields persist only for the current file
+string mainClassName = ""
+string currentClass = ""
+string startTemplate = ""
+string endTemplate = ""
+HashMap<string, Class> classes = null
+HashMap<string, Alias> aliases = null
+HashMap<string, Int> locals = null // name -> scope
+
+int nextTempVar = 0
+int indent = 0
+int scope = 0
+bool defaultStatic = false
+
+CompResult compileFile(string className, string code):
+    // Allow all methods to use these variables
+    mainClassName = className
+    currentClass = className
+    startTemplate = "import java.io.*;\nimport java.util.*;\n"
+    endTemplate = ""
+    className = "what"
+    code = code
+
+
 class Code
     ...
 

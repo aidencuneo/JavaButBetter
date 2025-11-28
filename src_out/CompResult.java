@@ -5,7 +5,7 @@ public class CompResult {
     public HashMap < String , Class > classes;
     public String startTemplate;
     public String endTemplate;
-    public CompResult(HashMap < String, Class > classes, String startTemplate, String endTemplate) {
+    public CompResult(HashMap < String , Class > classes , String startTemplate , String endTemplate) {
         this . classes = classes;
         this . startTemplate = startTemplate;
         this . endTemplate = endTemplate;

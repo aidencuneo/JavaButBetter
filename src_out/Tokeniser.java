@@ -24,7 +24,7 @@ public class Tokeniser {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(file))) { return lines; }
         String current = "";
         CharType type = charType(file.charAt(0));
-        CharType lastType;
+        CharType lastType = type;
         char lastChar = 0;
         int comment = 0;
         boolean backslash = false;
@@ -108,7 +108,7 @@ public class Tokeniser {
         if (LangUtil.isTruthy(current)) { lines.add(current); }
         return lines;
     }
-    public static ArrayList < Token > tokLine(String line, boolean keepIndent) {
+    public static ArrayList < Token > tokLine(String line , boolean keepIndent) {
         var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
         String indent = "";
@@ -133,7 +133,7 @@ public class Tokeniser {
         CharType type = charType(line.charAt(i));
         CharType lastType = CharType.W;
         CharType nextType = CharType.W;
-        CharType lastLastType;
+        CharType lastLastType = lastType;
         char lastChar = 0;
         char lastLastChar = 0;
         char nextChar = 0;

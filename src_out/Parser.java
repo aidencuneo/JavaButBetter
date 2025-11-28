@@ -66,7 +66,7 @@ public class Parser {
         }
         return tok;
     }
-    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok, ArrayList < String > names, ArrayList < ArrayList < Token > > values) {
+    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
         var lastWasDot = false;
         var newTok = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {

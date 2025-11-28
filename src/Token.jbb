@@ -64,7 +64,7 @@ Token:
 static Token fromString(string v):
     return new Token(Type.BLANK, v) if !v
 
-    Type t
+    Type t = Type.BLANK
     char f = v.charAt(0)
     char l = v.charAt(v.length() - 1)
     // System.out.println(f + ", " + l)

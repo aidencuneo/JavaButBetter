@@ -2,34 +2,34 @@ import java.io.*;
 import java.util.*;
 
 public class LangUtil {
-    public static void print(Object ... args) {
+    public static void print(Object ...) {
         for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
     }
-    public static void println(Object ... args) {
+    public static void println(Object ...) {
         for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
         System.out.println("");
     }
-    public static boolean isTruthy(boolean v) {
+    public static boolean isTruthy(boolean) {
         return v;
     }
-    public static boolean isTruthy(int v) {
+    public static boolean isTruthy(int) {
         return !Extensions.operEq(v, 0);
     }
-    public static boolean isTruthy(double v) {
+    public static boolean isTruthy(double) {
         return !Extensions.operEq(v, 0);
     }
-    public static boolean isTruthy(String v) {
+    public static boolean isTruthy(String) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static <T> boolean isTruthy(T [] v) {
+    public static <T> boolean isTruthy(T []) {
         return v.length > 0;
     }
-    public static boolean isTruthy(List v) {
+    public static boolean isTruthy(List) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static boolean isTruthy(Object v) {
+    public static boolean isTruthy(Object) {
         if (v instanceof Boolean x) return x;
         if (v instanceof Integer x) return x != 0;
         if (v instanceof Double x) return x != 0;
@@ -37,31 +37,31 @@ public class LangUtil {
         if (v instanceof List x) return x == null ? false : !x.isEmpty();
         return !Extensions.operEq(v, null);
     }
-    public static <T> T [] asIterable(T [] v) {
+    public static <T> T [] asIterable(T []) {
         return v;
     }
-    public static List < Integer > asIterable(int n) {
+    public static List < Integer > asIterable(int) {
         var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
             lst.add(i);
         }
         return lst;
     }
-    public static <T> Iterable < T > asIterable(Iterable < T > v) {
+    public static <T> Iterable < T > asIterable(Iterable < T >) {
         return v;
     }
-    public static <T> Iterable < T > asIterable(Iterator < T > v) {
+    public static <T> Iterable < T > asIterable(Iterator < T >) {
         return new IteratorToIterable < T > (v);
     }
-    public static <TK, TV> Set < TK > asIterable(HashMap < TK , TV > v) {
+    public static <TK, TV> Set < TK > asIterable(HashMap < , TV >) {
         return v.keySet();
     }
-    public static char [] asIterable(String s) {
+    public static char [] asIterable(String) {
         return s.toCharArray();
     }
-    public static String slice(String s , int start , int end , int step) {
-        var start = indexConvert(start, s.length());
-        var end = indexConvert(end, s.length());
+    public static String slice(String , int , int , int) {
+        start = indexConvert(start, s.length());
+        end = indexConvert(end, s.length());
         if (LangUtil.isTruthy(Extensions.operEq(step, 1))) {
             return s.substring(start, end);
         }
@@ -71,30 +71,30 @@ public class LangUtil {
         }
         return newStr;
     }
-    public static String slice(String s , Null start , Null end , int step) {
+    public static String slice(String , Null , Null , int) {
         return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (s.length() - 1), LangUtil.isTruthy(step > 0) ? (s.length()) : (- s.length() - 1), step);
     }
-    public static String slice(String s , Null start , int end , int step) {
+    public static String slice(String , Null , int , int) {
         return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (s.length() - 1), end, step);
     }
-    public static String slice(String s , int start , Null end , int step) {
+    public static String slice(String , int , Null , int) {
         return slice(s, start, LangUtil.isTruthy(step > 0) ? (s.length()) : (- 1), step);
     }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , int end , int step) {
+    public static <T> ArrayList < T > slice(ArrayList < T > , int , int , int) {
         start = indexConvert(start, v.size());
         end = indexConvert(end, v.size());
         return new ArrayList < > (v.subList(start, end));
     }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , Null end , int step) {
+    public static <T> ArrayList < T > slice(ArrayList < T > , Null , Null , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), LangUtil.isTruthy(step > 0) ? (v.size()) : (- v.size() - 1), step);
     }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , int end , int step) {
+    public static <T> ArrayList < T > slice(ArrayList < T > , Null , int , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), end, step);
     }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , Null end , int step) {
+    public static <T> ArrayList < T > slice(ArrayList < T > , int , Null , int) {
         return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (- 1), step);
     }
-    public static <T> List < T > slice(List < T > v , int start , int end , int step) {
+    public static <T> List < T > slice(List < T > , int , int , int) {
         start = indexConvert(start, v.size());
         end = indexConvert(end, v.size());
         var lst = new ArrayList < T > ();
@@ -104,16 +104,16 @@ public class LangUtil {
         }
         return lst;
     }
-    public static <T> List < T > slice(List < T > v , Null start , Null end , int step) {
+    public static <T> List < T > slice(List < T > , Null , Null , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), LangUtil.isTruthy(step > 0) ? (v.size()) : (- v.size() - 1), step);
     }
-    public static <T> List < T > slice(List < T > v , Null start , int end , int step) {
+    public static <T> List < T > slice(List < T > , Null , int , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.size() - 1), end, step);
     }
-    public static <T> List < T > slice(List < T > v , int start , Null end , int step) {
+    public static <T> List < T > slice(List < T > , int , Null , int) {
         return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (- 1), step);
     }
-    public static <T> List < T > slice(T [] v , int start , int end , int step) {
+    public static <T> List < T > slice(T [] , int , int , int) {
         start = indexConvert(start, v.length);
         end = indexConvert(end, v.length);
         var lst = new ArrayList < T > ();
@@ -122,53 +122,53 @@ public class LangUtil {
         }
         return lst;
     }
-    public static <T> List < T > slice(T [] v , Null start , Null end , int step) {
+    public static <T> List < T > slice(T [] , Null , Null , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.length - 1), LangUtil.isTruthy(step > 0) ? (v.length) : (- v.length - 1), step);
     }
-    public static <T> List < T > slice(T [] v , Null start , int end , int step) {
+    public static <T> List < T > slice(T [] , Null , int , int) {
         return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (v.length - 1), end, step);
     }
-    public static <T> List < T > slice(T [] v , int start , Null end , int step) {
+    public static <T> List < T > slice(T [] , int , Null , int) {
         return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.length) : (- 1), step);
     }
-    public static int indexConvert(int index , int size) {
+    public static int indexConvert(int , int) {
         if (LangUtil.isTruthy(index < 0)) { index += size; }
         return index;
     }
-    public static IntRange range(int start , int stop , int step) {
+    public static IntRange range(int , int , int) {
         return new IntRange(start, stop, step);
     }
-    public static IntRange range(int start , Null stop , Null step) {
+    public static IntRange range(int , Null , Null) {
         return range(start, Integer.MAX_VALUE, 1);
     }
-    public static IntRange range(int start , Null stop , int step) {
+    public static IntRange range(int , Null , int) {
         return range(start, LangUtil.isTruthy(step > 0) ? (Integer.MAX_VALUE) : (Integer.MIN_VALUE), step);
     }
-    public static IntRange range(int start , int stop , Null step) {
+    public static IntRange range(int , int , Null) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
     }
-    public static LongRange range(long start , long stop , long step) {
+    public static LongRange range(long , long , long) {
         return new LongRange(start, stop, step);
     }
-    public static LongRange range(long start , Null stop , Null step) {
+    public static LongRange range(long , Null , Null) {
         return range(start, Long.MAX_VALUE, 1);
     }
-    public static LongRange range(long start , Null stop , long step) {
+    public static LongRange range(long , Null , long) {
         return range(start, LangUtil.isTruthy(step > 0) ? (Long.MAX_VALUE) : (Long.MIN_VALUE), step);
     }
-    public static LongRange range(long start , long stop , Null step) {
+    public static LongRange range(long , long , Null) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
     }
-    public static DoubleRange range(double start , double stop , double step) {
+    public static DoubleRange range(double , double , double) {
         return new DoubleRange(start, stop, step);
     }
-    public static DoubleRange range(double start , Null stop , Null step) {
+    public static DoubleRange range(double , Null , Null) {
         return range(start, Double.MAX_VALUE, 1);
     }
-    public static DoubleRange range(double start , Null stop , double step) {
+    public static DoubleRange range(double , Null , double) {
         return range(start, LangUtil.isTruthy(step > 0) ? (Double.MAX_VALUE) : (Double.MIN_VALUE), step);
     }
-    public static DoubleRange range(double start , double stop , Null step) {
+    public static DoubleRange range(double , double , Null) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (- 1));
     }
     

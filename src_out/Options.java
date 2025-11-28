@@ -4,12 +4,12 @@ import java.util.*;
 public class Options {
     public static String defaultDecimal;
     public static void reset() {
-        var defaultDecimal = "f";
+        defaultDecimal = "f";
     }
     static {
         reset();
     }
-    public static void setOption(String name, String value) {
+    public static void setOption(String name , String value) {
         name = name.toLowerCase();
         var valueLower = value.toLowerCase();
         if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(name, "decimal"))) ? (Extensions.operEq(name, "decimal")) : (Extensions.operEq(name, "default_decimal")))) {

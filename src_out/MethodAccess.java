@@ -4,7 +4,7 @@ import java.util.*;
 public class MethodAccess {
     public AccessMod accessMod = AccessMod.NONE;
     public boolean isStatic = false;
-    public MethodAccess(AccessMod accessMod, boolean isStatic) {
+    public MethodAccess(AccessMod accessMod , boolean isStatic) {
         this . accessMod = accessMod;
         this . isStatic = isStatic;
     }

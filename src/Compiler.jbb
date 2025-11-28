@@ -103,8 +103,15 @@ string compileStatement(ArrayList<Token> tok, string out):
     let f = -1
     let f2 = -1
 
+    // Package
+    if startTok == Token.Type.PACKAGE
+        let packageStr = "package "
+        for j in [1..len(tok)]
+            packageStr += tok[j].value
+        startTemplate = packageStr + ";\n" + startTemplate
+
     // Imports
-    if startTok == Token.Type.IMPORT
+    elif startTok == Token.Type.IMPORT
         let importStr = "import "
         for j in [1..len(tok)]
             importStr += tok[j].value
@@ -321,7 +328,7 @@ string compileStatement(ArrayList<Token> tok, string out):
             let args = "()"
             if tok && tok[-1].type == Token.Type.EXPR
                 // Compile method arguments
-                args = compileMethodArgs(tok[-1].value)
+                args = compileMethodArgs(tok[-1].value, true)
                 tok.remove(len(tok) - 1)
 
             // Eat method name (can be many different token types)
@@ -447,6 +454,17 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         out += methodAccess + " enum " + name
 
+    // Variable declarations (exactly two identifiers with indentation)
+    elif len(tok) == 2 && tok[0].type == Token.Type.ID && tok[1].type == Token.Type.ID && indent
+        // type, name
+        let vartype = tok[0].value
+        let varname = tok[1].value
+
+        out += vartype + " " + varname + ";"
+
+        // Declare local
+        declareLocal(varname)
+
     // Field declarations (two tokens minimum with no indentation)
     elif len(tok) >= 2 && !indent
         // access?, static?, [type], name, (equals, [expr])?
@@ -482,6 +500,9 @@ string compileStatement(ArrayList<Token> tok, string out):
             // Error! Field missing type
             ...
 
+        // Declare local
+        declareLocal(name)
+
         out += methodAccess + " " + vartype + name + value + ";"
 
     // Expressions
@@ -511,12 +532,18 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += ", "
         out += compileExpr(tok[f + 1:])
 
-    // Assignments
+    // Assignments (no dots)
     elif (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
         // [type]?, name, =, [value]
 
         let vartype = ""
         let varname = ""
+
+        // // name.attr.attr2... = value
+        // if (f2 = findTokenType(tok[:f], Token.Type.DOT)) != -1
+        //     for j in [..f]
+        //         varname += tok[j].value + " "
+        //     varname .= trim()
 
         // type name = value
         if f == 2
@@ -537,9 +564,9 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         out += "(" if nested
 
-        // Declare if this name is not already in scope and this is not nested
-        if !localInScope(varname) && !nested
-            vartype = "var"
+        // Declare if this name is not already in scope, this is not nested, and the var name is valid
+        if !localInScope(varname) && !nested && !varname.contains(" ") // TODO: use regex and parser.jbb and stringparser.jbb to check if this is an identifier
+            vartype = "var" if !vartype // Automatic var insertion
             declareLocal(varname)
 
         if vartype
@@ -551,7 +578,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         out += ")" if nested
 
-    // Compound assignments
+    // Compound assignments (no dots)
     elif (f = findTokenType(tok, Token.Type.COMP_ASSIGN)) != -1
         let varname = ""
         let oper = tok[f].value[:-1]
@@ -856,14 +883,41 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 string compileExpr(ArrayList<Token> tok):
     return compileExpr(tok, true)
 
-string compileMethodArgs(string expr):
+string compileMethodArgs(string expr, bool declareLocals):
     if expr.startsWith("(") && expr.endsWith(")")
         expr = expr[1:-1]
 
     let out = ""
     let tok = Tokeniser.tokLine(expr)
-    out += t.value + " " for t in tok
+    let buffer = new ArrayList<Token>()
+    tok.add(Token.fromString(",")) // Comma to end last argument
+
+    // Add arguments one by one
+    for t in tok
+        if t.type == Token.Type.COMMA
+            // Buffer should be [name]
+            if len(buffer) == 1
+                declareLocal(buffer[0].value) if declareLocals
+                out += "Object " + compileExpr(buffer) + ", "
+
+            // Buffer should be [type..., name]
+            elif len(buffer) > 1
+                declareLocal(buffer[-1].value) if declareLocals
+                out += compileExpr(buffer) + ", "
+
+            buffer.clear()
+        else
+            buffer.add(t)
+
+    out .= trim()
+
+    if out.endsWith(",")
+        out = out[:-1].trim()
+
     return "(" + out.trim() + ")"
+
+string compileMethodArgs(string expr):
+    return compileMethodArgs(expr, false)
 
 string compileRange(ArrayList<Token> tok):
     // [start]?, .., [end]?, (.., [step])?

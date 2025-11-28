@@ -9,7 +9,7 @@ public class Options {
     static {
         reset();
     }
-    public static void setOption(String name , String value) {
+    public static void setOption(String name, String value) {
         name = name.toLowerCase();
         var valueLower = value.toLowerCase();
         if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(name, "decimal"))) ? (Extensions.operEq(name, "decimal")) : (Extensions.operEq(name, "default_decimal")))) {

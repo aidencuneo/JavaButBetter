@@ -10,7 +10,7 @@ public class JavaBB {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
+        var files = new File(compDir).list((File dir, String name) -> name.endsWith(".jbb"));
         LangUtil.println("\nCompiling Extensions...");
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
@@ -88,7 +88,7 @@ bool operEq(object a, object b):
             if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
                 var newCode = res.classes.get("Extensions").code;
                 var extensionsClass = extensionsClassRes.classes.get("Extensions");
-                var extensionsClass . code = extensionsClass.code + newCode;
+                extensionsClass.code = extensionsClass.code + newCode;
                 res.classes.remove("Extensions");
             }
             var compiled = res.getCompiledCode(className);

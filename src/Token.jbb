@@ -44,6 +44,7 @@ inline(public enum Type)
     ACCESS_MOD,
     STATIC,
     INSTANCE,
+    PACKAGE,
     IMPORT,
     CLASS,
     ENUM,
@@ -175,6 +176,8 @@ static Token fromString(string v):
         t = Type.STATIC
     elif v == "instance"
         t = Type.INSTANCE
+    elif v == "package"
+        t = Type.PACKAGE
     elif v == "import" || v == "include" || v == "require" || v == "use"
         t = Type.IMPORT
     elif v == "class"

@@ -9,7 +9,7 @@ public class Class {
     public String extendsType = "";
     public String code = "";
     public Class(String name) {
-        var this . name = name;
+        this . name = name;
     }
     public String toString() {
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }

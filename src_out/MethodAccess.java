@@ -4,9 +4,9 @@ import java.util.*;
 public class MethodAccess {
     public AccessMod accessMod = AccessMod.NONE;
     public boolean isStatic = false;
-    public MethodAccess(AccessMod accessMod , boolean isStatic) {
-        var this . accessMod = accessMod;
-        var this . isStatic = isStatic;
+    public MethodAccess(AccessMod accessMod, boolean isStatic) {
+        this . accessMod = accessMod;
+        this . isStatic = isStatic;
     }
     public static AccessMod accessModFromToken(Token tok) {
         if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(tok.type, Token.Type.DEFAULT))) ? (Extensions.operEq(tok.type, Token.Type.DEFAULT)) : (Extensions.operEq(tok.value, "?")))) { return AccessMod.DEFAULT; }

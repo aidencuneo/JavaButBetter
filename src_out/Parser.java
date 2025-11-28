@@ -9,7 +9,7 @@ public class Parser {
             var nextTok = LangUtil.isTruthy(i + 1 < tok.size()) ? (tok.get(i + 1)) : (new Token());
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
-                    var t . value = "String";
+                    t . value = "String";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "String"))) {
                     t . value = "string";
@@ -66,7 +66,7 @@ public class Parser {
         }
         return tok;
     }
-    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
+    public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok, ArrayList < String > names, ArrayList < ArrayList < Token > > values) {
         var lastWasDot = false;
         var newTok = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {
@@ -82,7 +82,7 @@ public class Parser {
                 var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
                 var newExpr = "";
                 for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
-                var t . value = "(" + newExpr + ")";
+                t . value = "(" + newExpr + ")";
             }
             newTok.add(t);
         }

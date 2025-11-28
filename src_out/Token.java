@@ -48,6 +48,7 @@ public class Token {
         ACCESS_MOD,
         STATIC,
         INSTANCE,
+        PACKAGE,
         IMPORT,
         CLASS,
         ENUM,
@@ -55,9 +56,9 @@ public class Token {
     }
     public Type type;
     public String value;
-    public Token(Type type , String value) {
-        var this . type = type;
-        var this . value = value;
+    public Token(Type type, String value) {
+        this . type = type;
+        this . value = value;
     }
     public Token() {
         this . type = Type.BLANK;
@@ -66,10 +67,10 @@ public class Token {
     public static Token fromString(String v) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
         Type t;
-        var f = v.charAt(0);
-        var l = v.charAt(v.length() - 1);
+        char f = v.charAt(0);
+        char l = v.charAt(v.length() - 1);
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
-            var t = Type.BLANK;
+            t = Type.BLANK;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.length() > 0)) ? (v.isBlank()) : (v.length() > 0))) {
             t = Type.INDENT;
@@ -93,8 +94,8 @@ public class Token {
             t = Type.STRING;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith("'''"))) ? (v.endsWith("'''")) : (v.startsWith("'''")))) {
-            var vNoQuotes = v.substring(3, v.length() - 3);
-            var realStr = StringParser.unescapeString(vNoQuotes);
+            String vNoQuotes = v.substring(3, v.length() - 3);
+            String realStr = StringParser.unescapeString(vNoQuotes);
             if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
                 var v = "\"\"\"" + vNoQuotes + "\"\"\"";
@@ -212,6 +213,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "instance"))) {
             t = Type.INSTANCE;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, "package"))) {
+            t = Type.PACKAGE;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(v, "import"))) ? (Extensions.operEq(v, "import")) : ((LangUtil.isTruthy(Extensions.operEq(v, "include"))) ? (Extensions.operEq(v, "include")) : ((LangUtil.isTruthy(Extensions.operEq(v, "require"))) ? (Extensions.operEq(v, "require")) : (Extensions.operEq(v, "use")))))) {
             t = Type.IMPORT;

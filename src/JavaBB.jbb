@@ -99,7 +99,7 @@ bool operEq(object a, object b):
             // Add code to current Extensions class
             let newCode = res.classes.get("Extensions").code
             let extensionsClass = extensionsClassRes.classes.get("Extensions")
-            extensionsClass.code = extensionsClass.code + newCode
+            inline(extensionsClass.code = extensionsClass.code + newCode;)
 
             // Remove Extensions class from this file's output
             res.classes.remove("Extensions")

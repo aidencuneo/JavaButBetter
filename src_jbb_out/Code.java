@@ -1,27 +1,11 @@
-package aidenbc;
-
 import java.io.*;
 import java.util.*;
 
 class Code implements Iterable < T > {
-    public String mainClassName = "";
-    public String currentClass = "";
-    public String startTemplate = "";
-    public String endTemplate = "";
-    public HashMap < String , Class > classes = null;
-    public HashMap < String , Alias > aliases = null;
-    public HashMap < String , Integer > locals = null;
-    public int nextTempVar = 0;
-    public int indent = 0;
-    public int scope = 0;
-    public boolean defaultStatic = false;
-    public CompResult compileFile(String className , String code) {
-        mainClassName = className;
-        currentClass = className;
-        startTemplate = "import java.io.*;\nimport java.util.*;\n";
-        endTemplate = "";
-        className = "what";
-        code = code;
+    public void what() {
+        var player = null;
+        var player = ((a) != null) ? (a) : (b);
+        player ?. name()()(ppe)().how();
     } {
         
     } {

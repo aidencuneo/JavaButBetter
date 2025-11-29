@@ -184,6 +184,8 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
         ) && !(
             lastChar == '=' && c == '>' // Join together '=>'
         ) && !(
+            lastChar == '?' && c == '.' // Join together '?.'
+        ) && !(
             lastChar == '_' && c == '_' // Join together all '_' tokens
         ) && !(
             lastChar == '+' && c == '+' // Join together all '+' tokens

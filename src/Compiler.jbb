@@ -41,6 +41,9 @@ CompResult compileFile(string className, string code):
         let cl = getOrCreateClass(currentClass)
         let tok = Tokeniser.tokLine(lines[i], true)
 
+        if currentClass != "LangUtil" && currentClass != "Extensions"
+            println tok
+
         // Nothing in the line?
         next if !tok
 

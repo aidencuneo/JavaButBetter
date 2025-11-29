@@ -10,7 +10,7 @@ public class JavaBB {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
-        var files = new File(compDir).list((File dir , String name) -> name.endsWith(".jbb"));
+        var files = new File(compDir).list();
         LangUtil.println("\nCompiling Extensions...");
         var extensionsClassRes = Compiler.compileFile("Extensions", """
 public static class Extensions
@@ -84,14 +84,21 @@ bool operEq(object a, object b):
             catch (FileNotFoundException e) {
                 
             }
-            var res = Compiler.compileFile(className, fileContent);
-            if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
-                var newCode = res.classes.get("Extensions").code;
-                var extensionsClass = extensionsClassRes.classes.get("Extensions");
-                extensionsClass.code = extensionsClass.code + newCode;
-                res.classes.remove("Extensions");
+            var compiled = "";
+            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
+                var res = Compiler.compileFile(className, fileContent);
+                if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
+                    var newCode = res.classes.get("Extensions").code;
+                    var extensionsClass = extensionsClassRes.classes.get("Extensions");
+                    extensionsClass.code = extensionsClass.code + newCode;
+                    res.classes.remove("Extensions");
+                }
+                compiled = res.getCompiledCode(className);
             }
-            var compiled = res.getCompiledCode(className);
+            else {
+                compiled = fileContent;
+                toPath = outDir + "/" + Extensions.operGetIndex(files, i);
+            }
             try (var writer = new PrintWriter(toPath)) {
                 new File(toPath).createNewFile();
                 writer.println(compiled);

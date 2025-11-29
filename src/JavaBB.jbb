@@ -11,7 +11,8 @@ static main:
         new File(outDir).mkdir()
 
     // Compile files one by one
-    let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb"))
+    // let files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb") || name.endsWith(".java"))
+    let files = new File(compDir).list()
 
     println "\nCompiling Extensions..."
 
@@ -91,21 +92,29 @@ bool operEq(object a, object b):
         catch FileNotFoundException e
             ...
 
-        // Compile this file
-        let res = Compiler.compileFile(className, fileContent)
+        // Compile this file (if .jbb)
+        let compiled = ""
 
-        // Extract Extensions class if it exists
-        if res.classes.containsKey("Extensions")
-            // Add code to current Extensions class
-            let newCode = res.classes.get("Extensions").code
-            let extensionsClass = extensionsClassRes.classes.get("Extensions")
-            inline(extensionsClass.code = extensionsClass.code + newCode;)
+        if files[i].endsWith(".jbb")
+            let res = Compiler.compileFile(className, fileContent)
 
-            // Remove Extensions class from this file's output
-            res.classes.remove("Extensions")
+            // Extract Extensions class if it exists
+            if res.classes.containsKey("Extensions")
+                // Add code to current Extensions class
+                let newCode = res.classes.get("Extensions").code
+                let extensionsClass = extensionsClassRes.classes.get("Extensions")
+                inline(extensionsClass.code = extensionsClass.code + newCode;)
 
-        // Get final compiled code
-        let compiled = res.getCompiledCode(className)
+                // Remove Extensions class from this file's output
+                res.classes.remove("Extensions")
+
+            // Get final compiled code
+            compiled = res.getCompiledCode(className)
+
+        // Copy regular files over (including .java)
+        else
+            compiled = fileContent
+            toPath = outDir + "/" + files[i] // Keep full name intact
 
         // Write to output file
         try let writer = new PrintWriter(toPath)

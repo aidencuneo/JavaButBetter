@@ -222,6 +222,10 @@ public class Compiler {
                 
             }
             else {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "!")))) : (tok))) {
+                    out += "@Override ";
+                    tok.remove(0);
+                }
                 var methodAccess = getMethodAccess(tok);
                 tok = stripMethodAccess(tok);
                 if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {

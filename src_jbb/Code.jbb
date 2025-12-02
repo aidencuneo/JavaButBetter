@@ -1,11 +1,12 @@
-m1:
+!m1:
     a = "hi"
     b = 2
     b = 3
 
-m2:
+override m2:
     b = 4
     b = 5
+    return new Object()
 
 what:
     // let player = null

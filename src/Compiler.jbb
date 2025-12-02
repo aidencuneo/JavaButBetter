@@ -311,7 +311,12 @@ string compileStatement(ArrayList<Token> tok, string out):
 
         // Methods
         else
-            // access?, typeargs?, [returntype|void], name, args?, scope
+            // override?, access?, typeargs?, [returntype|void], name, args?, scope
+
+            // Eat override token
+            if tok && (tok[0].value == "override" || tok[0].value == "!")
+                out += "@Override "
+                tok.remove(0)
 
             // Eat access tokens
             let methodAccess = getMethodAccess(tok)

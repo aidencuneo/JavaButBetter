@@ -1,12 +1,9 @@
 - Add decorators (?)
-- Fix automatic var insertion
-    - Delete locals every time scope decreases
+- Automatic "new" insertion for pascal case identifiers
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
-- Add null coalescing
-    - name?.operation()?.niceness => ???
 - Add /* */
 - Add support for implementing and extending classes
 - Add more operators to overload
@@ -26,3 +23,12 @@
     - str = (s => s.toUpperCase())("hello")
     - Define functions called _anon0, _anon1, etc. in the current class and replace the lambda with it
     - Upon further consideration, I don't think this will work very well
+
+
+
+Done:
+- Add null conditional operator
+    - name?.operation()?.niceness => ???
+- Fix automatic var insertion
+    - Delete locals every time scope decreases
+- Add @Override (!)

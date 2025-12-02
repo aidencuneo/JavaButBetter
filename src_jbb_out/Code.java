@@ -2,15 +2,15 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
-    public void m1() {
+    @Override public void m1() {
         var a = "hi";
         var b = 2;
-    } {
-        var b = 3;
+        b = 3;
     }
-    public void m2() {
+    @Override public void m2() {
         var b = 4;
         b = 5;
+        return new object();
     }
     public void what() {
         LangUtil.nullCheck(getPlayer(), _t0 -> _t0.name().upper());

@@ -25,6 +25,9 @@ public class Extensions {
         i = LangUtil.indexConvert(i, v.size());
         return v.get(i);
     }
+    public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
+        return v.get(key);
+    }
     public static int operAdd(int a , int b) {
         return a + b;
     }

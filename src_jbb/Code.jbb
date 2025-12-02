@@ -1,3 +1,12 @@
+m1:
+    a = "hi"
+    b = 2
+    b = 3
+
+m2:
+    b = 4
+    b = 5
+
 what:
     // let player = null
     // let player = a ?? b
@@ -13,14 +22,6 @@ main:
     // let range3 = [..20..10]
     // let range4 = [20..-100..-10]
     // let range5 = [..]
-
-    // print i for i in [..]
-    // println "0: " + i for i in range0
-    // println "1: " + i for i in range1
-    // println "2: " + i for i in range2
-    // println "3: " + i for i in range3
-    // println "4: " + i for i in range4
-    // println "5: " + i for i in range5
 
     empty = []
     empty = [1, 2, 3]

@@ -26,6 +26,7 @@ public class Compiler {
         defaultStatic = false;
         var lines = Tokeniser.splitFile(code);
         var lastIndent = 0;
+        var lastScope = 0;
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var cl = getOrCreateClass(currentClass);
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
@@ -43,11 +44,13 @@ public class Compiler {
                 lastIndent -= 4;
             }
             scope = indent / 4;
+            if (LangUtil.isTruthy(scope < lastScope)) { cleanLocals(scope); }
             cl . code = cl.code + " ".repeat(indent + 4);
             var out = compileStatement(tok, cl.code);
             cl = getOrCreateClass(currentClass);
             cl . code = out + "\n";
             lastIndent = indent;
+            lastScope = scope;
         }
         var cl = getOrCreateClass(currentClass);
         while (LangUtil.isTruthy(lastIndent > 0)) {
@@ -820,6 +823,13 @@ public class Compiler {
     }
     public static boolean localInScope(String name) {
         return scope >= locals.getOrDefault(name, scope + 1);
+    }
+    public static void cleanLocals(int scope) {
+        var toRemove = new ArrayList < String > ();
+        for (var name : LangUtil.asIterable(locals.keySet())) {
+            if (LangUtil.isTruthy(locals.get(name) > scope)) { toRemove.add(name); }
+        }
+        for (var name : LangUtil.asIterable(toRemove)) { locals.remove(name); }
     }
 }
 

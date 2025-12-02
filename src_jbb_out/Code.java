@@ -2,6 +2,16 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    public void m1() {
+        var a = "hi";
+        var b = 2;
+    } {
+        var b = 3;
+    }
+    public void m2() {
+        var b = 4;
+        b = 5;
+    }
     public void what() {
         LangUtil.nullCheck(getPlayer(), _t0 -> _t0.name().upper());
         LangUtil.nullCheck(getPlayer(), _t1 -> _t1.sendMessage("Hi!"));

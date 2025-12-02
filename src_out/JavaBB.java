@@ -40,6 +40,9 @@ char operGetIndex(string s, int i):
     i = LangUtil.indexConvert(i, v.size())
     ret v.get(i)
 
+(TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
+    ret v.get(key)
+
 // +
 int operAdd(int a, int b):
     inline(return a + b;)
@@ -180,7 +183,7 @@ List<Int> asIterable(int n):
 (T) Iterable<T> asIterable(Iterator<T> v):
     ret new IteratorToIterable<T>(v)
 
-(TK, TV) Set<TK> asIterable(HashMap<TK, TV> v):
+(TK, TV) Set<TK> asIterable(Map<TK, TV> v):
     ret v.keySet()
 
 char[] asIterable(string s):

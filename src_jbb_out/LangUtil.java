@@ -57,7 +57,7 @@ public class LangUtil {
     public static <T> Iterable < T > asIterable(Iterator < T > v) {
         return new IteratorToIterable < T > (v);
     }
-    public static <TK, TV> Set < TK > asIterable(HashMap < TK , TV > v) {
+    public static <TK, TV> Set < TK > asIterable(Map < TK , TV > v) {
         return v.keySet();
     }
     public static char [] asIterable(String s) {

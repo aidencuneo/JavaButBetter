@@ -1,30 +1,12 @@
 import java.io.*;
 import java.util.*;
 
-class Code implements Iterable < T > {
+public class Code {
     public void what() {
-        var player = null;
-        var player = ((a) != null) ? (a) : (b);
-        player ?. name()()(ppe)().how();
-    } {
-        
-    } {
-        
-    }
-}
-class Code2 extends Iterable < T > {
-    {
-        
-    }
-}
-public class Code3<T> implements Iterable < T > {
-    {
-        
-    }
-}
-public class Code4<T> extends Iterable < T > {
-    {
-        
+        LangUtil.nullCheck(getPlayer(), _t0 -> _t0.name().upper());
+        LangUtil.nullCheck(getPlayer(), _t1 -> _t1.sendMessage("Hi!"));
+        LangUtil.nullCheck(player, _t3 -> LangUtil.nullCheck(_t3.name(), _t2 -> _t2.upper().how())) + "what";
+        LangUtil.nullCheck(player.name().upper(), _t4 -> _t4.how());
     }
     public static void main(String[] args) {
         var empty = List.of();

@@ -28,6 +28,7 @@ public class Token {
         RANGE,
         LAMBDA,
         ARROW,
+        NULL_CHECK,
         INCREMENT,
         DECREMENT,
         INLINE,
@@ -153,6 +154,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "->"))) {
             t = Type.ARROW;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, "?."))) {
+            t = Type.NULL_CHECK;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "++"))) {
             t = Type.INCREMENT;

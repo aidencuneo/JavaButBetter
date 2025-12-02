@@ -567,7 +567,24 @@ public class Compiler {
             String name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
             out += name + "--";
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (((f = findAnyTokenTypeRev(tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR)))) > 0) : (Extensions.len(tok) > 1))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (!Extensions.operEq(((f = findTokenType(tok, Token.Type.NULL_CHECK))), - 1)) : (Extensions.len(tok) > 1))) {
+            var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            var rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+            var tempVar = getNextTemp();
+            if (LangUtil.isTruthy(rhs.startsWith("LangUtil.nullCheck"))) {
+                rhs = LangUtil.slice(rhs, Extensions.len("LangUtil.nullCheck("), - 1, 1);
+                out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> LangUtil.nullCheck(" + tempVar + "." + rhs + "))";
+            }
+            else {
+                out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ")";
+            }
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (!Extensions.operEq(((f = findTokenType(tok, Token.Type.DOT))), - 1)) : (Extensions.len(tok) > 1))) {
+            var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            var rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
+            out += lhs + "." + rhs;
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (((f = findAnyTokenTypeRev(tok, List.of(Token.Type.EXPR, Token.Type.SQUARE_EXPR)))) > 0) : (Extensions.len(tok) > 1))) {
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.EXPR))) {
                 var name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
                 if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
@@ -576,11 +593,6 @@ public class Compiler {
                 var t = Extensions.operGetIndex(tok, - 1);
                 var args = LangUtil.slice(t.value, 1, - 1, 1);
                 out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")";
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.DOT))) {
-                var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
-                var rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
-                out += lhs + "." + rhs;
             }
             else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.SQUARE_EXPR))) {
                 var iterable = compileExpr(LangUtil.slice(tok, null, f, 1));
@@ -718,7 +730,7 @@ public class Compiler {
         return "LangUtil.range(" + start + ", " + end + ", " + step + ")";
     }
     public static String getNextTemp() {
-        return "_temp" + nextTempVar++;
+        return "_t" + nextTempVar++;
     }
     public static int findToken(ArrayList < Token > tok , String value) {
         for (var i : LangUtil.asIterable(Extensions.len(tok))) {

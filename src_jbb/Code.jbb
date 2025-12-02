@@ -1,19 +1,10 @@
 what:
-    let player = null
-    let player = a ?? b
-    player?.name()?.upper().how()
-
-class Code
-    ...
-
-static class Code implements Iterable<T>
-    ...
-static class Code2 extends Iterable<T>
-    ...
-public class (T) Code3 implements Iterable<T>
-    ...
-public static class (T) Code4 extends Iterable<T>
-    ...
+    // let player = null
+    // let player = a ?? b
+    getPlayer()?.name().upper()
+    getPlayer()?.sendMessage("Hi!")
+    player?.name()?.upper().how() + "what"
+    player.name().upper()?.how()
 
 main:
     // let range0 = [9123.459382..23432.439..343.11]

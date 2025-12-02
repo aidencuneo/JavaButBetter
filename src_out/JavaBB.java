@@ -117,6 +117,7 @@ bool operEq(object a, object b):
         LangUtil.println("\n\nCompiling LangUtil...");
         var res = Compiler.compileFile("LangUtil", """
 // import java.lang.reflect.*
+import java.util.function.Function
 
 class Null
     ...
@@ -129,6 +130,10 @@ print(object ... args):
 println(object ... args):
     System.out.print('' + x) for x in args
     System.out.println('')
+
+// nullCheck
+(T, R) R nullCheck(T value, Function<T, R> func):
+    ret func.apply(value) if value != null else null
 
 // isTruthy
 bool isTruthy(bool v):

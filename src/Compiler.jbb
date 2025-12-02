@@ -745,9 +745,28 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     //     out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\").invoke(" + compileExpr(Tokeniser.tokLine(args)) + ")"
     // }
 
-    // Last occurrence of function call, dot or slice/index
+    // First occurrence of null check operator (?.)
+    elif len(tok) > 1 && (f = findTokenType(tok, Token.Type.NULL_CHECK)) != -1
+        let lhs = compileExpr(tok[:f])
+        let rhs = compileExpr(tok[f + 1:])
+        let tempVar = getNextTemp()
+
+        if rhs.startsWith("LangUtil.nullCheck") // Join together chained null checks
+            rhs = rhs[len("LangUtil.nullCheck("):-1]
+            out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> LangUtil.nullCheck(" + tempVar + "." + rhs + "))"
+        else
+            out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ")"
+
+    // First occurrence of dot operator
+    elif len(tok) > 1 && (f = findTokenType(tok, Token.Type.DOT)) != -1
+        let lhs = compileExpr(tok[:f])
+        let rhs = compileExpr(tok[f + 1:])
+        out += lhs + "." + rhs
+        // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+
+    // Last occurrence of function call or slice/index
     elif len(tok) > 1 && (f = findAnyTokenTypeRev(
-        tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR))) > 0
+        tok, List.of(Token.Type.EXPR, Token.Type.SQUARE_EXPR))) > 0
 
         // Function calls
         if tok[f].type == Token.Type.EXPR
@@ -760,13 +779,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             let t = tok[-1]
             let args = t.value[1:-1]
             out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
-
-        // Dot operator
-        elif tok[f].type == Token.Type.DOT
-            let lhs = compileExpr(tok[:f])
-            let rhs = compileExpr(tok[f + 1:])
-            out += lhs + "." + rhs
-            // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
 
         // Index/slice expressions ([tokens], square brackets)
         elif tok[f].type == Token.Type.SQUARE_EXPR
@@ -955,7 +967,7 @@ string compileRange(ArrayList<Token> tok):
     return "LangUtil.range(" + start + ", " + end + ", " + step + ")"
 
 string getNextTemp():
-    return "_temp" + nextTempVar++
+    return "_t" + nextTempVar++
 
 int findToken(ArrayList<Token> tok, string value):
     // return i if t.value.equals(value) for t in tok

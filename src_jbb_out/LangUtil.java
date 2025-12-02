@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
 public class LangUtil {
     public static void print(Object ... args) {
@@ -8,6 +9,9 @@ public class LangUtil {
     public static void println(Object ... args) {
         for (var x : LangUtil.asIterable(args)) { System.out.print("" + x); }
         System.out.println("");
+    }
+    public static <T, R> R nullCheck(T value , Function < T , R > func) {
+        return LangUtil.isTruthy(!Extensions.operEq(value, null)) ? (func.apply(value)) : (null);
     }
     public static boolean isTruthy(boolean v) {
         return v;

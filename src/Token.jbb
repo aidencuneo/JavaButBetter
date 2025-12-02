@@ -24,6 +24,7 @@ inline(public enum Type)
     RANGE,
     LAMBDA, // =>
     ARROW,  // ->
+    NULL_CHECK, // ?.
     INCREMENT,
     DECREMENT,
     INLINE,
@@ -136,6 +137,8 @@ static Token fromString(string v):
         t = Type.LAMBDA
     elif v == "->"
         t = Type.ARROW
+    elif v == "?."
+        t = Type.NULL_CHECK
     elif v == "++"
         t = Type.INCREMENT
     elif v == "--"

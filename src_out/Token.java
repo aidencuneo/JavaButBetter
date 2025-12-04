@@ -42,7 +42,6 @@ public class Token {
         WHILE,
         UNTIL,
         FOR,
-        IN,
         TRY,
         CATCH,
         DEFAULT,
@@ -128,7 +127,7 @@ public class Token {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(f, '{'))) ? (Extensions.operEq(l, '}')) : (Extensions.operEq(f, '{')))) {
             t = Type.BRACE_EXPR;
         }
-        else if (LangUtil.isTruthy((List.of("+", "-", "*", "/", "%", "&", "|", "and", "or", "xor", "nor", "&&", "||", "^", ">", "<", ">=", "<=", "==", "!=", "is").contains(v)))) {
+        else if (LangUtil.isTruthy(Extensions.operIn(v, List.of("+", "-", "*", "/", "%", "&", "|", "and", "or", "xor", "nor", "&&", "||", "^", ">", "<", ">=", "<=", "==", "!=", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-"))))) ? (List.of(Type.BIN_OPER, Type.BLANK).contains(lastToken)) : (((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-")))))) {
                 t = Type.UNARY_OPER;
             }
@@ -136,7 +135,7 @@ public class Token {
                 t = Type.BIN_OPER;
             }
         }
-        else if (LangUtil.isTruthy((List.of("!", "~", "not").contains(v)))) {
+        else if (LangUtil.isTruthy(Extensions.operIn(v, List.of("!", "~", "not")))) {
             t = Type.UNARY_OPER;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "="))) {
@@ -201,9 +200,6 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "for"))) {
             t = Type.FOR;
-        }
-        else if (LangUtil.isTruthy(Extensions.operEq(v, "in"))) {
-            t = Type.IN;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "try"))) {
             t = Type.TRY;

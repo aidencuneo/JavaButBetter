@@ -1,4 +1,3 @@
-- Add "elem in container"
 - Fix java lambdas (->)
 - Add support for implementing and extending classes
 - Add single line functions
@@ -8,12 +7,10 @@
 - Add more operator overloads
     - string * int
     - char * int
-- Add more operators to overload
-    - !, +, -, *, /, %
-- Add operator overloading
+- Add custom operator overloading
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
 - Add /* */
-- F-strings or `` strings
+- F-strings or `` strings (TEMPLATE_STRING token)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -38,3 +35,7 @@ Done:
 - Add @Override (!)
 - Add decorators
 - Automatic "new" insertion for pascal case function calls
+- Add more operators to overload
+    - +, -, *, /, %
+- Add "elem in container"
+    - in, inside, notin, outside

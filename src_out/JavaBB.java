@@ -41,6 +41,44 @@ char operGetIndex(string s, int i):
 (TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
     ret v.get(key)
 
+// ==
+bool operEq(int a, int b):
+    inline(return a == b;)
+
+bool operEq(long a, long b):
+    inline(return a == b;)
+
+bool operEq(double a, double b):
+    inline(return a == b;)
+
+bool operEq(bool a, bool b):
+    inline(return a == b;)
+
+bool operEq(string a, string b):
+    return a.equals(b)
+
+bool operEq(object a, object b):
+    return a.equals(b)
+
+// in
+bool operIn(char c, string s):
+    return s.indexOf(c) != -1
+
+bool operIn(string part, string s):
+    return s.indexOf(part) != -1
+
+bool operIn(object o, List lst):
+    return lst.contains(o)
+
+bool operIn(object o, object[] lst):
+    inline(return Arrays.stream(lst).anyMatch(x -> x.equals(o));)
+
+bool operIn(object o, Set s):
+    return s.contains(o)
+
+bool operIn(object o, Map m):
+    return m.containsKey(o)
+
 // Unary +
 int operUnaryAdd(int a):
     return a
@@ -133,25 +171,6 @@ long operMod(long a, long b):
 
 double operMod(double a, double b):
     inline(return a % b;)
-
-// ==
-bool operEq(int a, int b):
-    inline(return a == b;)
-
-bool operEq(long a, long b):
-    inline(return a == b;)
-
-bool operEq(double a, double b):
-    inline(return a == b;)
-
-bool operEq(bool a, bool b):
-    inline(return a == b;)
-
-bool operEq(string a, string b):
-    return a.equals(b)
-
-bool operEq(object a, object b):
-    return a.equals(b)
     """.trim());
         LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
         for (var i : LangUtil.asIterable(files.length)) {

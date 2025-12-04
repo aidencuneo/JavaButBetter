@@ -154,7 +154,7 @@ public class Compiler {
                 if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNTIL))) { out += ")"; }
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.FOR))) ? (!Extensions.operEq(((f = findTokenType(tok, Token.Type.IN))), Extensions.operUnarySub(1))) : (Extensions.operEq(startTok, Token.Type.FOR)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.FOR))) ? (!Extensions.operEq(((f = findToken(tok, "in"))), Extensions.operUnarySub(1))) : (Extensions.operEq(startTok, Token.Type.FOR)))) {
             out += "for (";
             String varname = Extensions.operGetIndex(tok, 1).value;
             out += Extensions.operAdd(Extensions.operAdd("var ", varname), " : LangUtil.asIterable(");
@@ -187,10 +187,10 @@ public class Compiler {
             out += " }";
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.FOR))), Extensions.operUnarySub(1)))) {
-            int f_in = findTokenTypeRev(tok, Token.Type.IN);
+            int f_in = findTokenRev(tok, "in");
             if (LangUtil.isTruthy(!Extensions.operEq(f_in, Extensions.operUnarySub(1)))) {
                 out += "for (";
-                String varname = Extensions.operGetIndex(tok, Extensions.operAdd(f, 1)).value;
+                var varname = Extensions.operGetIndex(tok, Extensions.operAdd(f, 1)).value;
                 out += Extensions.operAdd(Extensions.operAdd("var ", varname), " : LangUtil.asIterable(");
                 out += compileExpr(LangUtil.slice(tok, Extensions.operAdd(f_in, 1), null, 1));
                 out += ")) { ";
@@ -531,14 +531,25 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(lhs, " != "), rhs);
             }
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyTokenRev(tok, List.of("<", ">", "<=", ">=", "is")))), Extensions.operUnarySub(1)))) {
-            String oper = Extensions.operGetIndex(tok, f).value;
+        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyTokenRev(tok, List.of("<", ">", "<=", ">=", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))), Extensions.operUnarySub(1)))) {
+            var oper = Extensions.operGetIndex(tok, f).value;
+            var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             if (LangUtil.isTruthy(Extensions.operEq(oper, "is"))) {
                 oper = "==";
             }
-            String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
-            String rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
-            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(lhs, " "), oper), " "), rhs);
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "isnt"))) ? (Extensions.operEq(oper, "isnt")) : (Extensions.operEq(oper, "isnot")))) {
+                oper = "!=";
+            }
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "in"))) ? (Extensions.operEq(oper, "in")) : (Extensions.operEq(oper, "inside")))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operIn(", lhs), ", "), rhs), ")");
+            }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "notin"))) ? (Extensions.operEq(oper, "notin")) : (Extensions.operEq(oper, "outside")))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("!Extensions.operIn(", lhs), ", "), rhs), ")");
+            }
+            else {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(lhs, " "), oper), " "), rhs);
+            }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findAnyTokenRev(tok, List.of("+", "-")))) > 0)) ? (Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.BIN_OPER)) : (((f = findAnyTokenRev(tok, List.of("+", "-")))) > 0))) {
             String oper = Extensions.operGetIndex(tok, f).value;

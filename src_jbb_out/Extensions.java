@@ -28,6 +28,42 @@ public class Extensions {
     public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
         return v.get(key);
     }
+    public static boolean operEq(int a , int b) {
+        return a == b;
+    }
+    public static boolean operEq(long a , long b) {
+        return a == b;
+    }
+    public static boolean operEq(double a , double b) {
+        return a == b;
+    }
+    public static boolean operEq(boolean a , boolean b) {
+        return a == b;
+    }
+    public static boolean operEq(String a , String b) {
+        return a.equals(b);
+    }
+    public static boolean operEq(Object a , Object b) {
+        return a.equals(b);
+    }
+    public static boolean operIn(char c , String s) {
+        return !Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1));
+    }
+    public static boolean operIn(String part , String s) {
+        return !Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1));
+    }
+    public static boolean operIn(Object o , List lst) {
+        return lst.contains(o);
+    }
+    public static boolean operIn(Object o , Object [] lst) {
+        return Arrays.stream(lst).anyMatch(x -> x.equals(o));
+    }
+    public static boolean operIn(Object o , Set s) {
+        return s.contains(o);
+    }
+    public static boolean operIn(Object o , Map m) {
+        return m.containsKey(o);
+    }
     public static int operUnaryAdd(int a) {
         return a;
     }
@@ -108,24 +144,6 @@ public class Extensions {
     }
     public static double operMod(double a , double b) {
         return a % b;
-    }
-    public static boolean operEq(int a , int b) {
-        return a == b;
-    }
-    public static boolean operEq(long a , long b) {
-        return a == b;
-    }
-    public static boolean operEq(double a , double b) {
-        return a == b;
-    }
-    public static boolean operEq(boolean a , boolean b) {
-        return a == b;
-    }
-    public static boolean operEq(String a , String b) {
-        return a.equals(b);
-    }
-    public static boolean operEq(Object a , Object b) {
-        return a.equals(b);
     }
 }
 

@@ -1,3 +1,4 @@
+- Add "elem in container"
 - Fix java lambdas (->)
 - Add support for implementing and extending classes
 - Add single line functions

@@ -50,5 +50,9 @@ public class StringParser {
         }
         return false;
     }
+    public static String trimComma(String str) {
+        while (LangUtil.isTruthy(str.trim().endsWith(","))) { str = LangUtil.slice(str.trim(), null, Extensions.operUnarySub(1), 1); }
+        return str;
+    }
 }
 

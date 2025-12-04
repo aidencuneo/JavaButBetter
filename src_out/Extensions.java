@@ -88,6 +88,9 @@ public class Extensions {
         }
         return a.repeat(b);
     }
+    public static String operMul(int a , String b) {
+        return operMul(b, a);
+    }
     public static int operDiv(int a , int b) {
         return a / b;
     }

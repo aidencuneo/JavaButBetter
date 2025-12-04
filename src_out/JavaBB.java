@@ -111,6 +111,9 @@ string operMul(string a, int b):
         return StringBuilder(a).reverse().toString().repeat(-b)
     return a.repeat(b)
 
+string operMul(int a, string b):
+    return operMul(b, a)
+
 // /
 int operDiv(int a, int b):
     inline(return a / b;)

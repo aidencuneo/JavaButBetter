@@ -391,7 +391,6 @@ public class Compiler {
             if (LangUtil.isTruthy(!LangUtil.isTruthy(vartype))) {
                 
             }
-            LangUtil.println(Extensions.operAdd("Declaring ", name));
             declareLocal(name);
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), vartype), name), value), ";");
         }
@@ -541,24 +540,18 @@ public class Compiler {
             String rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(lhs, " "), oper), " "), rhs);
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyTokenRev(tok, List.of("+", "-")))), Extensions.operUnarySub(1)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(((f = findAnyTokenRev(tok, List.of("+", "-")))) > 0)) ? (Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.BIN_OPER)) : (((f = findAnyTokenRev(tok, List.of("+", "-")))) > 0))) {
             String oper = Extensions.operGetIndex(tok, f).value;
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "+"))) ? (lhs) : (Extensions.operEq(oper, "+")))) {
+            if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operAdd(", lhs), ", "), rhs), ")");
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "-"))) ? (lhs) : (Extensions.operEq(oper, "-")))) {
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operSub(", lhs), ", "), rhs), ")");
             }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
-                out += Extensions.operAdd(Extensions.operAdd("Extensions.operUnaryAdd(", rhs), ")");
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
-                out += Extensions.operAdd(Extensions.operAdd("Extensions.operUnarySub(", rhs), ")");
-            }
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyTokenRev(tok, List.of("*", "/", "%")))), Extensions.operUnarySub(1)))) {
+        else if (LangUtil.isTruthy(((f = findAnyTokenRev(tok, List.of("*", "/", "%")))) > 0)) {
             String oper = Extensions.operGetIndex(tok, f).value;
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -572,11 +565,17 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operMod(", lhs), ", "), rhs), ")");
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (Extensions.len(tok) > 1))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (List.of("+", "-").contains(Extensions.operGetIndex(tok, 0).value)))) : (Extensions.len(tok) > 1))) {
             String oper = Extensions.operGetIndex(tok, 0).value;
             String expr = compileExpr(LangUtil.slice(tok, 1, null, 1));
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "not"))) ? (Extensions.operEq(oper, "not")) : (Extensions.operEq(oper, "!")))) {
                 out += Extensions.operAdd(Extensions.operAdd("!LangUtil.isTruthy(", expr), ")");
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
+                out += Extensions.operAdd(Extensions.operAdd("Extensions.operUnaryAdd(", expr), ")");
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
+                out += Extensions.operAdd(Extensions.operAdd("Extensions.operUnarySub(", expr), ")");
             }
             else {
                 out += Extensions.operAdd(Extensions.operGetIndex(tok, 0).value, expr);
@@ -674,7 +673,7 @@ public class Compiler {
                 out += compileRange(tok);
             }
             else {
-                out += Extensions.operAdd(Extensions.operAdd("List.of(", compileExpr(tok)), ")");
+                out += Extensions.operAdd(Extensions.operAdd("List.of(", StringParser.trimComma(compileExpr(tok))), ")");
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {

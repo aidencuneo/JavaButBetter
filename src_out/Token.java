@@ -65,7 +65,7 @@ public class Token {
         this . type = Type.BLANK;
         this . value = "";
     }
-    public static Token fromString(String v) {
+    public static Token fromString(String v , Token . Type lastToken) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
         Type t = Type.BLANK;
         char f = v.charAt(0);
@@ -129,7 +129,12 @@ public class Token {
             t = Type.BRACE_EXPR;
         }
         else if (LangUtil.isTruthy((List.of("+", "-", "*", "/", "%", "&", "|", "and", "or", "xor", "nor", "&&", "||", "^", ">", "<", ">=", "<=", "==", "!=", "is").contains(v)))) {
-            t = Type.BIN_OPER;
+            if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-"))))) ? (List.of(Type.BIN_OPER, Type.BLANK).contains(lastToken)) : (((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-")))))) {
+                t = Type.UNARY_OPER;
+            }
+            else {
+                t = Type.BIN_OPER;
+            }
         }
         else if (LangUtil.isTruthy((List.of("!", "~", "not").contains(v)))) {
             t = Type.UNARY_OPER;
@@ -246,6 +251,9 @@ public class Token {
             t = Type.SYMBOL;
         }
         return new Token(t, v);
+    }
+    public static Token fromString(String v) {
+        return fromString(v, Type.BLANK);
     }
     public static boolean isAlpha(String s) {
         return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");

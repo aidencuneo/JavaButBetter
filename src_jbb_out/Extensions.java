@@ -61,6 +61,9 @@ public class Extensions {
     public static String operAdd(Object a , String b) {
         return a + b;
     }
+    public static String operAdd(String a , String b) {
+        return a + b;
+    }
     public static int operSub(int a , int b) {
         return a - b;
     }
@@ -84,6 +87,9 @@ public class Extensions {
             return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
         }
         return a.repeat(b);
+    }
+    public static String operMul(int a , String b) {
+        return operMul(b, a);
     }
     public static int operDiv(int a , int b) {
         return a / b;

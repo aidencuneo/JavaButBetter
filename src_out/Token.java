@@ -69,7 +69,7 @@ public class Token {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
         Type t = Type.BLANK;
         char f = v.charAt(0);
-        char l = v.charAt(v.length() - 1);
+        char l = v.charAt(Extensions.operSub(v.length(), 1));
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
             t = Type.BLANK;
         }
@@ -95,22 +95,22 @@ public class Token {
             t = Type.STRING;
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith("'''"))) ? (v.endsWith("'''")) : (v.startsWith("'''")))) {
-            String vNoQuotes = v.substring(3, v.length() - 3);
+            String vNoQuotes = v.substring(3, Extensions.operSub(v.length(), 3));
             String realStr = StringParser.unescapeString(vNoQuotes);
             if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
-                v = "\"\"\"" + vNoQuotes + "\"\"\"";
+                v = Extensions.operAdd(Extensions.operAdd("\"\"\"", vNoQuotes), "\"\"\"");
             }
             else {
                 t = Type.CHAR;
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(f, '\''))) ? (Extensions.operEq(l, '\'')) : (Extensions.operEq(f, '\'')))) {
-            String vNoQuotes = v.substring(1, v.length() - 1);
+            String vNoQuotes = v.substring(1, Extensions.operSub(v.length(), 1));
             String realStr = StringParser.unescapeString(vNoQuotes);
             if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
-                v = '"' + StringParser.escapeDoubleQuotes(vNoQuotes) + '"';
+                v = Extensions.operAdd(Extensions.operAdd('"', StringParser.escapeDoubleQuotes(vNoQuotes)), '"');
             }
             else {
                 t = Type.CHAR;
@@ -254,7 +254,7 @@ public class Token {
         return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$");
     }
     public String toString() {
-        return type + ":" + value;
+        return Extensions.operAdd(Extensions.operAdd(type, ":"), value);
     }
 }
 

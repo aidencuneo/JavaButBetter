@@ -6,12 +6,12 @@ public class StringParser {
         var out = "";
         for (int i = 0; i < str.length(); ++i) {
             var c = Extensions.operGetIndex(str, i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (i + 1 < str.length()) : (Extensions.operEq(c, '\\')))) {
-                var next = Extensions.operGetIndex(str, i + 1);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (Extensions.operAdd(i, 1) < str.length()) : (Extensions.operEq(c, '\\')))) {
+                var next = Extensions.operGetIndex(str, Extensions.operAdd(i, 1));
                 ++ i;
-                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (i + 4 < str.length()) : (Extensions.operEq(next, 'u')))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (Extensions.operAdd(i, 4) < str.length()) : (Extensions.operEq(next, 'u')))) {
                     try {
-                        var code = Integer.parseInt(str.substring(i + 1, i + 5), 16);
+                        var code = Integer.parseInt(str.substring(Extensions.operAdd(i, 1), Extensions.operAdd(i, 5)), 16);
                         out += (char) code;
                         i += 4;
                     }

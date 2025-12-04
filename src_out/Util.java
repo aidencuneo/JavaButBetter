@@ -44,8 +44,8 @@ public class Util {
     public static <T> String d(ArrayList < T > s) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(s))) { return "[]"; }
         var out = "[";
-        for (var e : LangUtil.asIterable(s)) { out += e + " "; }
-        return out.substring(0, out.length() - 1) + "]";
+        for (var e : LangUtil.asIterable(s)) { out += Extensions.operAdd(e, " "); }
+        return Extensions.operAdd(out.substring(0, Extensions.operSub(out.length(), 1)), "]");
     }
 }
 

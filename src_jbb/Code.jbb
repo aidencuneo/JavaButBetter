@@ -1,30 +1,9 @@
 main:
-    if ((type != lastType && type != CharType.W || type == CharType.S) && !(
-        sq || dq || bt || rb > 0 || sb > 0 || cb > 0
-    ) && !(
-        // Join together operators: -= += *= /= **= == >= <= .= ??=
-        ("+-*/=><!.?".contains("" + lastChar)) && c == '='
-    // ) && !(
-    //     lastType == CharType.A && c == '.' // Join together names like 'word.upper' (second part is below)
-    // ) && !(
-    //     type == CharType.A && lastChar == '.' // Second part to the line above
-    ) && !(
-        lastChar == '_' && type == CharType.A // Join together names like 'string_one' (second part is below)
-    ) && !(
-        lastType == CharType.A && c == '_' // Second part to the line above
-    ) && !(
-        lastType == CharType.A && type == CharType.D // Join alphabetical and numerical characters
-    ) && !(
-        type == CharType.A && lastType == CharType.D // Second part to the line above
-    ) && !(
-        lastType == CharType.D && c == '.' && nextType == CharType.D // Join numbers with dots (first part)
-    ) && !(
-        lastLastType == CharType.D && lastChar == '.' && type == CharType.D // Join numbers with dots (second part)
-    ) && !(
-        lastChar == '"' && c == '"' // Join together all double quotes
-    ) && !current.isBlank())
-        tok.add(Token.fromString(current.trim()))
-        current = ""
+    println 10 + "aiden"
+    println "what" + "what"
+    println "w" * 10
+    println "aiden" * -2
+    println -3 * ":aideN"
 
 // static class Extensions
 

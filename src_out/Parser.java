@@ -6,7 +6,7 @@ public class Parser {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
-            var nextTok = LangUtil.isTruthy(i + 1 < tok.size()) ? (tok.get(i + 1)) : (new Token());
+            var nextTok = LangUtil.isTruthy(Extensions.operAdd(i, 1) < tok.size()) ? (tok.get(Extensions.operAdd(i, 1))) : (new Token());
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
                     t . value = "String";
@@ -56,7 +56,7 @@ public class Parser {
                         tok.remove(i);
                     }
                     tok.addAll(i, aliasTokens);
-                    i += aliasTokens.size() - 1;
+                    i += Extensions.operSub(aliasTokens.size(), 1);
                 }
             }
             lastWasDot = false;
@@ -72,17 +72,17 @@ public class Parser {
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 var i = names.indexOf(t.value);
-                if (LangUtil.isTruthy(!Extensions.operEq(i, - 1))) {
+                if (LangUtil.isTruthy(!Extensions.operEq(i, Extensions.operUnarySub(1)))) {
                     newTok.addAll(values.get(i));
                     continue;
                 }
             }
             else if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.EXPR))) {
-                var exprStr = t.value.substring(1, t.value.length() - 1);
+                var exprStr = t.value.substring(1, Extensions.operSub(t.value.length(), 1));
                 var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
                 var newExpr = "";
                 for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
-                t . value = "(" + newExpr + ")";
+                t . value = Extensions.operAdd(Extensions.operAdd("(", newExpr), ")");
             }
             newTok.add(t);
         }

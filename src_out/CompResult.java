@@ -25,9 +25,9 @@ public class CompResult {
         }
         var packageStr = "";
         if (LangUtil.isTruthy(Compiler.packagePath)) {
-            packageStr = "package " + Compiler.packagePath + ";\n\n";
+            packageStr = Extensions.operAdd(Extensions.operAdd("package ", Compiler.packagePath), ";\n\n");
         }
-        return packageStr + startTemplate + "\n" + out + endTemplate;
+        return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(packageStr, startTemplate), "\n"), out), endTemplate);
     }
 }
 

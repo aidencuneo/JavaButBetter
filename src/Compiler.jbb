@@ -413,6 +413,10 @@ string compileStatement(ArrayList<Token> tok, string out):
     elif len(tok) == 1 && startTok == Token.Type.STATIC
         out += "static"
 
+    // Decorators
+    elif len(tok) > 1 && tok[0].value == "@"
+        out += "@" + compileExpr(tok[1:])
+
     // Keywords
     elif startTok == Token.Type.RETURN
         out += "return"
@@ -642,7 +646,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
 
     // Null coalescing
-    elif (f = findToken(tok, "??")) != -1
+    elif (f = findToken(tok, "??")) > 0
         // name ?? '' => ((name) != null) ? (name) : ("")
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -650,37 +654,37 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical or
-    elif (f = findAnyToken(tok, List.of("||", "or"))) != -1
+    elif (f = findAnyToken(tok, List.of("||", "or"))) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical and
-    elif (f = findAnyToken(tok, List.of("&&", "and"))) != -1
+    elif (f = findAnyToken(tok, List.of("&&", "and"))) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")"
 
     // Bitwise or
-    elif (f = findToken(tok, "|")) != -1
+    elif (f = findToken(tok, "|")) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " | " + rhs
 
     // Bitwise xor
-    elif (f = findToken(tok, "^")) != -1
+    elif (f = findToken(tok, "^")) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " ^ " + rhs
 
     // Bitwise and
-    elif (f = findToken(tok, "&")) != -1
+    elif (f = findToken(tok, "&")) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " & " + rhs
 
     // Equality operators
-    elif (f = findAnyToken(tok, List.of("==", "!=", "===", "!=="))) != -1
+    elif (f = findAnyToken(tok, List.of("==", "!=", "===", "!=="))) > 0
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -695,7 +699,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is"))) != -1
+    elif (f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is"))) > 0
         string oper = tok[f].value
 
         if oper == "is"
@@ -706,16 +710,30 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += lhs + " " + oper + " " + rhs
 
     // Additive binary operators
-    elif (f = findAnyToken(tok, List.of("+", "-"))) != -1
+    elif (f = findAnyToken(tok, List.of("+", "-"))) > 0
+        string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
-        out += lhs + " " + tok[f].value + " " + rhs
+
+        if oper == "+"
+            out += "Extensions.operAdd(" + lhs + ", " + rhs + ")"
+        elif oper == "-"
+            out += "Extensions.operSub(" + lhs + ", " + rhs + ")"
 
     // Multiplicative binary operators
-    elif (f = findAnyToken(tok, List.of("*", "/", "%"))) != -1
+    elif (f = findAnyToken(tok, List.of("*", "/", "%"))) > 0
+        string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
-        out += lhs + " " + tok[f].value + " " + rhs
+
+        if oper == "*"
+            out += "Extensions.operMul(" + lhs + ", " + rhs + ")"
+        elif oper == "/"
+            out += "Extensions.operDiv(" + lhs + ", " + rhs + ")"
+        elif oper == "%"
+            out += "Extensions.operMod(" + lhs + ", " + rhs + ")"
+
+        // out += lhs + " " + tok[f].value + " " + rhs
 
     // Unary operators
     elif len(tok) > 1 && tok[0].type == Token.Type.UNARY_OPER
@@ -729,7 +747,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += tok[0].value + expr
 
     // Exponentiation
-    elif (f = findToken(tok, "**")) != -1
+    elif (f = findToken(tok, "**")) > 0
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "Math.pow(" + lhs + ", " + rhs + ")"
@@ -774,14 +792,20 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         // Function calls
         if tok[f].type == Token.Type.EXPR
-            let name = compileExpr(tok[:-1])
+            name = compileExpr(tok[:-1])
+            isNew = tok[0].value == "new"
 
             // Name replacements
             if name == "len"
                 name = "Extensions.len"
 
-            let t = tok[-1]
-            let args = t.value[1:-1]
+            // Detect class names (pascal case)
+            if StringParser.isPascalCase(tok[-2].value) && !isNew
+                name = "new " + name
+                println tok[:-1] + ", " + name
+
+            t = tok[-1]
+            args = t.value[1:-1]
             out += name + "(" + compileExpr(Tokeniser.tokLine(args)) + ")"
 
         // Dotted expressions (.)

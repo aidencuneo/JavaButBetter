@@ -37,8 +37,47 @@ public class Extensions {
     public static double operAdd(double a , double b) {
         return a + b;
     }
-    public static int operAdd(boolean a , boolean b) {
-        return (a ? 1 : 0) + (b ? 1 : 0);
+    public static int operSub(int a , int b) {
+        return a - b;
+    }
+    public static long operSub(long a , long b) {
+        return a - b;
+    }
+    public static double operSub(double a , double b) {
+        return a - b;
+    }
+    public static int operMul(int a , int b) {
+        return a * b;
+    }
+    public static long operMul(long a , long b) {
+        return a * b;
+    }
+    public static double operMul(double a , double b) {
+        return a * b;
+    }
+    public static String operMul(String a , int b) {
+        if (LangUtil.isTruthy(b < 0)) {
+            return a.reverse().repeat(- b);
+        }
+        return a.repeat(b);
+    }
+    public static int operDiv(int a , int b) {
+        return a / b;
+    }
+    public static long operDiv(long a , long b) {
+        return a / b;
+    }
+    public static double operDiv(double a , double b) {
+        return a / b;
+    }
+    public static int operMod(int a , int b) {
+        return a % b;
+    }
+    public static long operMod(long a , long b) {
+        return a % b;
+    }
+    public static double operMod(double a , double b) {
+        return a % b;
     }
     public static boolean operEq(int a , int b) {
         return a == b;

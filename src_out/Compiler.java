@@ -326,6 +326,9 @@ public class Compiler {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "static";
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "@")) : (Extensions.len(tok) > 1))) {
+            out += "@" + compileExpr(LangUtil.slice(tok, 1, null, 1));
+        }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.RETURN))) {
             out += "return";
             if (LangUtil.isTruthy(Extensions.len(tok) > 1)) {
@@ -482,37 +485,37 @@ public class Compiler {
             String rhs = compileExpr(LangUtil.slice(tok, f2 + 1, null, 1));
             out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")";
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "??"))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findToken(tok, "??"))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")";
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("||", "or")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("||", "or")))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")";
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("&&", "and")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("&&", "and")))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")";
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "|"))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findToken(tok, "|"))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " | " + rhs;
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "^"))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findToken(tok, "^"))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " ^ " + rhs;
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "&"))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findToken(tok, "&"))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " & " + rhs;
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("==", "!=", "===", "!==")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("==", "!=", "===", "!==")))) > 0)) {
             String oper = Extensions.operGetIndex(tok, f).value;
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
@@ -529,7 +532,7 @@ public class Compiler {
                 out += lhs + " != " + rhs;
             }
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is")))) > 0)) {
             String oper = Extensions.operGetIndex(tok, f).value;
             if (LangUtil.isTruthy(Extensions.operEq(oper, "is"))) {
                 oper = "==";
@@ -538,15 +541,30 @@ public class Compiler {
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += lhs + " " + oper + " " + rhs;
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("+", "-")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("+", "-")))) > 0)) {
+            String oper = Extensions.operGetIndex(tok, f).value;
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
-            out += lhs + " " + Extensions.operGetIndex(tok, f).value + " " + rhs;
+            if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
+                out += "Extensions.operAdd(" + lhs + ", " + rhs + ")";
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
+                out += "Extensions.operSub(" + lhs + ", " + rhs + ")";
+            }
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyToken(tok, List.of("*", "/", "%")))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findAnyToken(tok, List.of("*", "/", "%")))) > 0)) {
+            String oper = Extensions.operGetIndex(tok, f).value;
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
-            out += lhs + " " + Extensions.operGetIndex(tok, f).value + " " + rhs;
+            if (LangUtil.isTruthy(Extensions.operEq(oper, "*"))) {
+                out += "Extensions.operMul(" + lhs + ", " + rhs + ")";
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "/"))) {
+                out += "Extensions.operDiv(" + lhs + ", " + rhs + ")";
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "%"))) {
+                out += "Extensions.operMod(" + lhs + ", " + rhs + ")";
+            }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (Extensions.len(tok) > 1))) {
             String oper = Extensions.operGetIndex(tok, 0).value;
@@ -558,7 +576,7 @@ public class Compiler {
                 out += Extensions.operGetIndex(tok, 0).value + expr;
             }
         }
-        else if (LangUtil.isTruthy(!Extensions.operEq(((f = findToken(tok, "**"))), - 1))) {
+        else if (LangUtil.isTruthy(((f = findToken(tok, "**"))) > 0)) {
             String lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             String rhs = compileExpr(LangUtil.slice(tok, f + 1, null, 1));
             out += "Math.pow(" + lhs + ", " + rhs + ")";
@@ -586,8 +604,13 @@ public class Compiler {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (((f = findAnyTokenTypeRev(tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR)))) > 0) : (Extensions.len(tok) > 1))) {
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.EXPR))) {
                 var name = compileExpr(LangUtil.slice(tok, null, - 1, 1));
+                var isNew = Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "new");
                 if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
                     name = "Extensions.len";
+                }
+                if (LangUtil.isTruthy((LangUtil.isTruthy(StringParser.isPascalCase(Extensions.operGetIndex(tok, - 2).value))) ? (!LangUtil.isTruthy(isNew)) : (StringParser.isPascalCase(Extensions.operGetIndex(tok, - 2).value)))) {
+                    name = "new " + name;
+                    LangUtil.println(LangUtil.slice(tok, null, - 1, 1) + ", " + name);
                 }
                 var t = Extensions.operGetIndex(tok, - 1);
                 var args = LangUtil.slice(t.value, 1, - 1, 1);

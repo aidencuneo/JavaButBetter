@@ -3,10 +3,8 @@ import java.util.*;
 
 public class JavaBB {
     public static void main(String[] args) {
-        var compDir = "src";
-        if (LangUtil.isTruthy(args)) { compDir = Extensions.operGetIndex(args, 0); }
-        var outDir = compDir + "_out";
-        if (LangUtil.isTruthy(args.length > 1)) { outDir = Extensions.operGetIndex(args, 1); }
+        var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
+        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (compDir + "_out");
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
@@ -20,7 +18,7 @@ int len(string s):
     ret s.length()
 
 (T) int len(Iterable<T> v):
-    let c = 0
+    c = 0
     ++c for x in v
     ret c
 
@@ -53,8 +51,56 @@ long operAdd(long a, long b):
 double operAdd(double a, double b):
     inline(return a + b;)
 
-int operAdd(bool a, bool b):
-    inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+// int operAdd(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// -
+int operSub(int a, int b):
+    inline(return a - b;)
+
+long operSub(long a, long b):
+    inline(return a - b;)
+
+double operSub(double a, double b):
+    inline(return a - b;)
+
+// int operSub(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// *
+int operMul(int a, int b):
+    inline(return a * b;)
+
+long operMul(long a, long b):
+    inline(return a * b;)
+
+double operMul(double a, double b):
+    inline(return a * b;)
+
+string operMul(string a, int b):
+    if b < 0
+        return a.reverse().repeat(-b)
+    return a.repeat(b)
+
+// /
+int operDiv(int a, int b):
+    inline(return a / b;)
+
+long operDiv(long a, long b):
+    inline(return a / b;)
+
+double operDiv(double a, double b):
+    inline(return a / b;)
+
+// %
+int operMod(int a, int b):
+    inline(return a % b;)
+
+long operMod(long a, long b):
+    inline(return a % b;)
+
+double operMod(double a, double b):
+    inline(return a % b;)
 
 // ==
 bool operEq(int a, int b):
@@ -172,7 +218,7 @@ bool isTruthy(object v):
     ret v
 
 List<Int> asIterable(int n):
-    let lst = new ArrayList<Int>()
+    lst = new ArrayList<Int>()
     inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
@@ -197,7 +243,7 @@ string slice(string s, int start, int end, int step):
     if step == 1
         return s.substring(start, end)
 
-    let newStr = ""
+    newStr = ""
     inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
         newStr += s.charAt(i)
     ret newStr
@@ -231,7 +277,7 @@ string slice(string s, int start, Null end, int step):
     start = indexConvert(start, v.size())
     end = indexConvert(end, v.size())
 
-    let lst = new ArrayList<T>()
+    lst = new ArrayList<T>()
     inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
         println i + ", " + start + ", " + end + ", " + step
         lst.add(v.get(i))
@@ -251,7 +297,7 @@ string slice(string s, int start, Null end, int step):
     start = indexConvert(start, v.length)
     end = indexConvert(end, v.length)
 
-    let lst = new ArrayList<T>()
+    lst = new ArrayList<T>()
     inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
         lst.add(v[i])
     ret lst

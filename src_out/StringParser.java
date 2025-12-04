@@ -5,9 +5,9 @@ public class StringParser {
     public static String unescapeString(String str) {
         var out = "";
         for (int i = 0; i < str.length(); ++i) {
-            var c = str.charAt(i);
+            var c = Extensions.operGetIndex(str, i);
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (i + 1 < str.length()) : (Extensions.operEq(c, '\\')))) {
-                var next = str.charAt(i + 1);
+                var next = Extensions.operGetIndex(str, i + 1);
                 ++ i;
                 if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (i + 4 < str.length()) : (Extensions.operEq(next, 'u')))) {
                     try {
@@ -41,6 +41,14 @@ public class StringParser {
     }
     public static String escapeDoubleQuotes(String str) {
         return str.replace("\"", "\\\"");
+    }
+    public static boolean isPascalCase(String str) {
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(str))) { return false; }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(Character.isUpperCase(Extensions.operGetIndex(str, 0))))) { return false; }
+        for (var c : LangUtil.asIterable(LangUtil.slice(str, 1, null, 1))) {
+            if (LangUtil.isTruthy(!LangUtil.isTruthy(Character.isUpperCase(c)))) { return true; }
+        }
+        return false;
     }
 }
 

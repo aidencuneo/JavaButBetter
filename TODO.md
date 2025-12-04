@@ -1,15 +1,18 @@
-- Add decorators (?)
-- Automatic "new" insertion for pascal case identifiers
+- Fix java lambdas (->)
+- Add support for implementing and extending classes
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
-- Add /* */
-- Add support for implementing and extending classes
+- Add more operator overloads
+    - string * int
+    - char * int
 - Add more operators to overload
     - !, +, -, *, /, %
 - Add operator overloading
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
+- Add /* */
+- F-strings or `` strings
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -32,3 +35,5 @@ Done:
 - Fix automatic var insertion
     - Delete locals every time scope decreases
 - Add @Override (!)
+- Add decorators
+- Automatic "new" insertion for pascal case function calls

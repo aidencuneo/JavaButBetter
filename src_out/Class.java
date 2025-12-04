@@ -15,11 +15,11 @@ public class Class {
         if (LangUtil.isTruthy(code.isBlank())) { return ""; }
         var accessModStr = MethodAccess.accessModToString(access);
         accessModStr += LangUtil.isTruthy(accessModStr) ? (" ") : ("");
-        var extendsStr = LangUtil.isTruthy(extendsType) ? (Extensions.operAdd(" extends ", extendsType)) : ("");
-        var implementsStr = LangUtil.isTruthy(implementsType) ? (Extensions.operAdd(" implements ", implementsType)) : ("");
-        var typeArgStr = LangUtil.isTruthy(typeArgs) ? (Extensions.operAdd(Extensions.operAdd("<", typeArgs), ">")) : ("");
-        var out = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(accessModStr, "class "), name), typeArgStr), extendsStr), implementsStr), " {\n");
-        out += Extensions.operAdd("    ", code.trim());
+        var extendsStr = LangUtil.isTruthy(extendsType) ? (" extends " + extendsType) : ("");
+        var implementsStr = LangUtil.isTruthy(implementsType) ? (" implements " + implementsType) : ("");
+        var typeArgStr = LangUtil.isTruthy(typeArgs) ? ("<" + typeArgs + ">") : ("");
+        var out = accessModStr + "class " + name + typeArgStr + extendsStr + implementsStr + " {\n";
+        out += "    " + code.trim();
         out += "\n}\n";
         return out;
     }

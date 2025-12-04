@@ -724,8 +724,6 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         elif oper == "-"
             out += "Extensions.operUnarySub(" + rhs + ")"
 
-        println len(out)
-
     // Multiplicative binary operators
     elif (f = findAnyTokenRev(tok, List.of("*", "/", "%"))) != -1
         string oper = tok[f].value
@@ -924,6 +922,10 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     //     System.out.println("String: " + Util.d(tok))
 
     // System.out.println("Just did expr: " + Util.d(tok))
+
+    println mainClassName + " --> " + len(out)
+    if len(out) > 1000
+        println(tok + ", " + out)
 
     return out.trim()
 

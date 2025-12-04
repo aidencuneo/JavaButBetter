@@ -3,4 +3,4 @@ cd src_out
 java JavaBB ../src
 
 @REM Compile src_out
-javac JavaBB.java
+javac -Xmaxerrs 20 JavaBB.java

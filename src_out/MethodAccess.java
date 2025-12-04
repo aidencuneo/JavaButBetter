@@ -22,7 +22,7 @@ public class MethodAccess {
         return "";
     }
     public String toString() {
-        return Extensions.operAdd(accessModToString(accessMod), (LangUtil.isTruthy(isStatic) ? (" static") : ("")));
+        return accessModToString(accessMod) + (LangUtil.isTruthy(isStatic) ? (" static") : (""));
     }
 }
 

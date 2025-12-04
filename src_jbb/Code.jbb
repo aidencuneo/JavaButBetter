@@ -3,6 +3,18 @@ regex (
     "CMD \"$1\""
 )
 
+// JavaScript template strings
+regex (
+    "(`.*?)\$\{(.+)\}(.*?`)"
+    "$1\" + ($2) + \"$3"
+)
+
+// Python f-strings
+regex (
+    "f(\".*?)\{([^\{\}]+)\}(.*?\")"
+    "$1\" + ($2) + \"$3"
+)
+
 alias CMD = elif cmd ==
 
 public class Code extends JavaPlugin
@@ -33,10 +45,11 @@ Random rand = Random()
         sender.sendMessage(ChatColor.GREEN + "Successfully joined the " + ChatColor.DARK_AQUA + "speedrunners" + ChatColor.GREEN + " team.")
 
     CMD --> newcmd
+        ...
 
     CMD --> joinchildren
         if Teams.teamsLocked
-            sender.sendMessage(ChatColor.RED + "Teams are locked.")
+            sender.sendMessage(ChatColor.RED + f"Teams ({Teams.teamsLocked}) are locked.")
             return true
 
         pl = (Player) sender

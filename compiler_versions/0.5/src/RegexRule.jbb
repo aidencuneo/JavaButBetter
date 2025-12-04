@@ -12,7 +12,6 @@ RegexRule(string find, string replace, string stage):
     this.pattern = Pattern.compile(find)
 
 bool find(string s):
-    println find + ", " + replace
     return pattern.matcher(s).find()
 
 string apply(string s):

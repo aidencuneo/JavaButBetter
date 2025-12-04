@@ -19,10 +19,12 @@ public class Code extends JavaPlugin {
             Teams.setTeam(pl, "speedrunners");
             sender.sendMessage(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(ChatColor.GREEN, "Successfully joined the "), ChatColor.DARK_AQUA), "speedrunners"), ChatColor.GREEN), " team."));
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(cmd, "newcmd")))
+        else if (LangUtil.isTruthy(Extensions.operEq(cmd, "newcmd"))) {
+            
+        }
         else if (LangUtil.isTruthy(Extensions.operEq(cmd, "joinchildren"))) {
             if (LangUtil.isTruthy(Teams.teamsLocked)) {
-                sender.sendMessage(Extensions.operAdd(ChatColor.RED, "Teams are locked."));
+                sender.sendMessage(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(ChatColor.RED, "Teams ("), (Teams.teamsLocked)), ") are locked."));
                 return true;
             }
             var pl = (Player)sender;

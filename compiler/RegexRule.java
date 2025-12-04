@@ -14,7 +14,6 @@ public class RegexRule {
         this . pattern = Pattern.compile(find);
     }
     public boolean find(String s) {
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd(find, ", "), replace));
         return pattern.matcher(s).find();
     }
     public String apply(String s) {

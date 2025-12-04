@@ -173,10 +173,10 @@ double operMod(double a, double b):
     inline(return a % b;)
     """.trim());
         LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
+        HashMap<String, String> fileContentMap = new HashMap<>();
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fileContent = "";
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
-            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
             var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
@@ -185,21 +185,17 @@ double operMod(double a, double b):
                 
             }
             if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
-                Precompiler.precompileFile(className, fileContent);
+                var lines = Precompiler.precompileFile(className, fileContent);
+                fileContent = String.join("\n", lines);
+                fileContentMap.put(Extensions.operGetIndex(files, i), fileContent);
             }
         }
         LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
-            var fileContent = "";
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
             var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
             var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
-            try (var scanner = new Scanner(new File(fromPath))) {
-                fileContent = scanner.useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
+            var fileContent = Extensions.operGetIndex(fileContentMap, Extensions.operGetIndex(files, i));
             fileContent = Precompiler.applyRegexRules(fileContent);
             var compiled = "";
             if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {

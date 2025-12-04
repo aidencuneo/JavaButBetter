@@ -3,7 +3,7 @@ public static class Precompiler
 // These fields persist for all files
 List<RegexRule> regexRules = new ArrayList<>()
 
-precompileFile(string className, string code):
+ArrayList<string> precompileFile(string className, string code):
     lines = Tokeniser.splitFile(code)
 
     for i in len(lines)
@@ -11,10 +11,13 @@ precompileFile(string className, string code):
         next if !tok
         tok.remove(0) // Ignore INDENT token
 
-        precompileStatement(tok) if tok
+        keep = precompileStatement(tok)
+        lines.set(i, "") if !keep
 
-precompileStatement(ArrayList<Token> tok):
-    return if !tok
+    return lines
+
+bool precompileStatement(ArrayList<Token> tok):
+    return false if !tok
 
     types = Tokeniser.getTokenTypes(tok)
     startTok = types[0]
@@ -26,7 +29,7 @@ precompileStatement(ArrayList<Token> tok):
     if startTok == Token.Type.REGEX
         if len(tok) < 2
             // Error!
-            return
+            return false
 
         stage = "pre"
 
@@ -37,7 +40,7 @@ precompileStatement(ArrayList<Token> tok):
         // Find the expression
         if (f = Compiler.findTokenType(tok, Token.Type.EXPR)) == -1
             // Error!
-            return
+            return false
 
         pair = tok[f].value[1:-1]
         pairTok = Tokeniser.tokLine(pair)
@@ -46,12 +49,16 @@ precompileStatement(ArrayList<Token> tok):
         // Not enough tokens in the expression?
         if len(pairTok) < 2
             // Error!
-            return
+            return false
 
         find = pairTok[0].value[1:-1]
         replace = pairTok[1].value[1:-1]
 
         regexRules.add(RegexRule(find, replace, stage))
+        return false
+
+    // Leave line unchanged (keep)
+    return true
 
 string applyRegexRules(string code, int attempts):
     for rule in regexRules

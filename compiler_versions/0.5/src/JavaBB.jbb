@@ -179,11 +179,11 @@ double operMod(double a, double b):
 
     // Precompile all files
     println "\n\nPrecompiling " + compDir + "..."
+    inline(HashMap<String, String> fileContentMap = new HashMap<>();)
 
     for i in len(files)
         fileContent = ""
         fromPath = compDir + "/" + files[i]
-        toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
         className = files[i].split("\\.")[0]
 
         // Read input file
@@ -193,22 +193,20 @@ double operMod(double a, double b):
             ...
 
         if files[i].endsWith(".jbb")
-            Precompiler.precompileFile(className, fileContent)
+            lines = Precompiler.precompileFile(className, fileContent)
+
+            // Join lines back together
+            fileContent = string.join("\n", lines)
+            fileContentMap.put(files[i], fileContent)
 
     // Compile all files
     println "\n\nCompiling " + compDir + "..."
 
     for i in len(files)
-        fileContent = ""
         fromPath = compDir + "/" + files[i]
         toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
         className = files[i].split("\\.")[0]
-
-        // Read input file
-        try let scanner = Scanner(File(fromPath))
-            fileContent = scanner.useDelimiter("\\Z").next()
-        catch FileNotFoundException e
-            ...
+        fileContent = fileContentMap[files[i]]
 
         // Apply regex rules
         fileContent = Precompiler.applyRegexRules(fileContent)
@@ -238,15 +236,15 @@ double operMod(double a, double b):
             toPath = outDir + "/" + files[i] // Keep full name intact
 
         // Write to output file
-        try writer = new PrintWriter(toPath)
-            new File(toPath).createNewFile()
+        try writer = PrintWriter(toPath)
+            File(toPath).createNewFile()
             writer.println(compiled)
         catch IOException e
             ...
 
     // Write Extensions.java
-    try let writer = new PrintWriter(outDir + "/Extensions.java")
-        new File(outDir + "/Extensions.java").createNewFile()
+    try let writer = PrintWriter(outDir + "/Extensions.java")
+        File(outDir + "/Extensions.java").createNewFile()
         writer.println(extensionsClassRes.getCompiledCode("Extensions"))
     catch IOException e
         ...
@@ -585,8 +583,8 @@ static class IteratorToIterable<T> implements Iterable<T> {
     """.trim())
     langUtilCode = res.getCompiledCode("LangUtil")
 
-    try let writer = new PrintWriter(outDir + "/LangUtil.java")
-        new File(outDir + "/LangUtil.java").createNewFile()
+    try let writer = PrintWriter(outDir + "/LangUtil.java")
+        File(outDir + "/LangUtil.java").createNewFile()
         writer.println(langUtilCode)
     catch IOException e
         ...

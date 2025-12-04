@@ -1,5 +1,26 @@
+!m1:
+    a = "hi" * 2
+    a = 10
+    b = 2
+    b = 3
+    d = true + true
+    c = someClass.WHAT()
+    return SomeClass.Thing()
+
 main:
-    ...
+    empty = []
+    empty = [1, 2, 3]
+    for i in 10
+        i = 20
+            i = 30
+        i = 40
+    i = 50
+    lst = [1, 2, 3, "hello"]
+    ints = [0, 1, 2, 3]
+    // println ints[0], ints[1], ints[2], ints[3], ints[-1], ints[-2], ints[-3], ints[-4]
+    println ints[0:-1:1], ints[::-1], ints[::1], ints[:2:-1], ints[1:]
+
+    println "69" == "69" // => true
 
 // static class Extensions
 

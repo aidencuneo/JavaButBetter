@@ -28,6 +28,24 @@ public class Extensions {
     public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
         return v.get(key);
     }
+    public static int operUnaryAdd(int a) {
+        return a;
+    }
+    public static long operUnaryAdd(long a) {
+        return a;
+    }
+    public static double operUnaryAdd(double a) {
+        return a;
+    }
+    public static int operUnarySub(int a) {
+        return -a;
+    }
+    public static long operUnarySub(long a) {
+        return -a;
+    }
+    public static double operUnarySub(double a) {
+        return -a;
+    }
     public static int operAdd(int a , int b) {
         return a + b;
     }
@@ -35,6 +53,12 @@ public class Extensions {
         return a + b;
     }
     public static double operAdd(double a , double b) {
+        return a + b;
+    }
+    public static String operAdd(String a , Object b) {
+        return a + b;
+    }
+    public static String operAdd(Object a , String b) {
         return a + b;
     }
     public static int operSub(int a , int b) {
@@ -57,7 +81,7 @@ public class Extensions {
     }
     public static String operMul(String a , int b) {
         if (LangUtil.isTruthy(b < 0)) {
-            return a.reverse().repeat(- b);
+            return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
         }
         return a.repeat(b);
     }

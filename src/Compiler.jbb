@@ -646,7 +646,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "LangUtil.isTruthy(" + cond + ") ? (" + lhs + ") : (" + rhs + ")"
 
     // Null coalescing
-    elif (f = findToken(tok, "??")) > 0
+    elif (f = findTokenRev(tok, "??")) != -1
         // name ?? '' => ((name) != null) ? (name) : ("")
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -654,37 +654,37 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical or
-    elif (f = findAnyToken(tok, List.of("||", "or"))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("||", "or"))) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical and
-    elif (f = findAnyToken(tok, List.of("&&", "and"))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("&&", "and"))) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")"
 
     // Bitwise or
-    elif (f = findToken(tok, "|")) > 0
+    elif (f = findTokenRev(tok, "|")) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " | " + rhs
 
     // Bitwise xor
-    elif (f = findToken(tok, "^")) > 0
+    elif (f = findTokenRev(tok, "^")) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " ^ " + rhs
 
     // Bitwise and
-    elif (f = findToken(tok, "&")) > 0
+    elif (f = findTokenRev(tok, "&")) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += lhs + " & " + rhs
 
     // Equality operators
-    elif (f = findAnyToken(tok, List.of("==", "!=", "===", "!=="))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("==", "!=", "===", "!=="))) != -1
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -699,7 +699,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyToken(tok, List.of("<", ">", "<=", ">=", "is"))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("<", ">", "<=", ">=", "is"))) != -1
         string oper = tok[f].value
 
         if oper == "is"
@@ -710,18 +710,22 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += lhs + " " + oper + " " + rhs
 
     // Additive binary operators
-    elif (f = findAnyToken(tok, List.of("+", "-"))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("+", "-"))) != -1
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
 
-        if oper == "+"
+        if oper == "+" and lhs
             out += "Extensions.operAdd(" + lhs + ", " + rhs + ")"
-        elif oper == "-"
+        elif oper == "-" and lhs
             out += "Extensions.operSub(" + lhs + ", " + rhs + ")"
+        elif oper == "+"
+            out += "Extensions.operUnaryAdd(" + rhs + ")"
+        elif oper == "-"
+            out += "Extensions.operUnarySub(" + rhs + ")"
 
     // Multiplicative binary operators
-    elif (f = findAnyToken(tok, List.of("*", "/", "%"))) > 0
+    elif (f = findAnyTokenRev(tok, List.of("*", "/", "%"))) != -1
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -747,7 +751,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += tok[0].value + expr
 
     // Exponentiation
-    elif (f = findToken(tok, "**")) > 0
+    elif (f = findTokenRev(tok, "**")) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "Math.pow(" + lhs + ", " + rhs + ")"

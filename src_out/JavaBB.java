@@ -4,7 +4,7 @@ import java.util.*;
 public class JavaBB {
     public static void main(String[] args) {
         var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
-        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (compDir + "_out");
+        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
@@ -41,6 +41,26 @@ char operGetIndex(string s, int i):
 (TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
     ret v.get(key)
 
+// Unary +
+int operUnaryAdd(int a):
+    return a
+
+long operUnaryAdd(long a):
+    return a
+
+double operUnaryAdd(double a):
+    return a
+
+// Unary -
+int operUnarySub(int a):
+    inline(return -a;)
+
+long operUnarySub(long a):
+    inline(return -a;)
+
+double operUnarySub(double a):
+    inline(return -a;)
+
 // +
 int operAdd(int a, int b):
     inline(return a + b;)
@@ -49,6 +69,12 @@ long operAdd(long a, long b):
     inline(return a + b;)
 
 double operAdd(double a, double b):
+    inline(return a + b;)
+
+string operAdd(string a, object b):
+    inline(return a + b;)
+
+string operAdd(object a, string b):
     inline(return a + b;)
 
 // int operAdd(bool a, bool b):
@@ -79,7 +105,7 @@ double operMul(double a, double b):
 
 string operMul(string a, int b):
     if b < 0
-        return a.reverse().repeat(-b)
+        return StringBuilder(a).reverse().toString().repeat(-b)
     return a.repeat(b)
 
 // /
@@ -121,11 +147,11 @@ bool operEq(string a, string b):
 bool operEq(object a, object b):
     return a.equals(b)
     """.trim());
-        LangUtil.println("\n\nCompiling " + compDir + "...");
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
         for (var i : LangUtil.asIterable(files.length)) {
             var fileContent = "";
-            var fromPath = compDir + "/" + Extensions.operGetIndex(files, i);
-            var toPath = outDir + "/" + Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0) + ".java";
+            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
+            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
             var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
@@ -146,7 +172,7 @@ bool operEq(object a, object b):
             }
             else {
                 compiled = fileContent;
-                toPath = outDir + "/" + Extensions.operGetIndex(files, i);
+                toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(files, i));
             }
             try (var writer = new PrintWriter(toPath)) {
                 new File(toPath).createNewFile();
@@ -156,8 +182,8 @@ bool operEq(object a, object b):
                 
             }
         }
-        try (var writer = new PrintWriter(outDir + "/Extensions.java")) {
-            new File(outDir + "/Extensions.java").createNewFile();
+        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/Extensions.java"))) {
+            new File(Extensions.operAdd(outDir, "/Extensions.java")).createNewFile();
             writer.println(extensionsClassRes.getCompiledCode("Extensions"));
         }
         catch (IOException e) {
@@ -494,8 +520,8 @@ static class IteratorToIterable<T> implements Iterable<T> {
 })
     """.trim());
         var langUtilCode = res.getCompiledCode("LangUtil");
-        try (var writer = new PrintWriter(outDir + "/LangUtil.java")) {
-            new File(outDir + "/LangUtil.java").createNewFile();
+        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {
+            new File(Extensions.operAdd(outDir, "/LangUtil.java")).createNewFile();
             writer.println(langUtilCode);
         }
         catch (IOException e) {

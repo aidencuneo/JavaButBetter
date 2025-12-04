@@ -724,6 +724,8 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         elif oper == "-"
             out += "Extensions.operUnarySub(" + rhs + ")"
 
+        println len(out)
+
     // Multiplicative binary operators
     elif (f = findAnyTokenRev(tok, List.of("*", "/", "%"))) != -1
         string oper = tok[f].value

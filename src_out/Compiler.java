@@ -557,6 +557,7 @@ public class Compiler {
             else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
                 out += Extensions.operAdd(Extensions.operAdd("Extensions.operUnarySub(", rhs), ")");
             }
+            LangUtil.println(Extensions.len(out));
         }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findAnyTokenRev(tok, List.of("*", "/", "%")))), Extensions.operUnarySub(1)))) {
             String oper = Extensions.operGetIndex(tok, f).value;

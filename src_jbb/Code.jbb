@@ -1,4 +1,6 @@
 !m1:
+    "Extensions.operAdd(" + lhs + ", " + rhs + ")"
+    out += "Extensions.operAdd(" + lhs + ", " + rhs + ")"
     a = "hi" * 2
     a = 10
     b = 2

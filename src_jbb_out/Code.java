@@ -3,6 +3,8 @@ import java.util.*;
 
 public class Code {
     @Override public void m1() {
+        Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operAdd(", lhs), ", "), rhs), ")");
+        out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operAdd(", lhs), ", "), rhs), ")");
         var a = Extensions.operMul("hi", 2);
         a = 10;
         var b = 2;

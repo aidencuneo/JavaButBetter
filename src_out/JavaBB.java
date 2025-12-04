@@ -172,8 +172,8 @@ long operMod(long a, long b):
 double operMod(double a, double b):
     inline(return a % b;)
     """.trim());
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
-        for (var i : LangUtil.asIterable(files.length)) {
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
+        for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fileContent = "";
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
             var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
@@ -184,6 +184,23 @@ double operMod(double a, double b):
             catch (FileNotFoundException e) {
                 
             }
+            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
+                Precompiler.precompileFile(className, fileContent);
+            }
+        }
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
+        for (var i : LangUtil.asIterable(Extensions.len(files))) {
+            var fileContent = "";
+            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
+            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
+            try (var scanner = new Scanner(new File(fromPath))) {
+                fileContent = scanner.useDelimiter("\\Z").next();
+            }
+            catch (FileNotFoundException e) {
+                
+            }
+            fileContent = Precompiler.applyRegexRules(fileContent);
             var compiled = "";
             if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
                 var res = Compiler.compileFile(className, fileContent);

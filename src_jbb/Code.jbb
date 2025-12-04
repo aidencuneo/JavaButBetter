@@ -1,9 +1,55 @@
-main:
-    println 10 + "aiden"
-    println "what" + "what"
-    println "w" * 10
-    println "aiden" * -2
-    println -3 * ":aideN"
+regex (
+    "CMD --> (.*)"
+    "CMD \"$1\""
+)
+
+alias CMD = elif cmd ==
+
+public class Code extends JavaPlugin
+
+static final int BUILD_ID = 79
+Random rand = Random()
+
+!bool onCommand(
+    final CommandSender sender,
+    Command command,
+    string label,
+    string[] args,
+):
+    Teams.setup()
+    cmd = command.getName()
+
+    if false
+        ...
+
+    CMD --> joinspeedrunners
+        if Teams.teamsLocked
+            sender.sendMessage(ChatColor.RED + "Teams are locked.")
+            return true
+
+        pl = (Player) sender
+        Teams.setTeam(pl, "speedrunners")
+
+        sender.sendMessage(ChatColor.GREEN + "Successfully joined the " + ChatColor.DARK_AQUA + "speedrunners" + ChatColor.GREEN + " team.")
+
+    CMD --> newcmd
+
+    CMD --> joinchildren
+        if Teams.teamsLocked
+            sender.sendMessage(ChatColor.RED + "Teams are locked.")
+            return true
+
+        pl = (Player) sender
+        Teams.setTeam(pl, "children")
+
+        sender.sendMessage(ChatColor.GREEN + "Successfully joined the " + ChatColor.LIGHT_PURPLE + "children" + ChatColor.GREEN + " team.")
+
+    CMD --> announce
+        if args.length < 1
+            return false
+
+        pl = (Player) sender
+        getServer().broadcastMessage(pl.getDisplayName() + " says: " + ChatColor.GOLD + args[0])
 
 // static class Extensions
 

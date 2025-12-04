@@ -67,7 +67,7 @@ public class Compiler {
     }
     public static String compileStatement(ArrayList < Token > tok , String out) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return ""; }
-        var types = getTokenTypes(tok);
+        var types = Tokeniser.getTokenTypes(tok);
         var startTok = Extensions.operGetIndex(types, 0);
         var endTok = Extensions.operGetIndex(types, Extensions.operUnarySub(1));
         var f = Extensions.operUnarySub(1);
@@ -112,7 +112,15 @@ public class Compiler {
                 args = Tokeniser.extractArgsFromExpr(Extensions.operGetIndex(tok, 2).value);
             }
             var tokens = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
-            aliases.put(name, new Alias(tokens, args));
+            if (LangUtil.isTruthy(tokens)) {
+                aliases.put(name, new Alias(tokens, args));
+            }
+            else {
+                if (LangUtil.isTruthy(Extensions.operIn(name, aliases))) { aliases.remove(name); }
+            }
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.REGEX))) {
+            
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), Extensions.operUnarySub(1)))) ? (Extensions.operAdd(f, 1) < Extensions.len(tok)) : (!Extensions.operEq(((f = findTokenType(tok, Token.Type.CLASS))), Extensions.operUnarySub(1))))) {
             var cl = getOrCreateClass(currentClass);
@@ -821,11 +829,6 @@ public class Compiler {
             if (LangUtil.isTruthy(types.contains(Extensions.operGetIndex(tok, i).type))) { return i; }
         }
         return Extensions.operUnarySub(1);
-    }
-    public static ArrayList < Token . Type > getTokenTypes(ArrayList < Token > tok) {
-        var types = new ArrayList < Token.Type > ();
-        for (var t : LangUtil.asIterable(tok)) { types.add(t.type); }
-        return types;
     }
     public static MethodAccess getMethodAccess(ArrayList < Token > tok , int end) {
         var accessMod = AccessMod.NONE;

@@ -1,4 +1,7 @@
+- Separate statement and expression null checks
+    - Null checks currently don't work if the function returns void
 - Fix java lambdas (->)
+    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Add support for implementing and extending classes
 - Add single line functions
     Either of:
@@ -39,3 +42,5 @@ Done:
     - +, -, *, /, %
 - Add "elem in container"
     - in, inside, notin, outside
+- Add precompilation and custom regex
+    - Allow customisation of the language itself through regex

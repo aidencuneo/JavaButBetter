@@ -12,15 +12,15 @@ public class CompResult {
     }
     public String getCompiledCode(String mainClassName) {
         var out = "";
-        if (LangUtil.isTruthy(classes.containsKey(mainClassName))) {
-            out += classes.get(mainClassName);
+        if (LangUtil.isTruthy(Extensions.operIn(mainClassName, classes))) {
+            out += Extensions.operGetIndex(classes, mainClassName);
         }
         for (var c : LangUtil.asIterable(classes)) {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
-                out += classes.get(c).code;
+                out += Extensions.operGetIndex(classes, c).code;
             }
             else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
-                out += classes.get(c);
+                out += Extensions.operGetIndex(classes, c);
             }
         }
         var packageStr = "";

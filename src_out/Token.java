@@ -53,6 +53,7 @@ public class Token {
         CLASS,
         ENUM,
         ALIAS,
+        REGEX,
     }
     public Type type;
     public String value;
@@ -233,6 +234,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "alias"))) {
             t = Type.ALIAS;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, "regex"))) {
+            t = Type.REGEX;
         }
         else if (LangUtil.isTruthy(isAlpha(v))) {
             t = Type.ID;

@@ -230,5 +230,10 @@ public class Tokeniser {
         elems.add(current);
         return elems;
     }
+    public static ArrayList < Token . Type > getTokenTypes(ArrayList < Token > tok) {
+        var types = new ArrayList < Token.Type > ();
+        for (var t : LangUtil.asIterable(tok)) { types.add(t.type); }
+        return types;
+    }
 }
 

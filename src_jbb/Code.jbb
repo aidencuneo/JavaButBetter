@@ -1,68 +1,350 @@
-regex (
-    "CMD --> (.*)"
-    "CMD \"$1\""
-)
+// regex (
+//     "CMD --> (.*)"
+//     "CMD \"$1\""
+// )
+
+// // JavaScript template strings
+// regex (
+//     "(`.*?)\$\{(.+)\}(.*?`)"
+//     "$1\" + ($2) + \"$3"
+// )
+
+// // Python f-strings
+// regex (
+//     "f(\".*?)\{([^\{\}]+)\}(.*?\")"
+//     "$1\" + ($2) + \"$3"
+// )
+
+
+package aidenbc.UVABOC
+
+import org.bukkit.*
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scoreboard.Team
 
 // JavaScript template strings
+// regex (
+//     "(`.*?)\$\{(.+)\}(.*?`)"
+//     "$1\" + ($2) + \"$3"
+// )
+
+// // Python f-strings
+// regex (
+//     "f(\".*?)\{([^\{\}]+)\}(.*?\")"
+//     "$1\" + ($2) + \"$3"
+// )
+
+// Python f-strings for all strings
 regex (
-    "(`.*?)\$\{(.+)\}(.*?`)"
+    "(\".*?)\{([^\{\}]+)\}(.*?\")"
     "$1\" + ($2) + \"$3"
 )
 
-// Python f-strings
+// ChatColor shorthand
 regex (
-    "f(\".*?)\{([^\{\}]+)\}(.*?\")"
-    "$1\" + ($2) + \"$3"
+    "C:([A-Z_]+)"
+    "ChatColor.$1"
 )
 
-alias CMD = elif cmd ==
+public class UVABOC extends JavaPlugin
 
-public class Code extends JavaPlugin
-
-static final int BUILD_ID = 79
+static final int BUILD_ID = 84
 Random rand = Random()
+
+!onEnable:
+    health = Math.round(10 * (victim.getHealth() - e.getFinalDamage()) / 2) / 10.0
+    health = round((victim.getHealth() - e.getFinalDamage()) / 2, 2)
+    health = roundstr((victim.getHealth() - e.getFinalDamage()) / 2, 2)
+    Var.plugin = this
+
+    EventHandling.addListener("Listeners", Listeners())
+    EventHandling.addListener("PlayerFreezing", PlayerFreezing())
+    EventHandling.addListener("Stats", Stats())
+
+    // getServer().getPluginManager().registerEvents(new Listeners(), this)
+    // getServer().getPluginManager().registerEvents(new PlayerFreezing(), this)
+
+    // Load data
+    DB.load()
+    Teams.load()
+
+    // Announce build ID
+    me = getServer().getPlayer(Master.myUUID)
+
+    if me
+        me.sendMessage("{C:GOLD}UVABOC: {C:RESET}{BUILD_ID}")
+    else
+        getServer().broadcastMessage("{C:GOLD}UVABOC: {C:RESET}{BUILD_ID}")
+
+!onDisable:
+    ...
 
 !bool onCommand(
     final CommandSender sender,
     Command command,
     string label,
-    string[] args,
+    string[] args
 ):
     Teams.setup()
     cmd = command.getName()
 
+    alias CMD = elif cmd ==
+
     if false
         ...
 
-    CMD --> joinspeedrunners
+    CMD "joinspeedrunners"
         if Teams.teamsLocked
-            sender.sendMessage(ChatColor.RED + "Teams are locked.")
+            sender.sendMessage(C_RED + "Teams are locked.")
             return true
 
         pl = (Player) sender
         Teams.setTeam(pl, "speedrunners")
 
-        sender.sendMessage(ChatColor.GREEN + "Successfully joined the " + ChatColor.DARK_AQUA + "speedrunners" + ChatColor.GREEN + " team.")
+        sender.sendMessage(C_GREEN + "Successfully joined the " + C_DARK_AQUA + "speedrunners" + C_GREEN + " team.")
 
-    CMD --> newcmd
-        ...
-
-    CMD --> joinchildren
+    CMD "joinchildren"
         if Teams.teamsLocked
-            sender.sendMessage(ChatColor.RED + f"Teams ({Teams.teamsLocked}) are locked.")
+            sender.sendMessage(C_RED + "Teams are locked.")
             return true
 
         pl = (Player) sender
         Teams.setTeam(pl, "children")
 
-        sender.sendMessage(ChatColor.GREEN + "Successfully joined the " + ChatColor.LIGHT_PURPLE + "children" + ChatColor.GREEN + " team.")
+        sender.sendMessage(C_GREEN + "Successfully joined the " + C_LIGHT_PURPLE + "children" + C_GREEN + " team.")
 
-    CMD --> announce
+    CMD "announce"
         if args.length < 1
             return false
 
         pl = (Player) sender
-        getServer().broadcastMessage(pl.getDisplayName() + " says: " + ChatColor.GOLD + args[0])
+        getServer().broadcastMessage(pl.getDisplayName() + " says: " + C_GOLD + args[0])
+
+    CMD "freeze"
+        if args.length < 1
+            PlayerFreezing.setAllFrozen(true)
+            sender.sendMessage(C_RED + "All players are frozen.")
+        else
+            PlayerFreezing.setFrozen(args[0], true)
+            sender.sendMessage(C_GOLD + args[0] + C_RED + " is now frozen.")
+
+    CMD "unfreeze"
+        if args.length < 1
+            PlayerFreezing.setAllFrozen(false)
+            sender.sendMessage(C_GREEN + "All players are unfrozen.")
+        else
+            PlayerFreezing.setFrozen(args[0], false)
+            sender.sendMessage(C_GOLD + args[0] + C_GREEN + " is now unfrozen.")
+
+    CMD "forcejoinspeedrunners"
+        if args.length < 1
+            return false
+
+        Player pl = sender.getServer().getPlayer(args[0])
+        Teams.setTeam(pl, "speedrunners")
+
+        sender.sendMessage(C_GREEN + "Successfully put " + pl.getName() + " into the " + C_DARK_AQUA + "speedrunners" + C_GREEN + " team.")
+        pl.sendMessage(C_GOLD + "You were placed into the " + C_DARK_AQUA + "speedrunners" + C_GOLD + " team.")
+
+    CMD "forcejoinchildren"
+        if args.length < 1
+            return false
+
+        Player pl = sender.getServer().getPlayer(args[0])
+        Teams.setTeam(pl, "children")
+
+        sender.sendMessage(C_GREEN + "Successfully put " + pl.getName() + " into the " + C_LIGHT_PURPLE + "children" + C_GREEN + " team.")
+        pl.sendMessage(C_GOLD + "You were placed into the " + C_LIGHT_PURPLE + "children" + C_GOLD + " team.")
+
+    CMD "lockteams"
+        if Teams.teamsLocked
+            sender.sendMessage(C_GOLD + "Teams are already locked.")
+            return true
+
+        Teams.teamsLocked = true
+        sender.sendMessage(C_RED + "Teams are now locked.")
+
+    CMD "unlockteams"
+        if !Teams.teamsLocked
+            sender.sendMessage(C_GOLD + "Teams are already unlocked.")
+            return true
+
+        Teams.teamsLocked = false
+        sender.sendMessage(C_GREEN + "Teams are now unlocked.")
+
+    CMD "resetevents"
+        Var.speedrunnersInNether = false
+        sender.sendMessage(C_GREEN + "Events reset.")
+
+    CMD "startgame"
+        if Var.gameStarted
+            sender.sendMessage(C_RED + "The game is already going!")
+            return true
+
+        // 30 seconds default
+        gracePeriod = 30
+
+        if args.length > 0
+            gracePeriod = Int.parseInt(args[0])
+
+        // Reset all players
+        inline(getLogger().setFilter(record -> !record.getMessage().toLowerCase().startsWith("/gamerule"));)
+        getServer().dispatchCommand(getServer().getConsoleSender(), "gamerule sendCommandFeedback false")
+        getServer().dispatchCommand(getServer().getConsoleSender(), "time set day")
+        Var.setGameRule(GameRule.KEEP_INVENTORY, false)
+        Var.setGameRule(GameRule.LOCATOR_BAR, false)
+        Var.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
+
+        for pl in getServer().getOnlinePlayers()
+            // Reset
+            pl.setHealth(0)
+
+            // Get team
+            team = Teams.getTeam(pl)
+
+            // Set gamemode
+            if team == "children"
+                pl.setGameMode(GameMode.ADVENTURE)
+            else
+                pl.setGameMode(GameMode.SURVIVAL)
+
+        Var.setGameRule(GameRule.KEEP_INVENTORY, true)
+        Var.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false)
+        getServer().dispatchCommand(getServer().getConsoleSender(), "gamerule sendCommandFeedback true")
+        Var.clearChat()
+
+        // Bukkit.getScheduler().scheduleSyncDelayedTask(Var.plugin, () ->
+        //     getServer().dispatchCommand(getServer().getConsoleSender(), "gamerule doImmediateRespawn false")
+        //     getServer().getWorld("world").setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false)
+        // }, 20L)
+
+        // Start the grace period for speedrunners
+        Var.gracePeriodOn = true
+
+        inline(Bukkit.getScheduler().scheduleSyncDelayedTask(Var.plugin, () -> {
+            // Finish grace period
+            getServer().broadcastMessage(C_RED + "Grace period has ended!");
+            Var.gracePeriodOn = false;
+            // Fix gamemodes
+            Collection<? extends Player> players1 = getServer().getOnlinePlayers();
+            for (Player pl : players1) {
+                pl.setGameMode(GameMode.SURVIVAL);
+            }
+        }, 20L * gracePeriod);)
+
+        // Start speedrunner danger sense
+        inline(Var.dangerSenseTask = new BukkitRunnable() {
+            public void run() {
+                // Get speedrunners
+                Team speedrunners = Teams.getSpeedrunners();
+                Team children = Teams.getChildren();
+
+                for (String name : speedrunners.getEntries()) {
+                    Player pl = getServer().getPlayer(name);
+
+                    if (pl == null)
+                        continue;
+
+                    // Get closest distance to a child
+                    double closestDistance = Double.MAX_VALUE;
+
+                    for (String child : children.getEntries()) {
+                        Player childPl = getServer().getPlayer(child);
+
+                        // Child doesn't exist or players in different worlds
+                        if (childPl == null || pl.getWorld() != childPl.getWorld())
+                            continue;
+
+                        double distance = pl.getLocation().distanceSquared(childPl.getLocation());
+
+                        if (distance < closestDistance)
+                            closestDistance = distance;
+                    }
+
+                    if (closestDistance < 5 * 5)
+                        Var.sendToActionBar(pl, C_BLACK + "A child is nearby");
+                    else if (closestDistance < 10 * 10)
+                        Var.sendToActionBar(pl, C_DARK_RED + "A child is nearby");
+                    else if (closestDistance < 20 * 20)
+                        Var.sendToActionBar(pl, C_RED + "A child is nearby");
+                    else if (closestDistance < 30 * 30)
+                        Var.sendToActionBar(pl, C_YELLOW + "A child is nearby");
+                    else if (closestDistance < 50 * 50)
+                        Var.sendToActionBar(pl, "A child is nearby");
+                }
+            }
+        };)
+
+        Var.dangerSenseTask.runTaskTimer(this, 2 * 20L, 2 * 20L)
+
+        getServer().broadcastMessage(C_AQUA + "The game has begun. Speedrunners have a " + gracePeriod + " second grace period.")
+
+        // Imposter
+        Teams.getImposter().sendMessage(C_DARK_PURPLE + "You are the imposter. Ensure that the speedrunners lose. You may attack speedrunners, but make sure you survive until the end.")
+        Team children = Teams.getChildren()
+
+        for name in children.getEntries()
+            getServer().getPlayer(name).sendMessage(
+                C_DARK_PURPLE + "The imposter is: " + C_GOLD + Teams.getImposter().getName() +
+                C_DARK_PURPLE + ". The speedrunners are not aware of this. Do not attack the imposter.")
+
+        // Lock the teams automatically
+        Teams.teamsLocked = true
+        Var.playersFrozen = false
+        Var.gameStarted = true
+        Var.speedrunnersInNether = false
+
+        // Set initial stats
+        Stats.reset()
+
+    CMD "stopgame"
+        // Stop speedrunner danger sense
+        Var.dangerSenseTask.cancel() if Var.dangerSenseTask
+        Var.endGame("")
+
+        // // Put everyone in adventure
+        // for (Player pl : getServer().getOnlinePlayers())
+        //     pl.setGameMode(GameMode.ADVENTURE)
+
+    CMD "restartgame"
+        sender.sendMessage(C_GREEN + "The game has restarted.")
+        Var.gameStarted = true
+
+    //
+    // Gameplay related commands
+    //
+
+    elif cmd in ["fortress", "bastion", "stronghold"]
+        pl = (Player) sender
+
+        wasOp = pl.isOp()
+        pl.setOp(true)
+
+        if cmd == "bastion"
+            pl.performCommand("locate structure bastion_remnant")
+        else
+            pl.performCommand("locate structure " + cmd)
+
+        pl.setOp(wasOp)
+
+    CMD "surrender"
+        pl = (Player) sender
+        pl.setHealth(0)
+
+    CMD "stats"
+        name = args[0] if args else sender.getName()
+        sender.sendMessage(Stats.displayStats(name))
+
+    else
+        return false
+
+    return true
+
 
 // static class Extensions
 

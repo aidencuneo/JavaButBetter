@@ -248,6 +248,20 @@ println(object ... args):
 (T, R) R nullCheck(T value, Function<T, R> func):
     ret func.apply(value) if value != null else null
 
+// round
+double round(double v, int places):
+    return Math.round(v * 10 ** places) / 10 ** places
+
+double round(double v):
+    return Math.round(v)
+
+// roundstr
+string roundstr(double v, int places):
+    return string.format(\"%.\" + places + \"f\", v)
+
+string roundstr(double v):
+    return string.format(\"%f\", v)
+
 // isTruthy
 bool isTruthy(bool v):
     ret v

@@ -629,8 +629,11 @@ public class Compiler {
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.EXPR))) {
                 var name = compileExpr(LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1));
                 var isNew = Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "new");
-                if (LangUtil.isTruthy(Extensions.operEq(name, "len"))) {
-                    name = "Extensions.len";
+                if (LangUtil.isTruthy(Extensions.operIn(name, List.of("len")))) {
+                    name = Extensions.operAdd("Extensions.", name);
+                }
+                else if (LangUtil.isTruthy(Extensions.operIn(name, List.of("round", "roundstr")))) {
+                    name = Extensions.operAdd("LangUtil.", name);
                 }
                 if (LangUtil.isTruthy((LangUtil.isTruthy(StringParser.isPascalCase(Extensions.operGetIndex(tok, Extensions.operUnarySub(2)).value))) ? (!LangUtil.isTruthy(isNew)) : (StringParser.isPascalCase(Extensions.operGetIndex(tok, Extensions.operUnarySub(2)).value)))) {
                     name = Extensions.operAdd("new ", name);

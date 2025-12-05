@@ -13,6 +13,18 @@ public class LangUtil {
     public static <T, R> R nullCheck(T value , Function < T , R > func) {
         return LangUtil.isTruthy(!Extensions.operEq(value, null)) ? (func.apply(value)) : (null);
     }
+    public static double round(double v , int places) {
+        return Extensions.operDiv(Math.round(Extensions.operMul(v, Math.pow(10, places))), Math.pow(10, places));
+    }
+    public static double round(double v) {
+        return Math.round(v);
+    }
+    public static String roundstr(double v , int places) {
+        return String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
+    }
+    public static String roundstr(double v) {
+        return String.format("%f", v);
+    }
     public static boolean isTruthy(boolean v) {
         return v;
     }

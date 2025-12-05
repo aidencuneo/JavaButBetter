@@ -1,4 +1,4 @@
-@REM This script compiles the latest compiler (self compilation)
+@REM This script compiles the latest compiler into src_out (self compilation)
 cd src_out
 java JavaBB ../src
 

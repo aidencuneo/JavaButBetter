@@ -816,8 +816,10 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             isNew = tok[0].value == "new"
 
             // Name replacements
-            if name == "len"
-                name = "Extensions.len"
+            if name in ["len"]
+                name = "Extensions." + name
+            elif name in ["round", "roundstr"]
+                name = "LangUtil." + name
 
             // Detect class names (pascal case)
             if StringParser.isPascalCase(tok[-2].value) && !isNew

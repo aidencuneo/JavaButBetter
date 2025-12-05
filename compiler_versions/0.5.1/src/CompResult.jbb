@@ -1,0 +1,34 @@
+HashMap<string, Class> classes
+string startTemplate
+string endTemplate
+
+CompResult(
+    HashMap<string, Class> classes,
+    string startTemplate,
+    string endTemplate
+):
+    this.classes = classes
+    this.startTemplate = startTemplate
+    this.endTemplate = endTemplate
+
+string getCompiledCode(string mainClassName):
+    // Construct classes
+    out = ""
+
+    // File class goes first
+    if mainClassName in classes
+        out += classes[mainClassName]
+
+    // Construct other classes
+    for c in classes
+        // The null class is used to write code without a class
+        if c == "null"
+            out += classes[c].code
+        elif c != mainClassName
+            out += classes[c]
+
+    packageStr = ""
+    if Compiler.packagePath
+        packageStr = "package " + Compiler.packagePath + ";\n\n"
+
+    return packageStr + startTemplate + "\n" + out + endTemplate

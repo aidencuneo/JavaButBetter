@@ -1,0 +1,585 @@
+import java.io.*;
+import java.util.*;
+
+public class JavaBB {
+    public static void main(String[] args) {
+        var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
+        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
+            new File(outDir).mkdir();
+        }
+        var files = new File(compDir).list();
+        LangUtil.println("\nCompiling Extensions...");
+        var extensionsClassRes = Compiler.compileFile("Extensions", """
+public static class Extensions
+
+// len
+int len(string s):
+    ret s.length()
+
+(T) int len(Iterable<T> v):
+    c = 0
+    ++c for x in v
+    ret c
+
+(T) int len(T[] v):
+    ret v.length
+
+// getIndex
+char operGetIndex(string s, int i):
+    i = LangUtil.indexConvert(i, s.length())
+    ret s.charAt(i)
+
+(T) T operGetIndex(T[] v, int i):
+    i = LangUtil.indexConvert(i, v.length)
+    inline(return v[i];)
+
+(T) T operGetIndex(List<T> v, int i):
+    i = LangUtil.indexConvert(i, v.size())
+    ret v.get(i)
+
+(TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
+    ret v.get(key)
+
+// ==
+bool operEq(int a, int b):
+    inline(return a == b;)
+
+bool operEq(long a, long b):
+    inline(return a == b;)
+
+bool operEq(double a, double b):
+    inline(return a == b;)
+
+bool operEq(bool a, bool b):
+    inline(return a == b;)
+
+bool operEq(string a, string b):
+    return a.equals(b)
+
+bool operEq(object a, object b):
+    return a.equals(b)
+
+// in
+bool operIn(char c, string s):
+    return s.indexOf(c) != -1
+
+bool operIn(string part, string s):
+    return s.indexOf(part) != -1
+
+bool operIn(object o, List lst):
+    return lst.contains(o)
+
+bool operIn(object o, object[] lst):
+    inline(return Arrays.stream(lst).anyMatch(x -> x.equals(o));)
+
+bool operIn(object o, Set s):
+    return s.contains(o)
+
+bool operIn(object o, Map m):
+    return m.containsKey(o)
+
+// Unary +
+int operUnaryAdd(int a):
+    return a
+
+long operUnaryAdd(long a):
+    return a
+
+double operUnaryAdd(double a):
+    return a
+
+// Unary -
+int operUnarySub(int a):
+    inline(return -a;)
+
+long operUnarySub(long a):
+    inline(return -a;)
+
+double operUnarySub(double a):
+    inline(return -a;)
+
+// +
+int operAdd(int a, int b):
+    inline(return a + b;)
+
+long operAdd(long a, long b):
+    inline(return a + b;)
+
+double operAdd(double a, double b):
+    inline(return a + b;)
+
+string operAdd(string a, object b):
+    inline(return a + b;)
+
+string operAdd(object a, string b):
+    inline(return a + b;)
+
+string operAdd(string a, string b):
+    inline(return a + b;)
+
+// int operAdd(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// -
+int operSub(int a, int b):
+    inline(return a - b;)
+
+long operSub(long a, long b):
+    inline(return a - b;)
+
+double operSub(double a, double b):
+    inline(return a - b;)
+
+// int operSub(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// *
+int operMul(int a, int b):
+    inline(return a * b;)
+
+long operMul(long a, long b):
+    inline(return a * b;)
+
+double operMul(double a, double b):
+    inline(return a * b;)
+
+string operMul(string a, int b):
+    if b < 0
+        return StringBuilder(a).reverse().toString().repeat(-b)
+    return a.repeat(b)
+
+string operMul(int a, string b):
+    return operMul(b, a)
+
+// /
+int operDiv(int a, int b):
+    inline(return a / b;)
+
+long operDiv(long a, long b):
+    inline(return a / b;)
+
+double operDiv(double a, double b):
+    inline(return a / b;)
+
+// %
+int operMod(int a, int b):
+    inline(return a % b;)
+
+long operMod(long a, long b):
+    inline(return a % b;)
+
+double operMod(double a, double b):
+    inline(return a % b;)
+    """.trim());
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
+        HashMap<String, String> fileContentMap = new HashMap<>();
+        for (var i : LangUtil.asIterable(Extensions.len(files))) {
+            var fileContent = "";
+            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
+            try (var scanner = new Scanner(new File(fromPath))) {
+                fileContent = scanner.useDelimiter("\\Z").next();
+            }
+            catch (FileNotFoundException e) {
+                
+            }
+            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
+                var lines = Precompiler.precompileFile(className, fileContent);
+                fileContent = String.join("\n", lines);
+                fileContentMap.put(Extensions.operGetIndex(files, i), fileContent);
+            }
+        }
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
+        for (var i : LangUtil.asIterable(Extensions.len(files))) {
+            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
+            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
+            var fileContent = Extensions.operGetIndex(fileContentMap, Extensions.operGetIndex(files, i));
+            fileContent = Precompiler.applyRegexRules(fileContent);
+            var compiled = "";
+            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
+                var res = Compiler.compileFile(className, fileContent);
+                if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
+                    var newCode = res.classes.get("Extensions").code;
+                    var extensionsClass = extensionsClassRes.classes.get("Extensions");
+                    extensionsClass.code = extensionsClass.code + newCode;
+                    res.classes.remove("Extensions");
+                }
+                compiled = res.getCompiledCode(className);
+            }
+            else {
+                compiled = fileContent;
+                toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(files, i));
+            }
+            try (var writer = new PrintWriter(toPath)) {
+                new File(toPath).createNewFile();
+                writer.println(compiled);
+            }
+            catch (IOException e) {
+                
+            }
+        }
+        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/Extensions.java"))) {
+            new File(Extensions.operAdd(outDir, "/Extensions.java")).createNewFile();
+            writer.println(extensionsClassRes.getCompiledCode("Extensions"));
+        }
+        catch (IOException e) {
+            
+        }
+        LangUtil.println("\n\nCompiling LangUtil...");
+        var res = Compiler.compileFile("LangUtil", """
+// import java.lang.reflect.*
+import java.util.function.Function
+
+class Null
+    ...
+
+public static class LangUtil
+
+print(object ... args):
+    System.out.print('' + x) for x in args
+
+println(object ... args):
+    System.out.print('' + x) for x in args
+    System.out.println('')
+
+// nullCheck
+(T, R) R nullCheck(T value, Function<T, R> func):
+    ret func.apply(value) if value != null else null
+
+// round
+double round(double v, int places):
+    return Math.round(v * 10 ** places) / 10 ** places
+
+double round(double v):
+    return Math.round(v)
+
+// roundstr
+string roundstr(double v, int places):
+    return string.format(\"%.\" + places + \"f\", v)
+
+string roundstr(double v):
+    return string.format(\"%f\", v)
+
+// isTruthy
+bool isTruthy(bool v):
+    ret v
+
+bool isTruthy(int v):
+    ret v != 0
+
+bool isTruthy(double v):
+    ret v != 0
+
+bool isTruthy(string v):
+    ret false if v is null
+    inline(return !v.isEmpty();)
+
+(T) bool isTruthy(T[] v):
+    ret v.length > 0
+
+bool isTruthy(List v):
+    ret false if v is null
+    inline(return !v.isEmpty();)
+
+bool isTruthy(object v):
+    inline(if (v instanceof Boolean x) return x;)
+    inline(if (v instanceof Integer x) return x != 0;)
+    inline(if (v instanceof Double x) return x != 0;)
+    inline(if (v instanceof String x) return x == null ? false : !x.isEmpty();)
+    inline(if (v instanceof List x) return x == null ? false : !x.isEmpty();)
+    ret v != null
+
+// asIterable
+(T) T[] asIterable(T[] v):
+    ret v
+
+List<Int> asIterable(int n):
+    lst = new ArrayList<Int>()
+    inline(for (int i = 0; i < n; ++i))
+        lst.add(i)
+    ret lst
+
+(T) Iterable<T> asIterable(Iterable<T> v):
+    ret v
+
+(T) Iterable<T> asIterable(Iterator<T> v):
+    ret new IteratorToIterable<T>(v)
+
+(TK, TV) Set<TK> asIterable(Map<TK, TV> v):
+    ret v.keySet()
+
+char[] asIterable(string s):
+    ret s.toCharArray()
+
+// slice (string)
+string slice(string s, int start, int end, int step):
+    start = indexConvert(start, s.length())
+    end = indexConvert(end, s.length())
+
+    if step == 1
+        return s.substring(start, end)
+
+    newStr = ""
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        newStr += s.charAt(i)
+    ret newStr
+
+string slice(string s, Null start, Null end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, step > 0 ? s.length() : -s.length() - 1, step)
+
+string slice(string s, Null start, int end, int step):
+    return slice(s, step > 0 ? 0 : s.length() - 1, end, step)
+
+string slice(string s, int start, Null end, int step):
+    return slice(s, start, step > 0 ? s.length() : -1, step)
+
+// slice (ArrayList)
+(T) ArrayList<T> slice(ArrayList<T> v, int start, int end, int step):
+    start = indexConvert(start, v.size())
+    end = indexConvert(end, v.size())
+    return new ArrayList<>(v.subList(start, end))
+
+(T) ArrayList<T> slice(ArrayList<T> v, Null start, Null end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
+
+(T) ArrayList<T> slice(ArrayList<T> v, Null start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
+
+(T) ArrayList<T> slice(ArrayList<T> v, int start, Null end, int step):
+    return slice(v, start, step > 0 ? v.size() : -1, step)
+
+// slice (List)
+(T) List<T> slice(List<T> v, int start, int end, int step):
+    start = indexConvert(start, v.size())
+    end = indexConvert(end, v.size())
+
+    lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        println i + ", " + start + ", " + end + ", " + step
+        lst.add(v.get(i))
+    ret lst
+
+(T) List<T> slice(List<T> v, Null start, Null end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
+
+(T) List<T> slice(List<T> v, Null start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
+
+(T) List<T> slice(List<T> v, int start, Null end, int step):
+    return slice(v, start, step > 0 ? v.size() : -1, step)
+
+// slice (array)
+(T) List<T> slice(T[] v, int start, int end, int step):
+    start = indexConvert(start, v.length)
+    end = indexConvert(end, v.length)
+
+    lst = new ArrayList<T>()
+    inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
+        lst.add(v[i])
+    ret lst
+
+(T) List<T> slice(T[] v, Null start, Null end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, step > 0 ? v.length : -v.length - 1, step)
+
+(T) List<T> slice(T[] v, Null start, int end, int step):
+    return slice(v, step > 0 ? 0 : v.length - 1, end, step)
+
+(T) List<T> slice(T[] v, int start, Null end, int step):
+    return slice(v, start, step > 0 ? v.length : -1, step)
+
+// indexConvert (helper function)
+int indexConvert(int index, int size):
+    index += size if index < 0
+    return index
+
+// range (int)
+IntRange range(int start, int stop, int step):
+    return new IntRange(start, stop, step)
+
+IntRange range(int start, Null stop, Null step):
+    return range(start, Int.MAX_VALUE, 1)
+
+IntRange range(int start, Null stop, int step):
+    return range(start, step > 0 ? Int.MAX_VALUE : Int.MIN_VALUE, step)
+
+IntRange range(int start, int stop, Null step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// range (long)
+LongRange range(long start, long stop, long step):
+    return new LongRange(start, stop, step)
+
+LongRange range(long start, Null stop, Null step):
+    return range(start, Long.MAX_VALUE, 1)
+
+LongRange range(long start, Null stop, long step):
+    return range(start, step > 0 ? Long.MAX_VALUE : Long.MIN_VALUE, step)
+
+LongRange range(long start, long stop, Null step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// range (double)
+DoubleRange range(double start, double stop, double step):
+    return new DoubleRange(start, stop, step)
+
+DoubleRange range(double start, Null stop, Null step):
+    return range(start, Double.MAX_VALUE, 1)
+
+DoubleRange range(double start, Null stop, double step):
+    return range(start, step > 0 ? Double.MAX_VALUE : Double.MIN_VALUE, step)
+
+DoubleRange range(double start, double stop, Null step):
+    return range(start, stop, start < stop ? 1 : -1)
+
+// // range (char)
+// CharRange range(char start, char stop, char step):
+//     return new CharRange(start, stop, step)
+
+// CharRange range(char start, Null stop, Null step):
+//     return range(start, Char.MAX_VALUE, 1)
+
+// CharRange range(char start, Null stop, char step):
+//     return range(start, step > 0 ? Char.MAX_VALUE : Char.MIN_VALUE, step)
+
+// CharRange range(char start, char stop, Null step):
+//     return range(start, stop, start < stop ? 1 : -1)
+
+// IntRange class
+inline(
+static class IntRange implements Iterator<Integer> {
+    public int start;
+    public int stop;
+    public int step;
+    public int current;
+
+    public IntRange(Integer start, Integer stop, Integer step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        int value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// LongRange class
+inline(
+static class LongRange implements Iterator<Long> {
+    public long start;
+    public long stop;
+    public long step;
+    public long current;
+
+    public LongRange(Long start, Long stop, Long step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        long value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// DoubleRange class
+inline(
+static class DoubleRange implements Iterator<Double> {
+    public double start;
+    public double stop;
+    public double step;
+    public double current;
+
+    public DoubleRange(Double start, Double stop, Double step) {
+        this.start = start;
+        this.stop = stop;
+        this.step = step;
+        this.current = start;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (step > 0 && stop > start)
+            return current < stop;
+        if (step < 0 && stop < start)
+            return current > stop;
+        return step == 0;
+    }
+
+    @Override
+    public Double next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        double value = current;
+        current += step;
+
+        return value;
+    }
+})
+
+// Iterator to iterable class
+inline(
+static class IteratorToIterable<T> implements Iterable<T> {
+    private final Iterator<T> iterator;
+
+    public IteratorToIterable(Iterator<T> iterator) {
+        if (iterator == null)
+            throw new IllegalArgumentException();
+        this.iterator = iterator;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return iterator;
+    }
+})
+    """.trim());
+        var langUtilCode = res.getCompiledCode("LangUtil");
+        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {
+            new File(Extensions.operAdd(outDir, "/LangUtil.java")).createNewFile();
+            writer.println(langUtilCode);
+        }
+        catch (IOException e) {
+            
+        }
+        LangUtil.println("\n\nDone.");
+    }
+}
+

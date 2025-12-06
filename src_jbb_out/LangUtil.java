@@ -2,6 +2,7 @@ package aidenbc.UVABOC;
 
 import java.io.*;
 import java.util.*;
+import java.lang.reflect.*;
 import java.util.function.Function;
 
 public class LangUtil {
@@ -306,6 +307,25 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 }
+    public static <T> T get(Object obj , String name) {
+        try {
+            var c = obj.getClass();
+            while (LangUtil.isTruthy(c)) {
+                try {
+                    var f = c.getDeclaredField(fieldName);
+                    f.setAccessible(true);
+                    return (T)f.get(obj);
+                }
+                catch (NoSuchFieldException e) {
+                    c = c.getSuperclass();
+                }
+            }
+            new throw new RuntimeException(Extensions.operAdd("Field not found: ", fieldName));
+        }
+        catch (Exception e) {
+            new throw new RuntimeException(e);
+        }
+    }
 }
 class Null {
     {

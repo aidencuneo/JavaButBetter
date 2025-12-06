@@ -255,7 +255,7 @@ double operMod(double a, double b):
 
     // Compile LangUtil
     res = Compiler.compileFile("LangUtil", """
-// import java.lang.reflect.*
+import java.lang.reflect.*
 import java.util.function.Function
 
 class Null
@@ -596,6 +596,27 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 })
+
+// getField (reflection)
+(T) T get(object obj, string name):
+    try
+        c = obj.getClass()
+
+        while c
+            try
+                f = c.getDeclaredField(fieldName)
+                f.setAccessible(true)
+                return (T) f.get(obj)
+            catch NoSuchFieldException e
+                c .= getSuperclass()
+
+        throw new RuntimeException(\"Field not found: \" + fieldName)
+    catch Exception e
+        throw new RuntimeException(e)
+
+// getMethod (reflection)
+
+
     """.trim())
     langUtilCode = res.getCompiledCode("LangUtil")
 

@@ -43,9 +43,11 @@ public class Extensions {
         return a == b;
     }
     public static boolean operEq(String a , String b) {
+        if (a == null) return b == null;
         return a.equals(b);
     }
     public static boolean operEq(Object a , Object b) {
+        if (a == null) return b == null;
         return a.equals(b);
     }
     public static boolean operIn(char c , String s) {

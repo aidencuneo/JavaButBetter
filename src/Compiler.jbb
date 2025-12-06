@@ -671,13 +671,13 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical or
-    elif (f = findAnyToken(tok, List.of("||", "or"))) != -1
+    elif (f = findAnyToken(tok, ["||", "or"])) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical and
-    elif (f = findAnyToken(tok, List.of("&&", "and"))) != -1
+    elif (f = findAnyToken(tok, ["&&", "and"])) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")"
@@ -701,7 +701,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += lhs + " & " + rhs
 
     // Equality operators
-    elif (f = findAnyTokenRev(tok, List.of("==", "!=", "===", "!=="))) != -1
+    elif (f = findAnyTokenRev(tok, ["==", "!=", "===", "!=="])) != -1
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -839,26 +839,25 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         // Dotted expressions (.)
         elif tok[f].type == Token.Type.DOT
-            let lhs = compileExpr(tok[:f])
-            let rhs = compileExpr(tok[f + 1:])
-            out += lhs + "." + rhs
-            // out += "LangUtil.dot(" + lhs + ", \"" + rhs + "\")"
+            lhs = compileExpr(tok[:f])
+            rhs = compileExpr(tok[f + 1:])
+            // out += lhs + "." + rhs
+            out += "LangUtil.getField(" + lhs + ", \"" + rhs + "\")"
 
         // Index/slice expressions ([tokens], square brackets)
         elif tok[f].type == Token.Type.SQUARE_EXPR
             // Get the iterable expression and replace tok with the tokens from this slice
-            let iterable = compileExpr(tok[:f])
-            let expr = tok[f].value
-            expr = expr[1:-1]
+            iterable = compileExpr(tok[:f])
+            expr = tok[f].value[1:-1]
             tok = Tokeniser.tokLine(expr)
 
             // Slice
             if findToken(tok, ":") != -1
                 // start?, :?, end?, :?, step?
 
-                let startTokens = new ArrayList<Token>()
-                let endTokens = new ArrayList<Token>()
-                let stepTokens = new ArrayList<Token>()
+                startTokens = new ArrayList<Token>()
+                endTokens = new ArrayList<Token>()
+                stepTokens = new ArrayList<Token>()
 
                 // Eat start
                 while tok && tok[0].value != ":"
@@ -880,9 +879,9 @@ string compileExpr(ArrayList<Token> tok, bool nested):
                     tok.remove(0)
 
                 // Compile tokens
-                let start = compileExpr(startTokens)
-                let end = compileExpr(endTokens)
-                let step = compileExpr(stepTokens)
+                start = compileExpr(startTokens)
+                end = compileExpr(endTokens)
+                step = compileExpr(stepTokens)
 
                 start = "null" if !start
                 end = "null" if !end
@@ -905,8 +904,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     // List expressions (square brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.SQUARE_EXPR
         // Replace tok with the tokens from this expression
-        let expr = tok[0].value
-        expr = expr[1:-1]
+        expr = tok[0].value[1:-1]
         tok = Tokeniser.tokLine(expr)
 
         // Range
@@ -926,13 +924,13 @@ string compileExpr(ArrayList<Token> tok, bool nested):
     // Fallback - add tokens as they are
     else
         for j in len(tok)
-            let t = tok[j]
+            t = tok[j]
             // Perform conversions for some tokens
 
             // Compile expressions
             if t.type == Token.Type.EXPR
-                string raw = t.value[1:-1]
-                ArrayList<Token> tokens = Tokeniser.tokLine(raw)
+                raw = t.value[1:-1]
+                tokens = Tokeniser.tokLine(raw)
                 out += "(" + compileExpr(tokens) + ")"
 
             // // Convert identifiers to get method calls

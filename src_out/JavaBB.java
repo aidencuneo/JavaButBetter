@@ -231,7 +231,7 @@ double operMod(double a, double b):
         }
         LangUtil.println("\n\nCompiling LangUtil...");
         var res = Compiler.compileFile("LangUtil", """
-// import java.lang.reflect.*
+import java.lang.reflect.*
 import java.util.function.Function
 
 class Null
@@ -572,6 +572,27 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 })
+
+// getField (reflection)
+(T) T get(object obj, string name):
+    try
+        c = obj.getClass()
+
+        while c
+            try
+                f = c.getDeclaredField(fieldName)
+                f.setAccessible(true)
+                return (T) f.get(obj)
+            catch NoSuchFieldException e
+                c .= getSuperclass()
+
+        throw new RuntimeException(\"Field not found: \" + fieldName)
+    catch Exception e
+        throw new RuntimeException(e)
+
+// getMethod (reflection)
+
+
     """.trim());
         var langUtilCode = res.getCompiledCode("LangUtil");
         try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {

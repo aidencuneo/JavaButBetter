@@ -56,6 +56,9 @@ public class UVABOC extends JavaPlugin
 static final int BUILD_ID = 84
 Random rand = Random()
 
+main:
+    println a.b().c.d().e.f
+
 !onEnable:
     health = Math.round(10 * (victim.getHealth() - e.getFinalDamage()) / 2) / 10.0
     health = round((victim.getHealth() - e.getFinalDamage()) / 2, 2)

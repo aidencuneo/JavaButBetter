@@ -14,6 +14,9 @@ import org.bukkit.scoreboard.Team;
 public class UVABOC extends JavaPlugin {
     public static final int BUILD_ID = 84;
     public Random rand = new Random();
+    public static void main(String[] args) {
+        LangUtil.println(a.b().c.d().e.f);
+    }
     @Override public void onEnable() {
         var health = Extensions.operDiv(Math.round(Extensions.operDiv(Extensions.operMul(10, (Extensions.operSub(victim.getHealth(), e.getFinalDamage()))), 2)), 10.0f);
         health = LangUtil.round(Extensions.operDiv((Extensions.operSub(victim.getHealth(), e.getFinalDamage())), 2), 2);

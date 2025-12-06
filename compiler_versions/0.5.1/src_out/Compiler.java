@@ -418,6 +418,12 @@ public class Compiler {
             out += ", ";
             out += compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
         }
+        else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.INLINE))) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
+                return "";
+            }
+            out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1);
+        }
         else if (LangUtil.isTruthy(!Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), Extensions.operUnarySub(1)))) {
             var vartype = "";
             var varname = "";

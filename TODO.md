@@ -1,3 +1,5 @@
+- Fix operEq not working with null objects
+- Add global aliases to precompilation
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Fix java lambdas (->)

@@ -59,9 +59,11 @@ bool operEq(bool a, bool b):
     inline(return a == b;)
 
 bool operEq(string a, string b):
+    inline(if (a == null) return b == null;)
     return a.equals(b)
 
 bool operEq(object a, object b):
+    inline(if (a == null) return b == null;)
     return a.equals(b)
 
 // in

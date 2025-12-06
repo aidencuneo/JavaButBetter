@@ -391,6 +391,43 @@ string slice(string s, int start, Null end, int step):
 (T) List<T> slice(T[] v, int start, Null end, int step):
     return slice(v, start, step > 0 ? v.length : -1, step)
 
+// getField (reflection)
+(T) T getField(object obj, string name):
+    try
+        c = obj.getClass()
+
+        while c
+            try
+                f = c.getDeclaredField(fieldName)
+                f.setAccessible(true)
+                return (T) f.get(obj)
+            catch NoSuchFieldException e
+                c .= getSuperclass()
+
+        throw new RuntimeException(\"Field not found: \" + fieldName)
+    catch Exception e
+        throw new RuntimeException(e)
+
+// getMethod (reflection)
+(T) T callMethod(object obj, string methodName, object... args):
+    try
+        c = obj.getClass()
+        inline(var argTypes = new Class<?>[args.length];)
+        for i in [..args.length]
+            argTypes[i] = object.class if args[i] == null else args[i].getClass()
+
+        while c
+            try
+                m = c.getDeclaredMethod(methodName, argTypes)
+                m.setAccessible(true)
+                return (T) m.invoke(obj, args)
+            catch NoSuchMethodException e
+                c .= getSuperclass()
+
+        inline(throw new RuntimeException(\"Method not found: \" + methodName);)
+    catch Exception e
+        inline(throw new RuntimeException(e);)
+
 // indexConvert (helper function)
 int indexConvert(int index, int size):
     index += size if index < 0
@@ -572,27 +609,6 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 })
-
-// getField (reflection)
-(T) T get(object obj, string name):
-    try
-        c = obj.getClass()
-
-        while c
-            try
-                f = c.getDeclaredField(fieldName)
-                f.setAccessible(true)
-                return (T) f.get(obj)
-            catch NoSuchFieldException e
-                c .= getSuperclass()
-
-        throw new RuntimeException(\"Field not found: \" + fieldName)
-    catch Exception e
-        throw new RuntimeException(e)
-
-// getMethod (reflection)
-
-
     """.trim());
         var langUtilCode = res.getCompiledCode("LangUtil");
         try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {

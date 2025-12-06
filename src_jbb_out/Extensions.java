@@ -1,11 +1,9 @@
-package aidenbc.UVABOC;
-
 import java.io.*;
 import java.util.*;
 
 public class Extensions {
     public static int len(String s) {
-        return s.length();
+        return LangUtil.callMethod(s, "length");
     }
     public static <T> int len(Iterable < T > v) {
         var c = 0;
@@ -13,22 +11,22 @@ public class Extensions {
         return c;
     }
     public static <T> int len(T [] v) {
-        return v.length;
+        return LangUtil.getField(v, "length");
     }
     public static char operGetIndex(String s , int i) {
-        i = LangUtil.indexConvert(i, s.length());
-        return s.charAt(i);
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.callMethod(s, "length"));
+        return LangUtil.callMethod(s, "charAt", i);
     }
     public static <T> T operGetIndex(T [] v , int i) {
-        i = LangUtil.indexConvert(i, v.length);
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.getField(v, "length"));
         return v[i];
     }
     public static <T> T operGetIndex(List < T > v , int i) {
-        i = LangUtil.indexConvert(i, v.size());
-        return v.get(i);
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.callMethod(v, "size"));
+        return LangUtil.callMethod(v, "get", i);
     }
     public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
-        return v.get(key);
+        return LangUtil.callMethod(v, "get", key);
     }
     public static boolean operEq(int a , int b) {
         return a == b;
@@ -44,29 +42,29 @@ public class Extensions {
     }
     public static boolean operEq(String a , String b) {
         if (a == null) return b == null;
-        return a.equals(b);
+        return LangUtil.callMethod(a, "equals", b);
     }
     public static boolean operEq(Object a , Object b) {
         if (a == null) return b == null;
-        return a.equals(b);
+        return LangUtil.callMethod(a, "equals", b);
     }
     public static boolean operIn(char c , String s) {
-        return !Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1));
+        return !Extensions.operEq(LangUtil.callMethod(s, "indexOf", c), Extensions.operUnarySub(1));
     }
     public static boolean operIn(String part , String s) {
-        return !Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1));
+        return !Extensions.operEq(LangUtil.callMethod(s, "indexOf", part), Extensions.operUnarySub(1));
     }
     public static boolean operIn(Object o , List lst) {
-        return lst.contains(o);
+        return LangUtil.callMethod(lst, "contains", o);
     }
     public static boolean operIn(Object o , Object [] lst) {
         return Arrays.stream(lst).anyMatch(x -> x.equals(o));
     }
     public static boolean operIn(Object o , Set s) {
-        return s.contains(o);
+        return LangUtil.callMethod(s, "contains", o);
     }
     public static boolean operIn(Object o , Map m) {
-        return m.containsKey(o);
+        return LangUtil.callMethod(m, "containsKey", o);
     }
     public static int operUnaryAdd(int a) {
         return a;
@@ -124,9 +122,9 @@ public class Extensions {
     }
     public static String operMul(String a , int b) {
         if (LangUtil.isTruthy(b < 0)) {
-            return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
+            return LangUtil.callMethod(LangUtil.callMethod(LangUtil.callMethod(new StringBuilder(a), "reverse"), "toString"), "repeat", Extensions.operUnarySub(b));
         }
-        return a.repeat(b);
+        return LangUtil.callMethod(a, "repeat", b);
     }
     public static String operMul(int a , String b) {
         return operMul(b, a);

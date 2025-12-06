@@ -1,5 +1,3 @@
-package aidenbc.UVABOC;
-
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
@@ -7,26 +5,26 @@ import java.util.function.Function;
 
 public class LangUtil {
     public static void print(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(Extensions.operAdd("", x)); }
+        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", Extensions.operAdd("", x)); }
     }
     public static void println(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(Extensions.operAdd("", x)); }
-        System.out.println("");
+        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", Extensions.operAdd("", x)); }
+        LangUtil.callMethod(LangUtil.getField(System.class, "out"), "println", "");
     }
     public static <T, R> R nullCheck(T value , Function < T , R > func) {
-        return LangUtil.isTruthy(!Extensions.operEq(value, null)) ? (func.apply(value)) : (null);
+        return LangUtil.isTruthy(!Extensions.operEq(value, null)) ? (LangUtil.callMethod(func, "apply", value)) : (null);
     }
     public static double round(double v , int places) {
-        return Extensions.operDiv(Math.round(Extensions.operMul(v, Math.pow(10, places))), Math.pow(10, places));
+        return Extensions.operDiv(LangUtil.callMethod(Math.class, "round", Extensions.operMul(v, Math.pow(10, places))), Math.pow(10, places));
     }
     public static double round(double v) {
-        return Math.round(v);
+        return LangUtil.callMethod(Math.class, "round", v);
     }
     public static String roundstr(double v , int places) {
-        return String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
+        return LangUtil.callMethod(String.class, "format", Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
     }
     public static String roundstr(double v) {
-        return String.format("%f", v);
+        return LangUtil.callMethod(String.class, "format", "%f", v);
     }
     public static boolean isTruthy(boolean v) {
         return v;
@@ -42,7 +40,7 @@ public class LangUtil {
         return !v.isEmpty();
     }
     public static <T> boolean isTruthy(T [] v) {
-        return v.length > 0;
+        return LangUtil.getField(v, "length") > 0;
     }
     public static boolean isTruthy(List v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
@@ -62,7 +60,7 @@ public class LangUtil {
     public static List < Integer > asIterable(int n) {
         var lst = new ArrayList < Integer > ();
         for (int i = 0; i < n; ++i) {
-            lst.add(i);
+            LangUtil.callMethod(lst, "add", i);
         }
         return lst;
     }
@@ -73,82 +71,130 @@ public class LangUtil {
         return new IteratorToIterable < T > (v);
     }
     public static <TK, TV> Set < TK > asIterable(Map < TK , TV > v) {
-        return v.keySet();
+        return LangUtil.callMethod(v, "keySet");
     }
     public static char [] asIterable(String s) {
-        return s.toCharArray();
+        return LangUtil.callMethod(s, "toCharArray");
     }
     public static String slice(String s , int start , int end , int step) {
-        start = indexConvert(start, s.length());
-        end = indexConvert(end, s.length());
+        start = indexConvert(start, LangUtil.callMethod(s, "length"));
+        end = indexConvert(end, LangUtil.callMethod(s, "length"));
         if (LangUtil.isTruthy(Extensions.operEq(step, 1))) {
-            return s.substring(start, end);
+            return LangUtil.callMethod(s, "substring", start, end);
         }
         var newStr = "";
         for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            newStr += s.charAt(i);
+            newStr += LangUtil.callMethod(s, "charAt", i);
         }
         return newStr;
     }
     public static String slice(String s , Null start , Null end , int step) {
-        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(s.length(), 1)), LangUtil.isTruthy(step > 0) ? (s.length()) : (Extensions.operSub(Extensions.operUnarySub(s.length()), 1)), step);
+        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(s, "length"), 1)), LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(s, "length")) : (Extensions.operSub(Extensions.operUnarySub(LangUtil.callMethod(s, "length")), 1)), step);
     }
     public static String slice(String s , Null start , int end , int step) {
-        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(s.length(), 1)), end, step);
+        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(s, "length"), 1)), end, step);
     }
     public static String slice(String s , int start , Null end , int step) {
-        return slice(s, start, LangUtil.isTruthy(step > 0) ? (s.length()) : (Extensions.operUnarySub(1)), step);
+        return slice(s, start, LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(s, "length")) : (Extensions.operUnarySub(1)), step);
     }
     public static <T> ArrayList < T > slice(ArrayList < T > v , int start , int end , int step) {
-        start = indexConvert(start, v.size());
-        end = indexConvert(end, v.size());
-        return new ArrayList < > (v.subList(start, end));
+        start = indexConvert(start, LangUtil.callMethod(v, "size"));
+        end = indexConvert(end, LangUtil.callMethod(v, "size"));
+        return new ArrayList < > (LangUtil.callMethod(v, "subList", start, end));
     }
     public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operSub(Extensions.operUnarySub(v.size()), 1)), step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(v, "size"), 1)), LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(v, "size")) : (Extensions.operSub(Extensions.operUnarySub(LangUtil.callMethod(v, "size")), 1)), step);
     }
     public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), end, step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(v, "size"), 1)), end, step);
     }
     public static <T> ArrayList < T > slice(ArrayList < T > v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operUnarySub(1)), step);
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(v, "size")) : (Extensions.operUnarySub(1)), step);
     }
     public static <T> List < T > slice(List < T > v , int start , int end , int step) {
-        start = indexConvert(start, v.size());
-        end = indexConvert(end, v.size());
+        start = indexConvert(start, LangUtil.callMethod(v, "size"));
+        end = indexConvert(end, LangUtil.callMethod(v, "size"));
         var lst = new ArrayList < T > ();
         for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
             LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(i, ", "), start), ", "), end), ", "), step));
-            lst.add(v.get(i));
+            LangUtil.callMethod(lst, "add", LangUtil.callMethod(v, "get", i));
         }
         return lst;
     }
     public static <T> List < T > slice(List < T > v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operSub(Extensions.operUnarySub(v.size()), 1)), step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(v, "size"), 1)), LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(v, "size")) : (Extensions.operSub(Extensions.operUnarySub(LangUtil.callMethod(v, "size")), 1)), step);
     }
     public static <T> List < T > slice(List < T > v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), end, step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.callMethod(v, "size"), 1)), end, step);
     }
     public static <T> List < T > slice(List < T > v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operUnarySub(1)), step);
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (LangUtil.callMethod(v, "size")) : (Extensions.operUnarySub(1)), step);
     }
     public static <T> List < T > slice(T [] v , int start , int end , int step) {
-        start = indexConvert(start, v.length);
-        end = indexConvert(end, v.length);
+        start = indexConvert(start, LangUtil.getField(v, "length"));
+        end = indexConvert(end, LangUtil.getField(v, "length"));
         var lst = new ArrayList < T > ();
         for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            lst.add(Extensions.operGetIndex(v, i));
+            LangUtil.callMethod(lst, "add", Extensions.operGetIndex(v, i));
         }
         return lst;
     }
     public static <T> List < T > slice(T [] v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.length, 1)), LangUtil.isTruthy(step > 0) ? (v.length) : (Extensions.operSub(Extensions.operUnarySub(v.length), 1)), step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.getField(v, "length"), 1)), LangUtil.isTruthy(step > 0) ? (LangUtil.getField(v, "length")) : (Extensions.operSub(Extensions.operUnarySub(LangUtil.getField(v, "length")), 1)), step);
     }
     public static <T> List < T > slice(T [] v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.length, 1)), end, step);
+        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(LangUtil.getField(v, "length"), 1)), end, step);
     }
     public static <T> List < T > slice(T [] v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.length) : (Extensions.operUnarySub(1)), step);
+        return slice(v, start, LangUtil.isTruthy(step > 0) ? (LangUtil.getField(v, "length")) : (Extensions.operUnarySub(1)), step);
+    }
+    public static <T> T getField(Object obj , String name) {
+        try {
+            var c = LangUtil.callMethod(obj, "getClass");
+            while (LangUtil.isTruthy(c)) {
+                try {
+                    var f = LangUtil.callMethod(c, "getDeclaredField", fieldName);
+                    LangUtil.callMethod(f, "setAccessible", true);
+                    return LangUtil.callMethod((T)f, "get", obj);
+                }
+                catch (NoSuchFieldException e) {
+                    c = LangUtil.callMethod(c, "getSuperclass");
+                }
+            }
+            new throw new RuntimeException(Extensions.operAdd("Field not found: ", fieldName));
+        }
+        catch (Exception e) {
+            new throw new RuntimeException(e);
+        }
+    }
+    public static <T> T callMethod(Object obj , String methodName , Object ... args) {
+        try {
+            var c = LangUtil.callMethod(obj, "getClass");
+            var argTypes = new Class<?>[args.length];
+            for (var i : LangUtil.asIterable(LangUtil.range(0, LangUtil.getField(args, "length"), null))) {
+}
+class Null {
+    {
+        
+    }
+}
+class [i] {
+    }
+            while (LangUtil.isTruthy(c)) {
+                try {
+                    var m = LangUtil.callMethod(c, "getDeclaredMethod", methodName, argTypes);
+                    LangUtil.callMethod(m, "setAccessible", true);
+                    return LangUtil.callMethod((T)m, "invoke", obj, args);
+                }
+                catch (NoSuchMethodException e) {
+                    c = LangUtil.callMethod(c, "getSuperclass");
+                }
+            }
+            throw new RuntimeException("Method not found: " + methodName);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public static int indexConvert(int index , int size) {
         if (LangUtil.isTruthy(index < 0)) { index += size; }
@@ -158,10 +204,10 @@ public class LangUtil {
         return new IntRange(start, stop, step);
     }
     public static IntRange range(int start , Null stop , Null step) {
-        return range(start, Integer.MAX_VALUE, 1);
+        return range(start, LangUtil.getField(Integer.class, "MAX_VALUE"), 1);
     }
     public static IntRange range(int start , Null stop , int step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Integer.MAX_VALUE) : (Integer.MIN_VALUE), step);
+        return range(start, LangUtil.isTruthy(step > 0) ? (LangUtil.getField(Integer.class, "MAX_VALUE")) : (LangUtil.getField(Integer.class, "MIN_VALUE")), step);
     }
     public static IntRange range(int start , int stop , Null step) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
@@ -170,10 +216,10 @@ public class LangUtil {
         return new LongRange(start, stop, step);
     }
     public static LongRange range(long start , Null stop , Null step) {
-        return range(start, Long.MAX_VALUE, 1);
+        return range(start, LangUtil.getField(Long.class, "MAX_VALUE"), 1);
     }
     public static LongRange range(long start , Null stop , long step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Long.MAX_VALUE) : (Long.MIN_VALUE), step);
+        return range(start, LangUtil.isTruthy(step > 0) ? (LangUtil.getField(Long.class, "MAX_VALUE")) : (LangUtil.getField(Long.class, "MIN_VALUE")), step);
     }
     public static LongRange range(long start , long stop , Null step) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
@@ -182,10 +228,10 @@ public class LangUtil {
         return new DoubleRange(start, stop, step);
     }
     public static DoubleRange range(double start , Null stop , Null step) {
-        return range(start, Double.MAX_VALUE, 1);
+        return range(start, LangUtil.getField(Double.class, "MAX_VALUE"), 1);
     }
     public static DoubleRange range(double start , Null stop , double step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Double.MAX_VALUE) : (Double.MIN_VALUE), step);
+        return range(start, LangUtil.isTruthy(step > 0) ? (LangUtil.getField(Double.class, "MAX_VALUE")) : (LangUtil.getField(Double.class, "MIN_VALUE")), step);
     }
     public static DoubleRange range(double start , double stop , Null step) {
         return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
@@ -307,29 +353,5 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 }
-    public static <T> T get(Object obj , String name) {
-        try {
-            var c = obj.getClass();
-            while (LangUtil.isTruthy(c)) {
-                try {
-                    var f = c.getDeclaredField(fieldName);
-                    f.setAccessible(true);
-                    return (T)f.get(obj);
-                }
-                catch (NoSuchFieldException e) {
-                    c = c.getSuperclass();
-                }
-            }
-            new throw new RuntimeException(Extensions.operAdd("Field not found: ", fieldName));
-        }
-        catch (Exception e) {
-            new throw new RuntimeException(e);
-        }
-    }
-}
-class Null {
-    {
-        
-    }
 }
 

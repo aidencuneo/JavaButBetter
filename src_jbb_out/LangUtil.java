@@ -153,7 +153,7 @@ public class LangUtil {
             var c = LangUtil.callMethod(obj, "getClass");
             while (LangUtil.isTruthy(c)) {
                 try {
-                    var f = LangUtil.callMethod(c, "getDeclaredField", fieldName);
+                    var f = LangUtil.callMethod(c, "getDeclaredField", name);
                     LangUtil.callMethod(f, "setAccessible", true);
                     return LangUtil.callMethod((T)f, "get", obj);
                 }
@@ -161,10 +161,10 @@ public class LangUtil {
                     c = LangUtil.callMethod(c, "getSuperclass");
                 }
             }
-            new throw new RuntimeException(Extensions.operAdd("Field not found: ", fieldName));
+            throw new RuntimeException("Field not found: " + name);
         }
         catch (Exception e) {
-            new throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
     public static <T> T callMethod(Object obj , String methodName , Object ... args) {
@@ -172,14 +172,8 @@ public class LangUtil {
             var c = LangUtil.callMethod(obj, "getClass");
             var argTypes = new Class<?>[args.length];
             for (var i : LangUtil.asIterable(LangUtil.range(0, LangUtil.getField(args, "length"), null))) {
-}
-class Null {
-    {
-        
-    }
-}
-class [i] {
-    }
+                argTypes[i] = args[i] == null ? Object.class : args[i].getClass();
+            }
             while (LangUtil.isTruthy(c)) {
                 try {
                     var m = LangUtil.callMethod(c, "getDeclaredMethod", methodName, argTypes);
@@ -353,5 +347,10 @@ static class IteratorToIterable<T> implements Iterable<T> {
         return iterator;
     }
 }
+}
+class Null {
+    {
+        
+    }
 }
 

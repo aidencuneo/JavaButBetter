@@ -1,239 +1,10 @@
 import java.io.*;
 import java.util.*;
 
-public class JavaBB {
-    public static void main(String[] args) {
-        var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
-        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
-            new File(outDir).mkdir();
-        }
-        var files = new File(compDir).list();
-        LangUtil.println("\nCompiling Extensions...");
-        var extensionsClassRes = Compiler.compileFile("Extensions", """
-public static class Extensions
-
-// len
-int len(string s):
-    ret s.length()
-
-(T) int len(Iterable<T> v):
-    c = 0
-    ++c for x in v
-    ret c
-
-(T) int len(T[] v):
-    ret v.length
-
-// getIndex
-char operGetIndex(string s, int i):
-    i = LangUtil.indexConvert(i, s.length())
-    ret s.charAt(i)
-
-(T) T operGetIndex(T[] v, int i):
-    i = LangUtil.indexConvert(i, v.length)
-    inline(return v[i];)
-
-(T) T operGetIndex(List<T> v, int i):
-    i = LangUtil.indexConvert(i, v.size())
-    ret v.get(i)
-
-(TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
-    ret v.get(key)
-
-// ==
-bool operEq(int a, int b):
-    inline(return a == b;)
-
-bool operEq(long a, long b):
-    inline(return a == b;)
-
-bool operEq(double a, double b):
-    inline(return a == b;)
-
-bool operEq(bool a, bool b):
-    inline(return a == b;)
-
-bool operEq(string a, string b):
-    inline(if (a == null) return b == null;)
-    return a.equals(b)
-
-bool operEq(object a, object b):
-    inline(if (a == null) return b == null;)
-    return a.equals(b)
-
-// in
-bool operIn(char c, string s):
-    return s.indexOf(c) != -1
-
-bool operIn(string part, string s):
-    return s.indexOf(part) != -1
-
-bool operIn(object o, List lst):
-    return lst.contains(o)
-
-bool operIn(object o, object[] lst):
-    inline(return Arrays.stream(lst).anyMatch(x -> x.equals(o));)
-
-bool operIn(object o, Set s):
-    return s.contains(o)
-
-bool operIn(object o, Map m):
-    return m.containsKey(o)
-
-// Unary +
-int operUnaryAdd(int a):
-    return a
-
-long operUnaryAdd(long a):
-    return a
-
-double operUnaryAdd(double a):
-    return a
-
-// Unary -
-int operUnarySub(int a):
-    inline(return -a;)
-
-long operUnarySub(long a):
-    inline(return -a;)
-
-double operUnarySub(double a):
-    inline(return -a;)
-
-// +
-int operAdd(int a, int b):
-    inline(return a + b;)
-
-long operAdd(long a, long b):
-    inline(return a + b;)
-
-double operAdd(double a, double b):
-    inline(return a + b;)
-
-string operAdd(string a, object b):
-    inline(return a + b;)
-
-string operAdd(object a, string b):
-    inline(return a + b;)
-
-string operAdd(string a, string b):
-    inline(return a + b;)
-
-// int operAdd(bool a, bool b):
-//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
-
-// -
-int operSub(int a, int b):
-    inline(return a - b;)
-
-long operSub(long a, long b):
-    inline(return a - b;)
-
-double operSub(double a, double b):
-    inline(return a - b;)
-
-// int operSub(bool a, bool b):
-//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
-
-// *
-int operMul(int a, int b):
-    inline(return a * b;)
-
-long operMul(long a, long b):
-    inline(return a * b;)
-
-double operMul(double a, double b):
-    inline(return a * b;)
-
-string operMul(string a, int b):
-    if b < 0
-        return StringBuilder(a).reverse().toString().repeat(-b)
-    return a.repeat(b)
-
-string operMul(int a, string b):
-    return operMul(b, a)
-
-// /
-int operDiv(int a, int b):
-    inline(return a / b;)
-
-long operDiv(long a, long b):
-    inline(return a / b;)
-
-double operDiv(double a, double b):
-    inline(return a / b;)
-
-// %
-int operMod(int a, int b):
-    inline(return a % b;)
-
-long operMod(long a, long b):
-    inline(return a % b;)
-
-double operMod(double a, double b):
-    inline(return a % b;)
-    """.trim());
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
-        HashMap<String, String> fileContentMap = new HashMap<>();
-        for (var i : LangUtil.asIterable(Extensions.len(files))) {
-            var fileContent = "";
-            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
-            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
-            try (var scanner = new Scanner(new File(fromPath))) {
-                fileContent = scanner.useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException e) {
-                
-            }
-            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
-                var lines = Precompiler.precompileFile(className, fileContent);
-                fileContent = String.join("\n", lines);
-                fileContentMap.put(Extensions.operGetIndex(files, i), fileContent);
-            }
-        }
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
-        for (var i : LangUtil.asIterable(Extensions.len(files))) {
-            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
-            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
-            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
-            var fileContent = Extensions.operGetIndex(fileContentMap, Extensions.operGetIndex(files, i));
-            fileContent = Precompiler.applyRegexRules(fileContent);
-            if (files[i].equals("Dynamic.jbb"))
-                System.out.println(fileContent);
-            var compiled = "";
-            if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
-                var res = Compiler.compileFile(className, fileContent);
-                if (LangUtil.isTruthy(res.classes.containsKey("Extensions"))) {
-                    var newCode = res.classes.get("Extensions").code;
-                    var extensionsClass = extensionsClassRes.classes.get("Extensions");
-                    extensionsClass.code = extensionsClass.code + newCode;
-                    res.classes.remove("Extensions");
-                }
-                compiled = res.getCompiledCode(className);
-            }
-            else {
-                compiled = fileContent;
-                toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(files, i));
-            }
-            try (var writer = new PrintWriter(toPath)) {
-                new File(toPath).createNewFile();
-                writer.println(compiled);
-            }
-            catch (IOException e) {
-                
-            }
-        }
-        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/Extensions.java"))) {
-            new File(Extensions.operAdd(outDir, "/Extensions.java")).createNewFile();
-            writer.println(extensionsClassRes.getCompiledCode("Extensions"));
-        }
-        catch (IOException e) {
-            
-        }
-        LangUtil.println("\n\nCompiling LangUtil...");
-        var res = Compiler.compileFile("LangUtil", """
-// import java.lang.reflect.*
+public class LangUtilCode {
+    public static CompResult get() {
+        return Compiler.compileFile("LangUtil", """
+import java.lang.reflect.*
 import java.util.function.Function
 
 class Null
@@ -261,10 +32,10 @@ double round(double v):
 
 // roundstr
 string roundstr(double v, int places):
-    return string.format(\"%.\" + places + \"f\", v)
+    return string.format("%." + places + "f", v)
 
 string roundstr(double v):
-    return string.format(\"%f\", v)
+    return string.format("%f", v)
 
 // isTruthy
 bool isTruthy(bool v):
@@ -392,6 +163,43 @@ string slice(string s, int start, Null end, int step):
 
 (T) List<T> slice(T[] v, int start, Null end, int step):
     return slice(v, start, step > 0 ? v.length : -1, step)
+
+// getField (reflection)
+(T) T getField(object obj, string name):
+    try
+        c = obj.getClass()
+
+        while c
+            try
+                f = c.getDeclaredField(name)
+                f.setAccessible(true)
+                return (T) f.get(obj)
+            catch NoSuchFieldException e
+                c .= getSuperclass()
+
+        inline(throw new RuntimeException("Field not found: " + name);)
+    catch Exception e
+        inline(throw new RuntimeException(e);)
+
+// getMethod (reflection)
+(T) T callMethod(object obj, string methodName, object... args):
+    try
+        c = obj.getClass()
+        inline(var argTypes = new Class<?>[args.length];)
+        for i in [..args.length]
+            inline(argTypes[i] = args[i] == null ? Object.class : args[i].getClass();)
+
+        while c
+            try
+                m = c.getDeclaredMethod(methodName, argTypes)
+                m.setAccessible(true)
+                return (T) m.invoke(obj, args)
+            catch NoSuchMethodException e
+                c .= getSuperclass()
+
+        inline(throw new RuntimeException("Method not found: " + methodName);)
+    catch Exception e
+        inline(throw new RuntimeException(e);)
 
 // indexConvert (helper function)
 int indexConvert(int index, int size):
@@ -575,15 +383,6 @@ static class IteratorToIterable<T> implements Iterable<T> {
     }
 })
     """.trim());
-        var langUtilCode = res.getCompiledCode("LangUtil");
-        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {
-            new File(Extensions.operAdd(outDir, "/LangUtil.java")).createNewFile();
-            writer.println(langUtilCode);
-        }
-        catch (IOException e) {
-            
-        }
-        LangUtil.println("\n\nDone.");
     }
 }
 

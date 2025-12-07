@@ -1,0 +1,176 @@
+regex (
+    ".*/\* Extensions_FILE_START \*/ `"
+    "# CompResult get:
+    return Compiler.compileFile('Extensions', '''"
+)
+
+regex (
+    "` /\* Extensions_FILE_END \*/.*"
+    "    '''.trim())
+"
+)
+
+/* Extensions_FILE_START */ `
+public static class Extensions
+
+// len
+int len(string s):
+    ret s.length()
+
+(T) int len(Iterable<T> v):
+    c = 0
+    ++c for x in v
+    ret c
+
+(T) int len(T[] v):
+    ret v.length
+
+// getIndex
+char operGetIndex(string s, int i):
+    i = LangUtil.indexConvert(i, s.length())
+    ret s.charAt(i)
+
+(T) T operGetIndex(T[] v, int i):
+    i = LangUtil.indexConvert(i, v.length)
+    inline(return v[i];)
+
+(T) T operGetIndex(List<T> v, int i):
+    i = LangUtil.indexConvert(i, v.size())
+    ret v.get(i)
+
+(TK, TV) TV operGetIndex(Map<TK, TV> v, TK key):
+    ret v.get(key)
+
+// ==
+bool operEq(int a, int b):
+    inline(return a == b;)
+
+bool operEq(long a, long b):
+    inline(return a == b;)
+
+bool operEq(double a, double b):
+    inline(return a == b;)
+
+bool operEq(bool a, bool b):
+    inline(return a == b;)
+
+bool operEq(string a, string b):
+    inline(if (a == null) return b == null;)
+    return a.equals(b)
+
+bool operEq(object a, object b):
+    inline(if (a == null) return b == null;)
+    return a.equals(b)
+
+// in
+bool operIn(char c, string s):
+    return s.indexOf(c) != -1
+
+bool operIn(string part, string s):
+    return s.indexOf(part) != -1
+
+bool operIn(object o, List lst):
+    return lst.contains(o)
+
+bool operIn(object o, object[] lst):
+    inline(return Arrays.stream(lst).anyMatch(x -> x.equals(o));)
+
+bool operIn(object o, Set s):
+    return s.contains(o)
+
+bool operIn(object o, Map m):
+    return m.containsKey(o)
+
+// Unary +
+int operUnaryAdd(int a):
+    return a
+
+long operUnaryAdd(long a):
+    return a
+
+double operUnaryAdd(double a):
+    return a
+
+// Unary -
+int operUnarySub(int a):
+    inline(return -a;)
+
+long operUnarySub(long a):
+    inline(return -a;)
+
+double operUnarySub(double a):
+    inline(return -a;)
+
+// +
+int operAdd(int a, int b):
+    inline(return a + b;)
+
+long operAdd(long a, long b):
+    inline(return a + b;)
+
+double operAdd(double a, double b):
+    inline(return a + b;)
+
+string operAdd(string a, object b):
+    inline(return a + b;)
+
+string operAdd(object a, string b):
+    inline(return a + b;)
+
+string operAdd(string a, string b):
+    inline(return a + b;)
+
+// int operAdd(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// -
+int operSub(int a, int b):
+    inline(return a - b;)
+
+long operSub(long a, long b):
+    inline(return a - b;)
+
+double operSub(double a, double b):
+    inline(return a - b;)
+
+// int operSub(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// *
+int operMul(int a, int b):
+    inline(return a * b;)
+
+long operMul(long a, long b):
+    inline(return a * b;)
+
+double operMul(double a, double b):
+    inline(return a * b;)
+
+string operMul(string a, int b):
+    if b < 0
+        return StringBuilder(a).reverse().toString().repeat(-b)
+    return a.repeat(b)
+
+string operMul(int a, string b):
+    return operMul(b, a)
+
+// /
+int operDiv(int a, int b):
+    inline(return a / b;)
+
+long operDiv(long a, long b):
+    inline(return a / b;)
+
+double operDiv(double a, double b):
+    inline(return a / b;)
+
+// %
+int operMod(int a, int b):
+    inline(return a % b;)
+
+long operMod(long a, long b):
+    inline(return a % b;)
+
+double operMod(double a, double b):
+    inline(return a % b;)
+` /* Extensions_FILE_END */

@@ -81,6 +81,46 @@ bool operIn(object o, Set s):
 bool operIn(object o, Map m):
     return m.containsKey(o)
 
+// >
+bool operGt(int a, int b):
+    inline(return a > b;)
+
+bool operGt(long a, long b):
+    inline(return a > b;)
+
+bool operGt(double a, double b):
+    inline(return a > b;)
+
+// <
+bool operLt(int a, int b):
+    inline(return a < b;)
+
+bool operLt(long a, long b):
+    inline(return a < b;)
+
+bool operLt(double a, double b):
+    inline(return a < b;)
+
+// >=
+bool operGte(int a, int b):
+    inline(return a >= b;)
+
+bool operGte(long a, long b):
+    inline(return a >= b;)
+
+bool operGte(double a, double b):
+    inline(return a >= b;)
+
+// <=
+bool operLte(int a, int b):
+    inline(return a <= b;)
+
+bool operLte(long a, long b):
+    inline(return a <= b;)
+
+bool operLte(double a, double b):
+    inline(return a <= b;)
+
 // Unary +
 int operUnaryAdd(int a):
     return a

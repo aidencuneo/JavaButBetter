@@ -17,7 +17,15 @@
 // )
 
 main:
-    println 1
+    // inline(
+    //     Dynamic.registerAll(Extensions.class);
+    // )
+
+    println inline(Arrays.toString(Dynamic.registry.keySet().toArray()))
+    option default_decimal d
+    a = 1.5 + 2.0
+    println a
+    System.out.println(Math.round(a))
 
 // main:
 //     println a.b(args1.h).c.d(args2.jjj()).e.f

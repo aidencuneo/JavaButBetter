@@ -1,7 +1,4 @@
 main:
-    println DynamicCode.get()
-    System.exit(0)
-
     // Get input and output directories
     compDir = args[0] if args else "src"
     outDir = args[1] if len(args) > 1 else compDir + "_out"
@@ -103,7 +100,13 @@ main:
     catch IOException e
         ...
 
+    // Compile Dynamic
+    dynamicCode = DynamicCode.get()
+
+    try let writer = PrintWriter(outDir + "/Dynamic.java")
+        File(outDir + "/Dynamic.java").createNewFile()
+        writer.println(dynamicCode)
+    catch IOException e
+        ...
+
     println "\n\nDone."
-    // dot(dot(System, "out"), "println").invoke(dot(System, "out"), "Done.")
-    // var f = a.b.c.d.e("hello")
-    // var f = dot(dot(dot(dot(a, "b"), "c"), "d"), "e").invoke("hello")

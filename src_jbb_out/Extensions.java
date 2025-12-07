@@ -14,19 +14,19 @@ public class Extensions {
         return LangUtil.getField(v, "length");
     }
     public static char operGetIndex(String s , int i) {
-        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.callMethod(s, "length"));
-        return LangUtil.callMethod(s, "charAt", i);
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.callMethod(s, "length")});
+        return LangUtil.callMethod(s, "charAt", new Object[] {i});
     }
     public static <T> T operGetIndex(T [] v , int i) {
-        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.getField(v, "length"));
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.getField(v, "length")});
         return v[i];
     }
     public static <T> T operGetIndex(List < T > v , int i) {
-        i = LangUtil.callMethod(LangUtil.class, "indexConvert", i, LangUtil.callMethod(v, "size"));
-        return LangUtil.callMethod(v, "get", i);
+        i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.callMethod(v, "size")});
+        return LangUtil.callMethod(v, "get", new Object[] {i});
     }
     public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
-        return LangUtil.callMethod(v, "get", key);
+        return LangUtil.callMethod(v, "get", new Object[] {key});
     }
     public static boolean operEq(int a , int b) {
         return a == b;
@@ -42,29 +42,65 @@ public class Extensions {
     }
     public static boolean operEq(String a , String b) {
         if (a == null) return b == null;
-        return LangUtil.callMethod(a, "equals", b);
+        return LangUtil.callMethod(a, "equals", new Object[] {b});
     }
     public static boolean operEq(Object a , Object b) {
         if (a == null) return b == null;
-        return LangUtil.callMethod(a, "equals", b);
+        return LangUtil.callMethod(a, "equals", new Object[] {b});
     }
     public static boolean operIn(char c , String s) {
-        return !Extensions.operEq(LangUtil.callMethod(s, "indexOf", c), Extensions.operUnarySub(1));
+        return !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {c}), Dynamic.call("operUnarySub", 1)));
     }
     public static boolean operIn(String part , String s) {
-        return !Extensions.operEq(LangUtil.callMethod(s, "indexOf", part), Extensions.operUnarySub(1));
+        return !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {part}), Dynamic.call("operUnarySub", 1)));
     }
     public static boolean operIn(Object o , List lst) {
-        return LangUtil.callMethod(lst, "contains", o);
+        return LangUtil.callMethod(lst, "contains", new Object[] {o});
     }
     public static boolean operIn(Object o , Object [] lst) {
         return Arrays.stream(lst).anyMatch(x -> x.equals(o));
     }
     public static boolean operIn(Object o , Set s) {
-        return LangUtil.callMethod(s, "contains", o);
+        return LangUtil.callMethod(s, "contains", new Object[] {o});
     }
     public static boolean operIn(Object o , Map m) {
-        return LangUtil.callMethod(m, "containsKey", o);
+        return LangUtil.callMethod(m, "containsKey", new Object[] {o});
+    }
+    public static boolean operGt(int a , int b) {
+        return a > b;
+    }
+    public static boolean operGt(long a , long b) {
+        return a > b;
+    }
+    public static boolean operGt(double a , double b) {
+        return a > b;
+    }
+    public static boolean operLt(int a , int b) {
+        return a < b;
+    }
+    public static boolean operLt(long a , long b) {
+        return a < b;
+    }
+    public static boolean operLt(double a , double b) {
+        return a < b;
+    }
+    public static boolean operGte(int a , int b) {
+        return a >= b;
+    }
+    public static boolean operGte(long a , long b) {
+        return a >= b;
+    }
+    public static boolean operGte(double a , double b) {
+        return a >= b;
+    }
+    public static boolean operLte(int a , int b) {
+        return a <= b;
+    }
+    public static boolean operLte(long a , long b) {
+        return a <= b;
+    }
+    public static boolean operLte(double a , double b) {
+        return a <= b;
     }
     public static int operUnaryAdd(int a) {
         return a;
@@ -121,10 +157,10 @@ public class Extensions {
         return a * b;
     }
     public static String operMul(String a , int b) {
-        if (LangUtil.isTruthy(b < 0)) {
-            return LangUtil.callMethod(LangUtil.callMethod(LangUtil.callMethod(new StringBuilder(a), "reverse"), "toString"), "repeat", Extensions.operUnarySub(b));
+        if (LangUtil.isTruthy(Dynamic.call("operLt", b, 0))) {
+            return LangUtil.callMethod(LangUtil.callMethod(LangUtil.callMethod(new StringBuilder(a), "reverse"), "toString"), "repeat", new Object[] {Dynamic.call("operUnarySub", b)});
         }
-        return LangUtil.callMethod(a, "repeat", b);
+        return LangUtil.callMethod(a, "repeat", new Object[] {b});
     }
     public static String operMul(int a , String b) {
         return operMul(b, a);

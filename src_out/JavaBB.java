@@ -3,8 +3,6 @@ import java.util.*;
 
 public class JavaBB {
     public static void main(String[] args) {
-        LangUtil.println(DynamicCode.get());
-        System.exit(0);
         var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
@@ -74,6 +72,14 @@ public class JavaBB {
         try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {
             new File(Extensions.operAdd(outDir, "/LangUtil.java")).createNewFile();
             writer.println(langUtilCode);
+        }
+        catch (IOException e) {
+            
+        }
+        var dynamicCode = DynamicCode.get();
+        try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/Dynamic.java"))) {
+            new File(Extensions.operAdd(outDir, "/Dynamic.java")).createNewFile();
+            writer.println(dynamicCode);
         }
         catch (IOException e) {
             

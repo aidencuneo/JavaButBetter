@@ -707,9 +707,9 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         string rhs = compileExpr(tok[f + 1:])
 
         if oper == "=="
-            out += "Extensions.operEq(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operEq\", " + lhs + ", " + rhs + ")"
         elif oper == "!="
-            out += "!Extensions.operEq(" + lhs + ", " + rhs + ")"
+            out += "!((boolean) Dynamic.call(\"operEq\", " + lhs + ", " + rhs + "))"
         elif oper == "==="
             out += lhs + " == " + rhs
         elif oper == "!=="
@@ -727,67 +727,75 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             oper = "!="
 
         if oper == "in" || oper == "inside"
-            out += "Extensions.operIn(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operIn\", " + lhs + ", " + rhs + ")"
         elif oper == "notin" || oper == "outside"
-            out += "!Extensions.operIn(" + lhs + ", " + rhs + ")"
+            out += "!((boolean) Dynamic.call(\"operIn\", " + lhs + ", " + rhs + "))"
+        elif oper == ">"
+            out += "Dynamic.call(\"operGt\", " + lhs + ", " + rhs + ")"
+        elif oper == ">="
+            out += "Dynamic.call(\"operGe\", " + lhs + ", " + rhs + ")"
+        elif oper == "<"
+            out += "Dynamic.call(\"operLt\", " + lhs + ", " + rhs + ")"
+        elif oper == "<="
+            out += "Dynamic.call(\"operLe\", " + lhs + ", " + rhs + ")"
         else
             out += lhs + " " + oper + " " + rhs
 
     // Additive binary operators
-    elif (f = findAnyTokenRev(tok, List.of("+", "-"))) > 0 && tok[f].type == Token.Type.BIN_OPER
-        string oper = tok[f].value
-        string lhs = compileExpr(tok[:f])
-        string rhs = compileExpr(tok[f + 1:])
+    elif (f = findAnyTokenRev(tok, ["+", "-"])) > 0 && tok[f].type == Token.Type.BIN_OPER
+        oper = tok[f].value
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
 
         if oper == "+"
-            out += "Extensions.operAdd(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operAdd\", " + lhs + ", " + rhs + ")"
         elif oper == "-"
-            out += "Extensions.operSub(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operSub\", " + lhs + ", " + rhs + ")"
 
     // Multiplicative binary operators
-    elif (f = findAnyTokenRev(tok, List.of("*", "/", "%"))) > 0
-        string oper = tok[f].value
-        string lhs = compileExpr(tok[:f])
-        string rhs = compileExpr(tok[f + 1:])
+    elif (f = findAnyTokenRev(tok, ["*", "/", "%"])) > 0
+        oper = tok[f].value
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
 
         if oper == "*"
-            out += "Extensions.operMul(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operMul\", " + lhs + ", " + rhs + ")"
         elif oper == "/"
-            out += "Extensions.operDiv(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operDiv\", " + lhs + ", " + rhs + ")"
         elif oper == "%"
-            out += "Extensions.operMod(" + lhs + ", " + rhs + ")"
+            out += "Dynamic.call(\"operMod\", " + lhs + ", " + rhs + ")"
 
         // out += lhs + " " + tok[f].value + " " + rhs
 
     // Unary operators
     elif len(tok) > 1 && (tok[0].type == Token.Type.UNARY_OPER || ["+", "-"].contains(tok[0].value))
-        string oper = tok[0].value
-        string expr = compileExpr(tok[1:])
+        oper = tok[0].value
+        expr = compileExpr(tok[1:])
 
         // not, !
         if oper == "not" || oper == "!"
             out += "!LangUtil.isTruthy(" + expr + ")"
         elif oper == "+"
-            out += "Extensions.operUnaryAdd(" + expr + ")"
+            out += "Dynamic.call(\"operUnaryAdd\", " + expr + ")"
         elif oper == "-"
-            out += "Extensions.operUnarySub(" + expr + ")"
+            out += "Dynamic.call(\"operUnarySub\", " + expr + ")"
         else
             out += tok[0].value + expr
 
     // Exponentiation
     elif (f = findTokenRev(tok, "**")) != -1
-        string lhs = compileExpr(tok[:f])
-        string rhs = compileExpr(tok[f + 1:])
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
         out += "Math.pow(" + lhs + ", " + rhs + ")"
 
     // Postfix increment
     elif len(tok) > 1 && tok[-1].type == Token.Type.INCREMENT
-        string name = compileExpr(tok[:-1])
+        name = compileExpr(tok[:-1])
         out += name + "++"
 
     // Postfix decrement
     elif len(tok) > 1 && tok[-1].type == Token.Type.DECREMENT
-        string name = compileExpr(tok[:-1])
+        name = compileExpr(tok[:-1])
         out += name + "--"
 
     // // Dotted function calls
@@ -826,7 +834,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             id = compileExpr(rhs[:-1])
             args = rhs[-1].value[1:-1]
             compArgs = compileExpr(Tokeniser.tokLine(args))
-            compArgs = ", " + compArgs if compArgs
+            compArgs = ", new Object[] {" + compArgs + "}" if compArgs
             println ":::" + "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
             out += "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
 
@@ -903,7 +911,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         // Index
         else
-            out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
+            out += "Dynamic.call(\"operGetIndex\", " + iterable + ", " + compileExpr(tok) + ")"
             // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
 
     // Expressions (parentheses)

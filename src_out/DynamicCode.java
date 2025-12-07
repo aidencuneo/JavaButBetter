@@ -5,25 +5,30 @@ public class DynamicCode {
     public static String get() {
         return """
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class Dynamic {
-    public static void main(String[] args) {
-        try {
-            register("operAdd", Dynamic.class.getMethod("operAdd", int.class, int.class));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+    // public static void main(String[] args) {
+    //     try {
+    //         register("operAdd", Dynamic.class.getMethod("operAdd", int.class, int.class));
+    //     } catch (NoSuchMethodException e) {
+    //         e.printStackTrace();
+    //     }
 
-        Object a = 1;
-        Object b = 2;
-        var res = call("operAdd", a, 2);
-        System.out.println(res);
-    }
+    //     Object a = 1;
+    //     Object b = 2;
+    //     var res = call("operAdd", a, 2);
+    //     System.out.println(res);
+    // }
 
-    public static int operAdd(int a, int b) {
-        return a + b;
-    }
+    // public static int operAdd(int a, int b) {
+    //     return a + b;
+    // }
+
+    // static {
+    //     Extensions.registerAll(Extensions.class);
+    // }
 
     static final Map<Signature, Method> registry = new HashMap<>();
 
@@ -31,6 +36,14 @@ public class Dynamic {
 
     public static void register(String name, Method m) {
         registry.put(new Signature(name, m.getParameterTypes()), m);
+    }
+
+    public static void registerAll(Class<?> clazz) {
+        for (Method m : clazz.getDeclaredMethods()) {
+            if (!Modifier.isStatic(m.getModifiers())) continue;
+            m.setAccessible(true); // Allow private static
+            registry.put(new Signature(m.getName(), m.getParameterTypes()), m);
+        }
     }
 
     public static Object call(String name, Object... args) {
@@ -69,16 +82,15 @@ public class Dynamic {
     static boolean isCompatible(Class<?> param, Class<?> given) {
         if (param.isAssignableFrom(given)) return true;
 
-        // primitive vs wrapper
+        // Primitive vs wrapper
         if (param == int.class && given == Integer.class) return true;
         if (param == long.class && given == Long.class) return true;
         if (param == double.class && given == Double.class) return true;
         if (param == float.class && given == Float.class) return true;
 
-        // add more if desired (char, short, byte)
+        // Add more if desired (char, short, byte)
         return false;
     }
-
 }
     """.trim();
     }

@@ -619,7 +619,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         ArrayList<Token> exprTok = tok[f + 1:]
 
         // For custom operators, convert to 'name = (name oper value)'
-        if List.of(".", "**", "??").contains(oper)
+        if oper in [".", "**", "??"]
             exprTok.add(0, Token.fromString(varname))
             exprTok.add(1, Token.fromString(oper))
             out += varname + " = "
@@ -671,13 +671,13 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += "((" + lhs + ") != null) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical or
-    elif (f = findAnyToken(tok, List.of("||", "or"))) != -1
+    elif (f = findAnyToken(tok, ["||", "or"])) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
 
     // Logical and
-    elif (f = findAnyToken(tok, List.of("&&", "and"))) != -1
+    elif (f = findAnyToken(tok, ["&&", "and"])) != -1
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + rhs + ") : (" + lhs + ")"
@@ -701,7 +701,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         out += lhs + " & " + rhs
 
     // Equality operators
-    elif (f = findAnyTokenRev(tok, List.of("==", "!=", "===", "!=="))) != -1
+    elif (f = findAnyTokenRev(tok, ["==", "!=", "===", "!=="])) != -1
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -734,7 +734,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += lhs + " " + oper + " " + rhs
 
     // Additive binary operators
-    elif (f = findAnyTokenRev(tok, List.of("+", "-"))) > 0 && tok[f].type == Token.Type.BIN_OPER
+    elif (f = findAnyTokenRev(tok, ["+", "-"])) > 0 && tok[f].type == Token.Type.BIN_OPER
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -745,7 +745,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
             out += "Extensions.operSub(" + lhs + ", " + rhs + ")"
 
     // Multiplicative binary operators
-    elif (f = findAnyTokenRev(tok, List.of("*", "/", "%"))) > 0
+    elif (f = findAnyTokenRev(tok, ["*", "/", "%"])) > 0
         string oper = tok[f].value
         string lhs = compileExpr(tok[:f])
         string rhs = compileExpr(tok[f + 1:])
@@ -816,7 +816,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     // Last occurrence of function call, dot, or slice/index
     elif len(tok) > 1 && (f = findAnyTokenTypeRev(
-        tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR))) > 0
+        tok, [Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR])) > 0
 
         // Function calls
         if tok[f].type == Token.Type.EXPR
@@ -919,26 +919,24 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     // Brace expressions (curly brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR
-        string expr = tok[0].value
-        expr = expr[1:-1]
+        expr = tok[0].value[1:-1]
         out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
 
     // Fallback - add tokens as they are
     else
         for j in len(tok)
-            let t = tok[j]
+            t = tok[j]
             // Perform conversions for some tokens
 
             // Compile expressions
             if t.type == Token.Type.EXPR
-                string raw = t.value[1:-1]
-                ArrayList<Token> tokens = Tokeniser.tokLine(raw)
+                raw = t.value[1:-1]
+                tokens = Tokeniser.tokLine(raw)
                 out += "(" + compileExpr(tokens) + ")"
 
             // // Convert identifiers to get method calls
-            // elif t.type == Token.Type.ID
+            // elif t.type == Token.Type.ID:
             //     out += "LangUtil.get(" + currentClass + ".class, \"" + t.value + "\")"
-            // }
 
             else
                 out += t.value + " "

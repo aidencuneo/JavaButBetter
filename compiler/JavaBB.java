@@ -199,6 +199,8 @@ double operMod(double a, double b):
             var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             var fileContent = Extensions.operGetIndex(fileContentMap, Extensions.operGetIndex(files, i));
             fileContent = Precompiler.applyRegexRules(fileContent);
+            if (files[i].equals("Dynamic.jbb"))
+                System.out.println(fileContent);
             var compiled = "";
             if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
                 var res = Compiler.compileFile(className, fileContent);

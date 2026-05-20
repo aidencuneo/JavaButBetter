@@ -1,40 +1,42 @@
-package aidenbc.UVABOC;
-
 import java.io.*;
 import java.util.*;
+import java.lang.reflect.*;
 import java.util.function.Function;
 
 public class LangUtil {
+    static {
+        Dynamic.registerAll(Extensions.class);
+    }
     public static void print(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(Extensions.operAdd("", x)); }
+        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", new Object[] {Dynamic.call("operAdd", "", x)}); }
     }
     public static void println(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(Extensions.operAdd("", x)); }
-        System.out.println("");
+        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", new Object[] {Dynamic.call("operAdd", "", x)}); }
+        LangUtil.callMethod(LangUtil.getField(System.class, "out"), "println", new Object[] {""});
     }
     public static <T, R> R nullCheck(T value , Function < T , R > func) {
-        return LangUtil.isTruthy(!Extensions.operEq(value, null)) ? (func.apply(value)) : (null);
+        return LangUtil.isTruthy(!((boolean) Dynamic.call("operEq", value, null))) ? (LangUtil.callMethod(func, "apply", new Object[] {value})) : (null);
     }
     public static double round(double v , int places) {
-        return Extensions.operDiv(Math.round(Extensions.operMul(v, Math.pow(10, places))), Math.pow(10, places));
+        return Math.round(v * Math.pow(10, places)) / Math.pow(10, places);
     }
     public static double round(double v) {
         return Math.round(v);
     }
     public static String roundstr(double v , int places) {
-        return String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
+        return LangUtil.callMethod(String.class, "format", new Object[] {Dynamic.call("operAdd", Dynamic.call("operAdd", "%.", places), "f"), v});
     }
     public static String roundstr(double v) {
-        return String.format("%f", v);
+        return LangUtil.callMethod(String.class, "format", new Object[] {"%f", v});
     }
     public static boolean isTruthy(boolean v) {
         return v;
     }
     public static boolean isTruthy(int v) {
-        return !Extensions.operEq(v, 0);
+        return !((boolean) Dynamic.call("operEq", v, 0));
     }
     public static boolean isTruthy(double v) {
-        return !Extensions.operEq(v, 0);
+        return !((boolean) Dynamic.call("operEq", v, 0));
     }
     public static boolean isTruthy(String v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
@@ -53,15 +55,15 @@ public class LangUtil {
         if (v instanceof Double x) return x != 0;
         if (v instanceof String x) return x == null ? false : !x.isEmpty();
         if (v instanceof List x) return x == null ? false : !x.isEmpty();
-        return !Extensions.operEq(v, null);
+        return v != null;
     }
     public static <T> T [] asIterable(T [] v) {
         return v;
     }
     public static List < Integer > asIterable(int n) {
-        var lst = new ArrayList < Integer > ();
+        var lst = new ArrayList<Integer>();
         for (int i = 0; i < n; ++i) {
-            lst.add(i);
+            LangUtil.callMethod(lst, "add", new Object[] {i});
         }
         return lst;
     }
@@ -69,125 +71,132 @@ public class LangUtil {
         return v;
     }
     public static <T> Iterable < T > asIterable(Iterator < T > v) {
-        return new IteratorToIterable < T > (v);
+        return new IteratorToIterable<T>(v);
     }
     public static <TK, TV> Set < TK > asIterable(Map < TK , TV > v) {
-        return v.keySet();
+        return LangUtil.callMethod(v, "keySet");
     }
     public static char [] asIterable(String s) {
-        return s.toCharArray();
+        return LangUtil.callMethod(s, "toCharArray");
     }
-    public static String slice(String s , int start , int end , int step) {
-        start = indexConvert(start, s.length());
-        end = indexConvert(end, s.length());
-        if (LangUtil.isTruthy(Extensions.operEq(step, 1))) {
-            return s.substring(start, end);
+    public static <T> T getField(Object obj , String name) {
+        
+    try {
+        Class<?> c;
+        Object target;
+
+        if (obj instanceof Class<?> clazz) {
+                        c = clazz;
+            target = null;
+        } else {
+            c = obj.getClass();
+            target = obj;
         }
-        var newStr = "";
-        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            newStr += s.charAt(i);
+
+        while (c != null) {
+            try {
+                Field f = c.getDeclaredField(name);
+                f.setAccessible(true);
+                return (T) f.get(target);
+            } catch (NoSuchFieldException e) {
+                                c = c.getSuperclass();
+            }
         }
-        return newStr;
+
+        throw new RuntimeException("Field not found: " + name);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
     }
-    public static String slice(String s , Null start , Null end , int step) {
-        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(s.length(), 1)), LangUtil.isTruthy(step > 0) ? (s.length()) : (Extensions.operSub(Extensions.operUnarySub(s.length()), 1)), step);
     }
-    public static String slice(String s , Null start , int end , int step) {
-        return slice(s, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(s.length(), 1)), end, step);
-    }
-    public static String slice(String s , int start , Null end , int step) {
-        return slice(s, start, LangUtil.isTruthy(step > 0) ? (s.length()) : (Extensions.operUnarySub(1)), step);
-    }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , int end , int step) {
-        start = indexConvert(start, v.size());
-        end = indexConvert(end, v.size());
-        return new ArrayList < > (v.subList(start, end));
-    }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operSub(Extensions.operUnarySub(v.size()), 1)), step);
-    }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), end, step);
-    }
-    public static <T> ArrayList < T > slice(ArrayList < T > v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operUnarySub(1)), step);
-    }
-    public static <T> List < T > slice(List < T > v , int start , int end , int step) {
-        start = indexConvert(start, v.size());
-        end = indexConvert(end, v.size());
-        var lst = new ArrayList < T > ();
-        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(i, ", "), start), ", "), end), ", "), step));
-            lst.add(v.get(i));
+    public static <T> T callMethod(Object obj , String methodName , Object ... args) {
+        
+    try {
+        Class<?> c;
+        Object target;
+
+        if (obj instanceof Class<?> clazz) {
+                        c = clazz;
+            target = null;
+        } else {
+            c = obj.getClass();
+            target = obj;
         }
-        return lst;
-    }
-    public static <T> List < T > slice(List < T > v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operSub(Extensions.operUnarySub(v.size()), 1)), step);
-    }
-    public static <T> List < T > slice(List < T > v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.size(), 1)), end, step);
-    }
-    public static <T> List < T > slice(List < T > v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.size()) : (Extensions.operUnarySub(1)), step);
-    }
-    public static <T> List < T > slice(T [] v , int start , int end , int step) {
-        start = indexConvert(start, v.length);
-        end = indexConvert(end, v.length);
-        var lst = new ArrayList < T > ();
-        for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            lst.add(Extensions.operGetIndex(v, i));
+
+                Class<?>[] argTypes = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++)
+            argTypes[i] = args[i] == null ? Object.class : args[i].getClass();
+
+                                                                
+        System.out.println("argTypes: " + Arrays.toString(argTypes));
+
+        while (c != null) {
+            try {
+                                Method m = findCompatibleMethod(c, methodName, argTypes);
+
+                                try {
+                    m.setAccessible(true);
+                } catch (InaccessibleObjectException e) {
+                                    }
+
+                return (T) m.invoke(target, args);
+            } catch (NoSuchMethodException e) {
+                c = c.getSuperclass();
+            }
         }
-        return lst;
+
+        throw new RuntimeException("Method not found: " + methodName);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
     }
-    public static <T> List < T > slice(T [] v , Null start , Null end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.length, 1)), LangUtil.isTruthy(step > 0) ? (v.length) : (Extensions.operSub(Extensions.operUnarySub(v.length), 1)), step);
     }
-    public static <T> List < T > slice(T [] v , Null start , int end , int step) {
-        return slice(v, LangUtil.isTruthy(step > 0) ? (0) : (Extensions.operSub(v.length, 1)), end, step);
+    
+static Method findCompatibleMethod(Class<?> c, String name, Class<?>[] argTypes) throws NoSuchMethodException {
+    for (Method m : c.getDeclaredMethods()) {
+        if (!m.getName().equals(name)) continue;
+        Class<?>[] params = m.getParameterTypes();
+        if (params.length != argTypes.length) continue;
+        boolean ok = true;
+        for (int i = 0; i < params.length; i++) {
+            if (!isCompatible(params[i], argTypes[i])) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) return m;
     }
-    public static <T> List < T > slice(T [] v , int start , Null end , int step) {
-        return slice(v, start, LangUtil.isTruthy(step > 0) ? (v.length) : (Extensions.operUnarySub(1)), step);
+    throw new NoSuchMethodException();
+}
+    
+static boolean isCompatible(Class<?> param, Class<?> given) {
+    if (param.isAssignableFrom(given)) return true;
+    if (param.isPrimitive()) {
+        if (param == int.class && given == Integer.class) return true;
+        if (param == long.class && given == Long.class) return true;
+        if (param == double.class && given == Double.class) return true;
+        if (param == float.class && given == Float.class) return true;
+        if (param == boolean.class && given == Boolean.class) return true;
+        if (param == char.class && given == Character.class) return true;
+        if (param == byte.class && given == Byte.class) return true;
+        if (param == short.class && given == Short.class) return true;
     }
+        if (given.isPrimitive()) return isCompatible(param, primitiveToWrapper(given));
+    return false;
+}
+    
+static Class<?> primitiveToWrapper(Class<?> c) {
+    if (c == int.class) return Integer.class;
+    if (c == long.class) return Long.class;
+    if (c == double.class) return Double.class;
+    if (c == float.class) return Float.class;
+    if (c == boolean.class) return Boolean.class;
+    if (c == char.class) return Character.class;
+    if (c == byte.class) return Byte.class;
+    if (c == short.class) return Short.class;
+    return c;
+}
     public static int indexConvert(int index , int size) {
-        if (LangUtil.isTruthy(index < 0)) { index += size; }
+        if (LangUtil.isTruthy(Dynamic.call("operLt", index, 0))) { index += size; }
         return index;
-    }
-    public static IntRange range(int start , int stop , int step) {
-        return new IntRange(start, stop, step);
-    }
-    public static IntRange range(int start , Null stop , Null step) {
-        return range(start, Integer.MAX_VALUE, 1);
-    }
-    public static IntRange range(int start , Null stop , int step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Integer.MAX_VALUE) : (Integer.MIN_VALUE), step);
-    }
-    public static IntRange range(int start , int stop , Null step) {
-        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
-    }
-    public static LongRange range(long start , long stop , long step) {
-        return new LongRange(start, stop, step);
-    }
-    public static LongRange range(long start , Null stop , Null step) {
-        return range(start, Long.MAX_VALUE, 1);
-    }
-    public static LongRange range(long start , Null stop , long step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Long.MAX_VALUE) : (Long.MIN_VALUE), step);
-    }
-    public static LongRange range(long start , long stop , Null step) {
-        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
-    }
-    public static DoubleRange range(double start , double stop , double step) {
-        return new DoubleRange(start, stop, step);
-    }
-    public static DoubleRange range(double start , Null stop , Null step) {
-        return range(start, Double.MAX_VALUE, 1);
-    }
-    public static DoubleRange range(double start , Null stop , double step) {
-        return range(start, LangUtil.isTruthy(step > 0) ? (Double.MAX_VALUE) : (Double.MIN_VALUE), step);
-    }
-    public static DoubleRange range(double start , double stop , Null step) {
-        return range(start, stop, LangUtil.isTruthy(start < stop) ? (1) : (Extensions.operUnarySub(1)));
     }
     
 static class IntRange implements Iterator<Integer> {

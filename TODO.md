@@ -40,6 +40,8 @@
 - Add more operator overloads
     - string * int
     - char * int
+- Add XOR and bitwise operators
+    - XOR can be xor or ^
 - Add custom operator overloading
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
 - F-strings or `` strings (TEMPLATE_STRING token)

@@ -79,6 +79,7 @@ public class LangUtil {
     public static char [] asIterable(String s) {
         return LangUtil.callMethod(s, "toCharArray");
     }
+    @SuppressWarnings("unchecked")
     public static <T> T getField(Object obj , String name) {
         
     try {
@@ -108,6 +109,7 @@ public class LangUtil {
         throw new RuntimeException(e);
     }
     }
+    @SuppressWarnings("unchecked")
     public static <T> T callMethod(Object obj , String methodName , Object ... args) {
         
     try {

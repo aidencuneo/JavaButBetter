@@ -1,13 +1,30 @@
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
-public class Code {
+class Code {
     public static void main(String[] args) {
-        LangUtil.println(Arrays.toString(Dynamic.registry.keySet().toArray()));
-        
-        var a = Dynamic.call("operAdd", 1.5d, 2.0d);
-        LangUtil.println(a);
-        LangUtil.callMethod(LangUtil.getField(System.class, "out"), "println", new Object[] {LangUtil.callMethod(Math.class, "round", new Object[] {a})});
+        RegexRule r = new RegexRule("a", "b", "pre");
+        LangUtil.println((LangUtil.callMethod(r, "find", new Object[] {"a"})));
+        LangUtil.println((LangUtil.callMethod(r, "apply", new Object[] {"a"})));
+    }
+}
+class RegexRule {
+    public String find = "";
+    public String replace = "";
+    public String stage = "pre";
+    public Pattern pattern = null;
+    public RegexRule(String find , String replace , String stage) {
+        this . find = find;
+        this . replace = replace;
+        this . stage = stage;
+        this . pattern = LangUtil.callMethod(Pattern.class, "compile", new Object[] {find});
+    }
+    public boolean find(String s) {
+        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", new Object[] {s}), "find");
+    }
+    public String apply(String s) {
+        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", new Object[] {s}), "replaceAll", new Object[] {replace});
     }
 }
 

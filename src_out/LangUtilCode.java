@@ -168,6 +168,7 @@ char[] asIterable(string s):
 //     return slice(v, start, step > 0 ? v.length : -1, step)
 
 // getField (reflection)
+inline(@SuppressWarnings("unchecked"))
 (T) T getField(object obj, string name):
     inline(
     try {
@@ -200,6 +201,7 @@ char[] asIterable(string s):
     })
 
 // callMethod (reflection)
+inline(@SuppressWarnings("unchecked"))
 (T) T callMethod(object obj, string methodName, object... args):
     inline(
     try {

@@ -16,16 +16,44 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
-main:
-    // inline(
-    //     Dynamic.registerAll(Extensions.class);
-    // )
+use java.util.regex.*;
 
-    println inline(Arrays.toString(Dynamic.registry.keySet().toArray()))
-    option default_decimal d
-    a = 1.5 + 2.0
-    println a
-    System.out.println(Math.round(a))
+class RegexRule
+
+string find = ""
+string replace = ""
+string stage = "pre"
+Pattern pattern = null
+
+RegexRule(string find, string replace, string stage):
+    this.find = find
+    this.replace = replace
+    this.stage = stage
+    this.pattern = Pattern.compile(find)
+
+bool find(string s):
+    return pattern.matcher(s).find()
+
+string apply(string s):
+    return pattern.matcher(s).replaceAll(replace)
+
+class Code
+
+main:
+    RegexRule r = new RegexRule("a", "b", "pre")
+    println(r.find("a"))
+    println(r.apply("a"))
+
+// main:
+//     // inline(
+//     //     Dynamic.registerAll(Extensions.class);
+//     // )
+
+//     println inline(Arrays.toString(Dynamic.registry.keySet().toArray()))
+//     option default_decimal d
+//     a = 1.5 + 2.0
+//     println a
+//     System.out.println(Math.round(a))
 
 // main:
 //     println a.b(args1.h).c.d(args2.jjj()).e.f

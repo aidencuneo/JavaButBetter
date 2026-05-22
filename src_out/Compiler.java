@@ -464,7 +464,7 @@ public class Compiler {
             }
             if (LangUtil.isTruthy(nested)) { out += "("; }
             ArrayList < Token > exprTok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
-            if (LangUtil.isTruthy(List.of(".", "**", "??").contains(oper))) {
+            if (LangUtil.isTruthy(Extensions.operIn(oper, List.of(".", "**", "??")))) {
                 exprTok.add(0, Token.fromString(varname));
                 exprTok.add(1, Token.fromString(oper));
                 out += Extensions.operAdd(varname, " = ");
@@ -728,8 +728,7 @@ public class Compiler {
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
-            String expr = Extensions.operGetIndex(tok, 0).value;
-            expr = LangUtil.slice(expr, 1, Extensions.operUnarySub(1), 1);
+            var expr = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
             out += Extensions.operAdd(Extensions.operAdd("{", compileExpr(Tokeniser.tokLine(expr))), "}");
         }
         else {

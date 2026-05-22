@@ -16,3 +16,23 @@ bool find(string s):
 
 string apply(string s):
     return pattern.matcher(s).replaceAll(replace)
+
+// Goal:
+// use java.util.regex.*;
+
+// find = ""
+// replace = ""
+// stage = "pre"
+// pattern = null
+
+// RegexRule(find, replace, stage):
+//     self.find = find
+//     self.replace = replace
+//     self.stage = stage
+//     self.pattern = Pattern.compile find
+
+// find(s):
+//     return pattern.matcher(s).find
+
+// apply(s):
+//     return pattern.matcher(s).replaceAll replace

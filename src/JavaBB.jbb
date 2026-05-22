@@ -100,13 +100,13 @@ main:
     catch IOException e
         ...
 
-    // Compile Dynamic
-    dynamicCode = DynamicCode.get()
+    // // Compile Dynamic
+    // dynamicCode = DynamicCode.get()
 
-    try let writer = PrintWriter(outDir + "/Dynamic.java")
-        File(outDir + "/Dynamic.java").createNewFile()
-        writer.println(dynamicCode)
-    catch IOException e
-        ...
+    // try let writer = PrintWriter(outDir + "/Dynamic.java")
+    //     File(outDir + "/Dynamic.java").createNewFile()
+    //     writer.println(dynamicCode)
+    // catch IOException e
+    //     ...
 
     println "\n\nDone."

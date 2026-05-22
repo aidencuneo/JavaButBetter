@@ -21,23 +21,27 @@
     - function()
     - 
 
-- Separate statement and expression null checks
-    - Null checks currently don't work if the function returns void
-- Change this to self (?)
-- Add global aliases to precompilation
-- Fix java lambdas (->)
-    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
-- Add support for implementing and extending classes
+- Make JBB installable as a command
+    - Add to path
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
+- Add /* */
+- Add standard library somehow?
+- Make functions callable with a space like in ruby
+- Separate statement and expression null checks
+    - Null checks currently don't work if the function returns void
+- Add global aliases to precompilation
+- Change this to self (?)
+- Fix java lambdas (->)
+    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
+- Add support for implementing and extending classes
 - Add more operator overloads
     - string * int
     - char * int
 - Add custom operator overloading
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- Add /* */
 - F-strings or `` strings (TEMPLATE_STRING token)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)

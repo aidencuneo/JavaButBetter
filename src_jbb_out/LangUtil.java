@@ -110,37 +110,38 @@ public class LangUtil {
     }
     }
     @SuppressWarnings("unchecked")
-    public static <T> T callMethod(Object obj , String methodName , Object ... args) {
-        
+    public static Object callMethod(Object obj , String methodName , Object ... args) {
     try {
+        System.out.println("Method: " + methodName);
+
         Class<?> c;
         Object target;
 
-        if (obj instanceof Class<?> clazz) {
-                        c = clazz;
-            target = null;
-        } else {
-            c = obj.getClass();
-            target = obj;
-        }
+        // if (obj instanceof Class<?> clazz) {
+        //     c = clazz;
+        //     target = null;
+        // } else {
+        c = obj.getClass();
+        target = obj;
+        // }
 
-                Class<?>[] argTypes = new Class<?>[args.length];
+        Class<?>[] argTypes = new Class<?>[args.length];
+
         for (int i = 0; i < args.length; i++)
             argTypes[i] = args[i] == null ? Object.class : args[i].getClass();
-
                                                                 
         System.out.println("argTypes: " + Arrays.toString(argTypes));
 
         while (c != null) {
             try {
-                                Method m = findCompatibleMethod(c, methodName, argTypes);
+                Method m = findCompatibleMethod(c, methodName, argTypes);
 
-                                try {
+                try {
                     m.setAccessible(true);
-                } catch (InaccessibleObjectException e) {
-                                    }
+                } catch (InaccessibleObjectException e) {}
 
-                return (T) m.invoke(target, args);
+                System.out.println("Found");
+                return m.invoke(target, args);
             } catch (NoSuchMethodException e) {
                 c = c.getSuperclass();
             }
@@ -150,7 +151,7 @@ public class LangUtil {
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
-    }
+}
     
 static Method findCompatibleMethod(Class<?> c, String name, Class<?>[] argTypes) throws NoSuchMethodException {
     for (Method m : c.getDeclaredMethods()) {

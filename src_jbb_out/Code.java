@@ -5,8 +5,8 @@ import java.util.regex.*;
 class Code {
     public static void main(String[] args) {
         RegexRule r = new RegexRule("a", "b", "pre");
-        LangUtil.println((LangUtil.callMethod(r, "find", new Object[] {"a"})));
-        LangUtil.println((LangUtil.callMethod(r, "apply", new Object[] {"a"})));
+        LangUtil.println(LangUtil.callMethod(r, "find", "a"));
+        LangUtil.println(LangUtil.callMethod(r, "apply", "a"));
     }
 }
 class RegexRule {
@@ -18,13 +18,14 @@ class RegexRule {
         this . find = find;
         this . replace = replace;
         this . stage = stage;
-        this . pattern = LangUtil.callMethod(Pattern.class, "compile", new Object[] {find});
+        // this . pattern = LangUtil.callMethod(Pattern.class, "compile", find);
+        this . pattern = Pattern.compile(find);
     }
     public boolean find(String s) {
-        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", new Object[] {s}), "find");
+        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", s), "find");
     }
     public String apply(String s) {
-        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", new Object[] {s}), "replaceAll", new Object[] {replace});
+        return LangUtil.callMethod(LangUtil.callMethod(pattern, "matcher", s), "replaceAll", replace);
     }
 }
 

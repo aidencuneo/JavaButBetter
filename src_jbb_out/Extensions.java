@@ -3,68 +3,68 @@ import java.util.*;
 
 public class Extensions {
     public static int len(String s) {
-        return LangUtil.callMethod(s, "length");
+        return (int) LangUtil.callMethod(s, "length");
     }
     public static <T> int len(Iterable < T > v) {
         var c = 0;
         for (var x : LangUtil.asIterable(v)) { ++ c; }
-        return c;
+        return (int) c;
     }
     public static <T> int len(T [] v) {
-        return LangUtil.getField(v, "length");
+        return (int) LangUtil.getField(v, "length");
     }
     public static char operGetIndex(String s , int i) {
         i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.callMethod(s, "length")});
-        return LangUtil.callMethod(s, "charAt", new Object[] {i});
+        return (char) LangUtil.callMethod(s, "charAt", new Object[] {i});
     }
     public static <T> T operGetIndex(T [] v , int i) {
         i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.getField(v, "length")});
-        return v[i];
+        return (T) v[i];
     }
     public static <T> T operGetIndex(List < T > v , int i) {
         i = LangUtil.callMethod(LangUtil.class, "indexConvert", new Object[] {i, LangUtil.callMethod(v, "size")});
-        return LangUtil.callMethod(v, "get", new Object[] {i});
+        return (T) LangUtil.callMethod(v, "get", new Object[] {i});
     }
     public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
-        return LangUtil.callMethod(v, "get", new Object[] {key});
+        return (TV) LangUtil.callMethod(v, "get", new Object[] {key});
     }
     public static boolean operEq(int a , int b) {
-        return a == b;
+        return (boolean) (a == b);
     }
     public static boolean operEq(long a , long b) {
-        return a == b;
+        return (boolean) (a == b);
     }
     public static boolean operEq(double a , double b) {
-        return a == b;
+        return (boolean) (a == b);
     }
     public static boolean operEq(boolean a , boolean b) {
-        return a == b;
+        return (boolean) (a == b);
     }
     public static boolean operEq(String a , String b) {
         if (a == null) return b == null;
-        return LangUtil.callMethod(a, "equals", new Object[] {b});
+        return (boolean) LangUtil.callMethod(a, "equals", new Object[] {b});
     }
     public static boolean operEq(Object a , Object b) {
         if (a == null) return b == null;
-        return LangUtil.callMethod(a, "equals", new Object[] {b});
+        return (boolean) LangUtil.callMethod(a, "equals", new Object[] {b});
     }
     public static boolean operIn(char c , String s) {
-        return !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {c}), Dynamic.call("operUnarySub", 1)));
+        return (boolean) !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {c}), Dynamic.call("operUnarySub", 1)));
     }
     public static boolean operIn(String part , String s) {
-        return !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {part}), Dynamic.call("operUnarySub", 1)));
+        return (boolean) !((boolean) Dynamic.call("operEq", LangUtil.callMethod(s, "indexOf", new Object[] {part}), Dynamic.call("operUnarySub", 1)));
     }
     public static boolean operIn(Object o , List lst) {
-        return LangUtil.callMethod(lst, "contains", new Object[] {o});
+        return (boolean) LangUtil.callMethod(lst, "contains", new Object[] {o});
     }
     public static boolean operIn(Object o , Object [] lst) {
-        return Arrays.stream(lst).anyMatch(x -> x.equals(o));
+        return (boolean) Arrays.stream(lst).anyMatch(x -> x.equals(o));
     }
     public static boolean operIn(Object o , Set s) {
-        return LangUtil.callMethod(s, "contains", new Object[] {o});
+        return (boolean) LangUtil.callMethod(s, "contains", new Object[] {o});
     }
     public static boolean operIn(Object o , Map m) {
-        return LangUtil.callMethod(m, "containsKey", new Object[] {o});
+        return (boolean) LangUtil.callMethod(m, "containsKey", new Object[] {o});
     }
     public static boolean operGt(int a , int b) {
         return a > b;
@@ -158,9 +158,9 @@ public class Extensions {
     }
     public static String operMul(String a , int b) {
         if (LangUtil.isTruthy(Dynamic.call("operLt", b, 0))) {
-            return LangUtil.callMethod(LangUtil.callMethod(LangUtil.callMethod(new StringBuilder(a), "reverse"), "toString"), "repeat", new Object[] {Dynamic.call("operUnarySub", b)});
+            return (String) LangUtil.callMethod(LangUtil.callMethod(LangUtil.callMethod(new StringBuilder(a), "reverse"), "toString"), "repeat", new Object[] {Dynamic.call("operUnarySub", b)});
         }
-        return LangUtil.callMethod(a, "repeat", new Object[] {b});
+        return (String) LangUtil.callMethod(a, "repeat", new Object[] {b});
     }
     public static String operMul(int a , String b) {
         return operMul(b, a);

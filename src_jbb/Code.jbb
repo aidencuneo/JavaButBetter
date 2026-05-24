@@ -29,7 +29,7 @@ RegexRule(string find, string replace, string stage):
     this.find = find
     this.replace = replace
     this.stage = stage
-    this.pattern = Pattern.compile(find)
+    inline(this.pattern = Pattern.compile(find);)
 
 bool find(string s):
     return pattern.matcher(s).find()
@@ -41,8 +41,8 @@ class Code
 
 main:
     RegexRule r = new RegexRule("a", "b", "pre")
-    println(r.find("a"))
-    println(r.apply("a"))
+    println r.find("a")
+    println r.apply("a")
 
 // main:
 //     // inline(

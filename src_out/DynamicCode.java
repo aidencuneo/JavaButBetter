@@ -46,7 +46,7 @@ public class Dynamic {
         }
     }
 
-    public static Object call(String name, Object... args) {
+    public static <T> T call(String name, Object... args) {
         Class<?>[] givenTypes = Arrays.stream(args)
             .map(a -> a == null ? Object.class : a.getClass())
             .toArray(Class<?>[]::new);
@@ -69,7 +69,7 @@ public class Dynamic {
 
             if (match) {
                 try {
-                    return entry.getValue().invoke(null, args);
+                    return (T) entry.getValue().invoke(null, args);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

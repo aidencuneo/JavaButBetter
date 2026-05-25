@@ -23,11 +23,11 @@ static
     inline(Dynamic.registerAll(Extensions.class);)
 
 print(object ... args):
-    System.out.print('' + x) for x in args
+    System.out.print(string.valueOf(x)) for x in args
 
 println(object ... args):
-    System.out.print('' + x) for x in args
-    System.out.println('')
+    System.out.print(string.valueOf(x)) for x in args
+    System.out.println("")
 
 // nullCheck
 (T, R) R nullCheck(T value, Function<T, R> func):
@@ -64,17 +64,19 @@ bool isTruthy(string v):
 (T) bool isTruthy(T[] v):
     inline(return v.length > 0;)
 
-bool isTruthy(List v):
+(T) bool isTruthy(List<T> v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
 bool isTruthy(object v):
-    inline(if (v instanceof Boolean x) return x;)
-    inline(if (v instanceof Integer x) return x != 0;)
-    inline(if (v instanceof Double x) return x != 0;)
-    inline(if (v instanceof String x) return x == null ? false : !x.isEmpty();)
-    inline(if (v instanceof List x) return x == null ? false : !x.isEmpty();)
-    inline(return v != null;)
+    inline(
+        if (v instanceof Boolean x) return isTruthy(x);
+        if (v instanceof Integer x) return isTruthy(x);
+        if (v instanceof Double x) return isTruthy(x);
+        if (v instanceof String x) return isTruthy(x);
+        if (v instanceof List x) return isTruthy(x);
+        return v != null;
+    )
 
 // asIterable
 (T) T[] asIterable(T[] v):
@@ -173,6 +175,11 @@ char[] asIterable(string s):
 
 // (T) List<T> slice(T[] v, int start, Null end, int step):
 //     return slice(v, start, step > 0 ? v.length : -1, step)
+
+// cast (cast Object to any required type)
+inline(@SuppressWarnings("unchecked"))
+(T) T cast(object o):
+    ret (T) o
 
 // getField (reflection)
 inline(@SuppressWarnings("unchecked"))

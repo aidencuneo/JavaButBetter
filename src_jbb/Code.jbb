@@ -35,7 +35,7 @@ bool find(string s):
     return pattern.matcher(s).find()
 
 string apply(string s):
-    return pattern.matcher(s).replaceAll(replace)
+    return pattern.matcher(s).replaceAll(replace) + "..."
 
 class Code
 

@@ -647,21 +647,15 @@ public class Compiler {
             var lhs = LangUtil.slice(tok, null, f, 1);
             var rhs = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
             var compLhs = compileExpr(lhs);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(lhs), 1))) ? (StringParser.isPascalCase(Extensions.operGetIndex(lhs, 0).value)) : (Extensions.operEq(Extensions.len(lhs), 1)))) {
-                compLhs += ".class";
-            }
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(rhs, Extensions.operUnarySub(1)).type, Token.Type.EXPR))) {
                 var id = compileExpr(LangUtil.slice(rhs, null, Extensions.operUnarySub(1), 1));
                 var args = LangUtil.slice(Extensions.operGetIndex(rhs, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
                 var compArgs = compileExpr(Tokeniser.tokLine(args));
-                if (LangUtil.isTruthy(compArgs)) { compArgs = Extensions.operAdd(Extensions.operAdd(", new Object[] {", compArgs), "}"); }
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(":::", "LangUtil.callMethod("), compLhs), ", \""), id), "\""), compArgs), ")"));
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("LangUtil.callMethod(", compLhs), ", \""), id), "\""), compArgs), ")");
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(compLhs, "."), id), "("), compArgs), ")");
             }
             else {
                 var id = compileExpr(rhs);
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(":::", "LangUtil.getField("), compLhs), ", \""), id), "\")"));
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("LangUtil.getField(", compLhs), ", \""), id), "\")");
+                out += Extensions.operAdd(Extensions.operAdd(compLhs, "."), id);
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.len(tok) > 1)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.EXPR)) : (Extensions.len(tok) > 1))) {

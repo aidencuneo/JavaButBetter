@@ -825,25 +825,26 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         rhs = tok[f + 1:]
         compLhs = compileExpr(lhs)
 
-        // Detect class names (pascal case)
-        if len(lhs) == 1 && StringParser.isPascalCase(lhs[0].value)
-            compLhs += ".class"
+        // // Detect class names (pascal case)
+        // if len(lhs) == 1 && StringParser.isPascalCase(lhs[0].value)
+        //     compLhs += ".class"
 
         // Dotted function calls
         if rhs[-1].type == Token.Type.EXPR
             id = compileExpr(rhs[:-1])
             args = rhs[-1].value[1:-1]
             compArgs = compileExpr(Tokeniser.tokLine(args))
-            compArgs = ", new Object[] {" + compArgs + "}" if compArgs
-            println ":::" + "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
-            out += "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
+            out += compLhs + "." + id + "(" + compArgs + ")"
+            // compArgs = ", new Object[] {" + compArgs + "}" if compArgs
+            // println ":::" + "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
+            // out += "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
 
         // Fields
         else
             id = compileExpr(rhs)
-            println ":::" + "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
-            // out += lhs + "." + rhs
-            out += "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
+            out += compLhs + "." + id
+            // println ":::" + "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
+            // out += "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
 
     // Function calls (no dots)
     elif len(tok) > 1 && tok[-1].type == Token.Type.EXPR

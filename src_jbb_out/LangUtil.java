@@ -8,14 +8,14 @@ public class LangUtil {
         Dynamic.registerAll(Extensions.class);
     }
     public static void print(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", new Object[] {Dynamic.call("operAdd", "", x)}); }
+        for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
     }
     public static void println(Object ... args) {
-        for (var x : LangUtil.asIterable(args)) { LangUtil.callMethod(LangUtil.getField(System.class, "out"), "print", new Object[] {Dynamic.call("operAdd", "", x)}); }
-        LangUtil.callMethod(LangUtil.getField(System.class, "out"), "println", new Object[] {""});
+        for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
+        System.out.println("");
     }
     public static <T, R> R nullCheck(T value , Function < T , R > func) {
-        return LangUtil.isTruthy(!((boolean) Dynamic.call("operEq", value, null))) ? (LangUtil.callMethod(func, "apply", new Object[] {value})) : (null);
+        return LangUtil.isTruthy(!((boolean) Dynamic.call("operEq", value, null))) ? (func.apply(value)) : (null);
     }
     public static double round(double v , int places) {
         return Math.round(v * Math.pow(10, places)) / Math.pow(10, places);
@@ -24,10 +24,10 @@ public class LangUtil {
         return Math.round(v);
     }
     public static String roundstr(double v , int places) {
-        return LangUtil.callMethod(String.class, "format", new Object[] {Dynamic.call("operAdd", Dynamic.call("operAdd", "%.", places), "f"), v});
+        return String.format(Dynamic.call("operAdd", Dynamic.call("operAdd", "%.", places), "f"), v);
     }
     public static String roundstr(double v) {
-        return LangUtil.callMethod(String.class, "format", new Object[] {"%f", v});
+        return String.format("%f", v);
     }
     public static boolean isTruthy(boolean v) {
         return v;
@@ -45,17 +45,19 @@ public class LangUtil {
     public static <T> boolean isTruthy(T [] v) {
         return v.length > 0;
     }
-    public static boolean isTruthy(List v) {
+    public static <T> boolean isTruthy(List < T > v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
     public static boolean isTruthy(Object v) {
-        if (v instanceof Boolean x) return x;
-        if (v instanceof Integer x) return x != 0;
-        if (v instanceof Double x) return x != 0;
-        if (v instanceof String x) return x == null ? false : !x.isEmpty();
-        if (v instanceof List x) return x == null ? false : !x.isEmpty();
+        
+        if (v instanceof Boolean x) return isTruthy(x);
+        if (v instanceof Integer x) return isTruthy(x);
+        if (v instanceof Double x) return isTruthy(x);
+        if (v instanceof String x) return isTruthy(x);
+        if (v instanceof List x) return isTruthy(x);
         return v != null;
+    
     }
     public static <T> T [] asIterable(T [] v) {
         return v;
@@ -63,7 +65,7 @@ public class LangUtil {
     public static List < Integer > asIterable(int n) {
         var lst = new ArrayList<Integer>();
         for (int i = 0; i < n; ++i) {
-            LangUtil.callMethod(lst, "add", new Object[] {i});
+            lst.add(i);
         }
         return lst;
     }
@@ -74,10 +76,14 @@ public class LangUtil {
         return new IteratorToIterable<T>(v);
     }
     public static <TK, TV> Set < TK > asIterable(Map < TK , TV > v) {
-        return LangUtil.callMethod(v, "keySet");
+        return v.keySet();
     }
     public static char [] asIterable(String s) {
-        return LangUtil.callMethod(s, "toCharArray");
+        return s.toCharArray();
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object o) {
+        return (T)o;
     }
     @SuppressWarnings("unchecked")
     public static <T> T getField(Object obj , String name) {
@@ -110,38 +116,37 @@ public class LangUtil {
     }
     }
     @SuppressWarnings("unchecked")
-    public static Object callMethod(Object obj , String methodName , Object ... args) {
+    public static <T> T callMethod(Object obj , String methodName , Object ... args) {
+        
     try {
-        System.out.println("Method: " + methodName);
-
         Class<?> c;
         Object target;
 
-        // if (obj instanceof Class<?> clazz) {
-        //     c = clazz;
-        //     target = null;
-        // } else {
-        c = obj.getClass();
-        target = obj;
-        // }
+        if (obj instanceof Class<?> clazz) {
+                        c = clazz;
+            target = null;
+        } else {
+            c = obj.getClass();
+            target = obj;
+        }
 
-        Class<?>[] argTypes = new Class<?>[args.length];
-
+                Class<?>[] argTypes = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++)
             argTypes[i] = args[i] == null ? Object.class : args[i].getClass();
+
                                                                 
         System.out.println("argTypes: " + Arrays.toString(argTypes));
 
         while (c != null) {
             try {
-                Method m = findCompatibleMethod(c, methodName, argTypes);
+                                Method m = findCompatibleMethod(c, methodName, argTypes);
 
-                try {
+                                try {
                     m.setAccessible(true);
-                } catch (InaccessibleObjectException e) {}
+                } catch (InaccessibleObjectException e) {
+                                    }
 
-                System.out.println("Found");
-                return m.invoke(target, args);
+                return (T) m.invoke(target, args);
             } catch (NoSuchMethodException e) {
                 c = c.getSuperclass();
             }
@@ -151,7 +156,7 @@ public class LangUtil {
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
-}
+    }
     
 static Method findCompatibleMethod(Class<?> c, String name, Class<?>[] argTypes) throws NoSuchMethodException {
     for (Method m : c.getDeclaredMethods()) {

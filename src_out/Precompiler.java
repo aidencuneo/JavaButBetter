@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Precompiler {
-    public static List < RegexRule > regexRules = new ArrayList < > ();
+    public static List < RegexRule > regexRules = Extensions.operGt(Extensions.operLt(new ArrayList, ), ());
     public static ArrayList < String > precompileFile(String className , String code) {
         var lines = Tokeniser.splitFile(code);
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
@@ -22,7 +22,7 @@ public class Precompiler {
         var f = Extensions.operUnarySub(1);
         var f2 = Extensions.operUnarySub(1);
         if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.REGEX))) {
-            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
+            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(tok), 2))) {
                 return false;
             }
             var stage = "pre";
@@ -32,14 +32,14 @@ public class Precompiler {
             if (LangUtil.isTruthy(Extensions.operEq(((f = Compiler.findTokenType(tok, Token.Type.EXPR))), Extensions.operUnarySub(1)))) {
                 return false;
             }
-            var pair = LangUtil.slice(Extensions.operGetIndex(tok, f).value, 1, Extensions.operUnarySub(1), 1);
+            var pair = Extensions.operGetIndex(tok, f).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
             var pairTok = Tokeniser.tokLine(pair);
             LangUtil.println(pairTok);
-            if (LangUtil.isTruthy(Extensions.len(pairTok) < 2)) {
+            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(pairTok), 2))) {
                 return false;
             }
-            var find = LangUtil.slice(Extensions.operGetIndex(pairTok, 0).value, 1, Extensions.operUnarySub(1), 1);
-            var replace = LangUtil.slice(Extensions.operGetIndex(pairTok, 1).value, 1, Extensions.operUnarySub(1), 1);
+            var find = Extensions.operGetIndex(pairTok, 0).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
+            var replace = Extensions.operGetIndex(pairTok, 1).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
             regexRules.add(new RegexRule(find, replace, stage));
             return false;
         }

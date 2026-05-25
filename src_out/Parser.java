@@ -6,7 +6,7 @@ public class Parser {
         var lastWasDot = false;
         for (int i = 0; i < tok.size(); ++i) {
             var t = tok.get(i);
-            var nextTok = LangUtil.isTruthy(Extensions.operAdd(i, 1) < tok.size()) ? (tok.get(Extensions.operAdd(i, 1))) : (new Token());
+            var nextTok = LangUtil.isTruthy(Extensions.operLt(Extensions.operAdd(i, 1), tok.size())) ? (tok.get(Extensions.operAdd(i, 1))) : (new Token());
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
                     t . value = "String";
@@ -68,11 +68,11 @@ public class Parser {
     }
     public static ArrayList < Token > replaceIdentifiers(ArrayList < Token > tok , ArrayList < String > names , ArrayList < ArrayList < Token > > values) {
         var lastWasDot = false;
-        var newTok = new ArrayList < Token > ();
+        var newTok = Extensions.operGt(Extensions.operLt(new ArrayList, Token), ());
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 var i = names.indexOf(t.value);
-                if (LangUtil.isTruthy(!Extensions.operEq(i, Extensions.operUnarySub(1)))) {
+                if (LangUtil.isTruthy(!((boolean) Extensions.operEq(i, Extensions.operUnarySub(1))))) {
                     newTok.addAll(values.get(i));
                     continue;
                 }

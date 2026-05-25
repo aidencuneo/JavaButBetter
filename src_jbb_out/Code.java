@@ -24,7 +24,7 @@ class RegexRule {
         return pattern.matcher(s).find();
     }
     public String apply(String s) {
-        return Dynamic.call("operAdd", pattern.matcher(s).replaceAll(replace), "...");
+        return Extensions.operAdd(pattern.matcher(s).replaceAll(replace), "...");
     }
 }
 

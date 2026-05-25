@@ -49,10 +49,10 @@ public class Extensions {
         return a.equals(b);
     }
     public static boolean operIn(char c , String s) {
-        return !((boolean) Dynamic.call("operEq", s.indexOf(c), Dynamic.call("operUnarySub", 1)));
+        return !((boolean) Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1)));
     }
     public static boolean operIn(String part , String s) {
-        return !((boolean) Dynamic.call("operEq", s.indexOf(part), Dynamic.call("operUnarySub", 1)));
+        return !((boolean) Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1)));
     }
     public static boolean operIn(Object o , List lst) {
         return lst.contains(o);
@@ -157,8 +157,8 @@ public class Extensions {
         return a * b;
     }
     public static String operMul(String a , int b) {
-        if (LangUtil.isTruthy(Dynamic.call("operLt", b, 0))) {
-            return new StringBuilder(a).reverse().toString().repeat(Dynamic.call("operUnarySub", b));
+        if (LangUtil.isTruthy(Extensions.operLt(b, 0))) {
+            return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
         }
         return a.repeat(b);
     }

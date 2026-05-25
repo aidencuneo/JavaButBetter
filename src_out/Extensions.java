@@ -49,10 +49,10 @@ public class Extensions {
         return a.equals(b);
     }
     public static boolean operIn(char c , String s) {
-        return !Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1));
+        return !((boolean) Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1)));
     }
     public static boolean operIn(String part , String s) {
-        return !Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1));
+        return !((boolean) Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1)));
     }
     public static boolean operIn(Object o , List lst) {
         return lst.contains(o);
@@ -65,6 +65,42 @@ public class Extensions {
     }
     public static boolean operIn(Object o , Map m) {
         return m.containsKey(o);
+    }
+    public static boolean operGt(int a , int b) {
+        return a > b;
+    }
+    public static boolean operGt(long a , long b) {
+        return a > b;
+    }
+    public static boolean operGt(double a , double b) {
+        return a > b;
+    }
+    public static boolean operLt(int a , int b) {
+        return a < b;
+    }
+    public static boolean operLt(long a , long b) {
+        return a < b;
+    }
+    public static boolean operLt(double a , double b) {
+        return a < b;
+    }
+    public static boolean operGte(int a , int b) {
+        return a >= b;
+    }
+    public static boolean operGte(long a , long b) {
+        return a >= b;
+    }
+    public static boolean operGte(double a , double b) {
+        return a >= b;
+    }
+    public static boolean operLte(int a , int b) {
+        return a <= b;
+    }
+    public static boolean operLte(long a , long b) {
+        return a <= b;
+    }
+    public static boolean operLte(double a , double b) {
+        return a <= b;
     }
     public static int operUnaryAdd(int a) {
         return a;
@@ -121,7 +157,7 @@ public class Extensions {
         return a * b;
     }
     public static String operMul(String a , int b) {
-        if (LangUtil.isTruthy(b < 0)) {
+        if (LangUtil.isTruthy(Extensions.operLt(b, 0))) {
             return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
         }
         return a.repeat(b);

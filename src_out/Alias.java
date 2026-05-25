@@ -10,7 +10,7 @@ public class Alias {
     }
     public Alias(ArrayList < Token > tokens) {
         this . tokens = tokens;
-        this . args = new ArrayList < String > ();
+        this . args = Extensions.operGt(Extensions.operLt(new ArrayList, String), ());
     }
 }
 

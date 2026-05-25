@@ -4,9 +4,6 @@ import java.lang.reflect.*;
 import java.util.function.Function;
 
 public class LangUtil {
-    static {
-        Dynamic.registerAll(Extensions.class);
-    }
     public static void print(Object ... args) {
         for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
     }
@@ -15,7 +12,7 @@ public class LangUtil {
         System.out.println("");
     }
     public static <T, R> R nullCheck(T value , Function < T , R > func) {
-        return LangUtil.isTruthy(!((boolean) Dynamic.call("operEq", value, null))) ? (func.apply(value)) : (null);
+        return LangUtil.isTruthy(!((boolean) Extensions.operEq(value, null))) ? (func.apply(value)) : (null);
     }
     public static double round(double v , int places) {
         return Math.round(v * Math.pow(10, places)) / Math.pow(10, places);
@@ -24,7 +21,7 @@ public class LangUtil {
         return Math.round(v);
     }
     public static String roundstr(double v , int places) {
-        return String.format(Dynamic.call("operAdd", Dynamic.call("operAdd", "%.", places), "f"), v);
+        return String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
     }
     public static String roundstr(double v) {
         return String.format("%f", v);
@@ -33,10 +30,10 @@ public class LangUtil {
         return v;
     }
     public static boolean isTruthy(int v) {
-        return !((boolean) Dynamic.call("operEq", v, 0));
+        return !((boolean) Extensions.operEq(v, 0));
     }
     public static boolean isTruthy(double v) {
-        return !((boolean) Dynamic.call("operEq", v, 0));
+        return !((boolean) Extensions.operEq(v, 0));
     }
     public static boolean isTruthy(String v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
@@ -81,129 +78,8 @@ public class LangUtil {
     public static char [] asIterable(String s) {
         return s.toCharArray();
     }
-    @SuppressWarnings("unchecked")
-    public static <T> T cast(Object o) {
-        return (T)o;
-    }
-    @SuppressWarnings("unchecked")
-    public static <T> T getField(Object obj , String name) {
-        
-    try {
-        Class<?> c;
-        Object target;
-
-        if (obj instanceof Class<?> clazz) {
-                        c = clazz;
-            target = null;
-        } else {
-            c = obj.getClass();
-            target = obj;
-        }
-
-        while (c != null) {
-            try {
-                Field f = c.getDeclaredField(name);
-                f.setAccessible(true);
-                return (T) f.get(target);
-            } catch (NoSuchFieldException e) {
-                                c = c.getSuperclass();
-            }
-        }
-
-        throw new RuntimeException("Field not found: " + name);
-    } catch (Exception e) {
-        throw new RuntimeException(e);
-    }
-    }
-    @SuppressWarnings("unchecked")
-    public static <T> T callMethod(Object obj , String methodName , Object ... args) {
-        
-    try {
-        Class<?> c;
-        Object target;
-
-        if (obj instanceof Class<?> clazz) {
-                        c = clazz;
-            target = null;
-        } else {
-            c = obj.getClass();
-            target = obj;
-        }
-
-                Class<?>[] argTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++)
-            argTypes[i] = args[i] == null ? Object.class : args[i].getClass();
-
-                                                                
-        System.out.println("argTypes: " + Arrays.toString(argTypes));
-
-        while (c != null) {
-            try {
-                                Method m = findCompatibleMethod(c, methodName, argTypes);
-
-                                try {
-                    m.setAccessible(true);
-                } catch (InaccessibleObjectException e) {
-                                    }
-
-                return (T) m.invoke(target, args);
-            } catch (NoSuchMethodException e) {
-                c = c.getSuperclass();
-            }
-        }
-
-        throw new RuntimeException("Method not found: " + methodName);
-    } catch (Exception e) {
-        throw new RuntimeException(e);
-    }
-    }
-    
-static Method findCompatibleMethod(Class<?> c, String name, Class<?>[] argTypes) throws NoSuchMethodException {
-    for (Method m : c.getDeclaredMethods()) {
-        if (!m.getName().equals(name)) continue;
-        Class<?>[] params = m.getParameterTypes();
-        if (params.length != argTypes.length) continue;
-        boolean ok = true;
-        for (int i = 0; i < params.length; i++) {
-            if (!isCompatible(params[i], argTypes[i])) {
-                ok = false;
-                break;
-            }
-        }
-        if (ok) return m;
-    }
-    throw new NoSuchMethodException();
-}
-    
-static boolean isCompatible(Class<?> param, Class<?> given) {
-    if (param.isAssignableFrom(given)) return true;
-    if (param.isPrimitive()) {
-        if (param == int.class && given == Integer.class) return true;
-        if (param == long.class && given == Long.class) return true;
-        if (param == double.class && given == Double.class) return true;
-        if (param == float.class && given == Float.class) return true;
-        if (param == boolean.class && given == Boolean.class) return true;
-        if (param == char.class && given == Character.class) return true;
-        if (param == byte.class && given == Byte.class) return true;
-        if (param == short.class && given == Short.class) return true;
-    }
-        if (given.isPrimitive()) return isCompatible(param, primitiveToWrapper(given));
-    return false;
-}
-    
-static Class<?> primitiveToWrapper(Class<?> c) {
-    if (c == int.class) return Integer.class;
-    if (c == long.class) return Long.class;
-    if (c == double.class) return Double.class;
-    if (c == float.class) return Float.class;
-    if (c == boolean.class) return Boolean.class;
-    if (c == char.class) return Character.class;
-    if (c == byte.class) return Byte.class;
-    if (c == short.class) return Short.class;
-    return c;
-}
     public static int indexConvert(int index , int size) {
-        if (LangUtil.isTruthy(Dynamic.call("operLt", index, 0))) { index += size; }
+        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
         return index;
     }
     

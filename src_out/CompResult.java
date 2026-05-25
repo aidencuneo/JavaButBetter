@@ -19,7 +19,7 @@ public class CompResult {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
                 out += Extensions.operGetIndex(classes, c).code;
             }
-            else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
+            else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, mainClassName)))) {
                 out += Extensions.operGetIndex(classes, c);
             }
         }

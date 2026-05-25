@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Util {
     public static int indexConvert(int index , int size) {
-        if (LangUtil.isTruthy(index < 0)) { index += size; }
+        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
         return index;
     }
     public static <T> T get(ArrayList < T > lst , int index) {
@@ -19,10 +19,10 @@ public class Util {
         try {
             start = indexConvert(start, lst.size());
             end = indexConvert(end, lst.size());
-            return new ArrayList < > (lst.subList(start, end));
+            return Extensions.operGt(Extensions.operLt(new ArrayList, ), (lst.subList(start, end)));
         }
         catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            return new ArrayList < T > ();
+            return Extensions.operGt(Extensions.operLt(new ArrayList, T), ());
         }
     }
     public static <T> ArrayList < T > select(ArrayList < T > lst , int start) {

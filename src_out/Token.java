@@ -73,7 +73,7 @@ public class Token {
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
             t = Type.BLANK;
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(v.length(), 0))) ? (v.isBlank()) : (Extensions.operGt(v.length(), 0)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(v.length() > 0)) ? (v.isBlank()) : (v.length() > 0))) {
             t = Type.INDENT;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, ":"))) {
@@ -97,7 +97,7 @@ public class Token {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith("'''"))) ? (v.endsWith("'''")) : (v.startsWith("'''")))) {
             String vNoQuotes = v.substring(3, Extensions.operSub(v.length(), 3));
             String realStr = StringParser.unescapeString(vNoQuotes);
-            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(realStr.length(), 1)))) {
+            if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
                 v = Extensions.operAdd(Extensions.operAdd("\"\"\"", vNoQuotes), "\"\"\"");
             }
@@ -108,7 +108,7 @@ public class Token {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(f, '\''))) ? (Extensions.operEq(l, '\'')) : (Extensions.operEq(f, '\'')))) {
             String vNoQuotes = v.substring(1, Extensions.operSub(v.length(), 1));
             String realStr = StringParser.unescapeString(vNoQuotes);
-            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(realStr.length(), 1)))) {
+            if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
                 v = Extensions.operAdd(Extensions.operAdd('"', StringParser.escapeDoubleQuotes(vNoQuotes)), '"');
             }

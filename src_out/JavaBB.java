@@ -4,7 +4,7 @@ import java.util.*;
 public class JavaBB {
     public static void main(String[] args) {
         var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
-        var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(args), 1)) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
+        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
@@ -16,7 +16,7 @@ public class JavaBB {
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fileContent = "";
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
-            var className = Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0);
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             try (var scanner = new Scanner(new File(fromPath))) {
                 fileContent = scanner.useDelimiter("\\Z").next();
             }
@@ -32,16 +32,16 @@ public class JavaBB {
         LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
-            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0)), ".java");
-            var className = Extensions.operGetIndex(files, i).Extensions.operGetIndex(split("\\."), 0);
+            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
+            var className = Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0);
             var fileContent = Extensions.operGetIndex(fileContentMap, Extensions.operGetIndex(files, i));
             fileContent = Precompiler.applyRegexRules(fileContent);
             var compiled = "";
             if (LangUtil.isTruthy(Extensions.operGetIndex(files, i).endsWith(".jbb"))) {
                 var res = Compiler.compileFile(className, fileContent);
                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
-                    var newCode = res.Extensions.operGetIndex(classes, "Extensions").code;
-                    var extensionsClass = extensionsClassRes.Extensions.operGetIndex(classes, "Extensions");
+                    var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
+                    var extensionsClass = Extensions.operGetIndex(extensionsClassRes.classes, "Extensions");
                     extensionsClass.code = extensionsClass.code + newCode;
                     res.classes.remove("Extensions");
                 }

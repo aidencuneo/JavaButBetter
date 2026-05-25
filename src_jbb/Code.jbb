@@ -16,33 +16,48 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
-use java.util.regex.*;
+public static class Compiler
 
-class RegexRule
+// Definitions
+alias INDENT_SIZE = 4
 
-string find = ""
-string replace = ""
-string stage = "pre"
-Pattern pattern = null
+// These fields persist only for the current file
+string mainClassName = ""
+string currentClass = ""
+string startTemplate = ""
+string endTemplate = ""
+string packagePath = ""
+HashMap<string, Class> classes = new HashMap<string, Class>()
+HashMap<string, Alias> aliases = new HashMap<string, Alias>()
+HashMap<string, Int> locals = HashMap<string, Int>() // name -> scope
 
-RegexRule(string find, string replace, string stage):
-    this.find = find
-    this.replace = replace
-    this.stage = stage
-    inline(this.pattern = Pattern.compile(find);)
+// use java.util.regex.*;
 
-bool find(string s):
-    return pattern.matcher(s).find()
+// class RegexRule
 
-string apply(string s):
-    return pattern.matcher(s).replaceAll(replace) + "..."
+// string find = ""
+// string replace = ""
+// string stage = "pre"
+// Pattern pattern = null
 
-class Code
+// RegexRule(string find, string replace, string stage):
+//     this.find = find
+//     this.replace = replace
+//     this.stage = stage
+//     inline(this.pattern = Pattern.compile(find);)
 
-main:
-    RegexRule r = new RegexRule("a", "b", "pre")
-    println r.find("a")
-    println r.apply("a")
+// bool find(string s):
+//     return pattern.matcher(s).find()
+
+// string apply(string s):
+//     return pattern.matcher(s).replaceAll(replace) + "..."
+
+// class Code
+
+// main:
+//     RegexRule r = new RegexRule("a", "b", "pre")
+//     println r.find("a")
+//     println r.apply("a")
 
 // main:
 //     // inline(

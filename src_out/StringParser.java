@@ -6,10 +6,10 @@ public class StringParser {
         var out = "";
         for (int i = 0; i < str.length(); ++i) {
             var c = Extensions.operGetIndex(str, i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (Extensions.operLt(Extensions.operAdd(i, 1), str.length())) : (Extensions.operEq(c, '\\')))) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (Extensions.operAdd(i, 1) < str.length()) : (Extensions.operEq(c, '\\')))) {
                 var next = Extensions.operGetIndex(str, Extensions.operAdd(i, 1));
                 ++ i;
-                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (Extensions.operLt(Extensions.operAdd(i, 4), str.length())) : (Extensions.operEq(next, 'u')))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(next, 'u'))) ? (Extensions.operAdd(i, 4) < str.length()) : (Extensions.operEq(next, 'u')))) {
                     try {
                         var code = Integer.parseInt(str.substring(Extensions.operAdd(i, 1), Extensions.operAdd(i, 5)), 16);
                         out += (char) code;
@@ -51,7 +51,7 @@ public class StringParser {
         return false;
     }
     public static String trimComma(String str) {
-        while (LangUtil.isTruthy(str.trim().endsWith(","))) { str = str.LangUtil.slice(trim(), null, Extensions.operUnarySub(1), 1); }
+        while (LangUtil.isTruthy(str.trim().endsWith(","))) { str = LangUtil.slice(str.trim(), null, Extensions.operUnarySub(1), 1); }
         return str;
     }
 }

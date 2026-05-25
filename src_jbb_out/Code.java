@@ -1,30 +1,14 @@
 import java.io.*;
 import java.util.*;
-import java.util.regex.*;
 
-class Code {
-    public static void main(String[] args) {
-        RegexRule r = new RegexRule("a", "b", "pre");
-        LangUtil.println(r.find("a"));
-        LangUtil.println(r.apply("a"));
-    }
-}
-class RegexRule {
-    public String find = "";
-    public String replace = "";
-    public String stage = "pre";
-    public Pattern pattern = null;
-    public RegexRule(String find , String replace , String stage) {
-        this . find = find;
-        this . replace = replace;
-        this . stage = stage;
-        this.pattern = Pattern.compile(find);
-    }
-    public boolean find(String s) {
-        return pattern.matcher(s).find();
-    }
-    public String apply(String s) {
-        return Extensions.operAdd(pattern.matcher(s).replaceAll(replace), "...");
-    }
+public class Compiler {
+    public static String mainClassName = "";
+    public static String currentClass = "";
+    public static String startTemplate = "";
+    public static String endTemplate = "";
+    public static String packagePath = "";
+    public static HashMap < String , Class > classes = Extensions.operLt(new HashMap, String), Extensions.operGt(Class, ());
+    public static HashMap < String , Alias > aliases = Extensions.operLt(new HashMap, String), Extensions.operGt(Alias, ());
+    public static HashMap < String , Integer > locals = Extensions.operLt(HashMap, String), Extensions.operGt(Integer, ());
 }
 

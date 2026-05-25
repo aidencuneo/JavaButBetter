@@ -27,7 +27,7 @@ println(object ... args):
     System.out.println("")
 
 // nullCheck
-(T, R) R nullCheck(T value, Function<T, R> func):
+(T, R) R nullCheck(T value, Function:<T, R> func):
     ret func.apply(value) if value != null else null
 
 // round
@@ -61,7 +61,7 @@ bool isTruthy(string v):
 (T) bool isTruthy(T[] v):
     inline(return v.length > 0;)
 
-(T) bool isTruthy(List<T> v):
+(T) bool isTruthy(List:<T> v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
@@ -79,19 +79,19 @@ bool isTruthy(object v):
 (T) T[] asIterable(T[] v):
     ret v
 
-List<Int> asIterable(int n):
+List:<Int> asIterable(int n):
     lst = inline(new ArrayList<Integer>())
     inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
 
-(T) Iterable<T> asIterable(Iterable<T> v):
+(T) Iterable:<T> asIterable(Iterable:<T> v):
     ret v
 
-(T) Iterable<T> asIterable(Iterator<T> v):
+(T) Iterable:<T> asIterable(Iterator:<T> v):
     ret inline(new IteratorToIterable<T>(v))
 
-(TK, TV) Set<TK> asIterable(Map<TK, TV> v):
+(TK, TV) Set:<TK> asIterable(Map:<TK, TV> v):
     ret v.keySet()
 
 char[] asIterable(string s):

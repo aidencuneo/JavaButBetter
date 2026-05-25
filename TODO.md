@@ -1,35 +1,23 @@
-- Use a method to retrieve fields and methods with "."
-    - M = LangUtil.getMethod
-    - F = LangUtil.getField
-    - obj.method() -> M(obj, "method").apply()
-    - obj.field -> F(obj, "field")
-    - a.b(args1).c.d(args2).e.f -> F(F(M(F(M(a, "b").apply(args1), "c"), "d").apply(args2), "e"), "f")
-
-    - last dot
-        - rhs = [f] or [f, ()]
-
-        - case last tok is expr:
-            - id = rhs[:-1] -> [f]
-            - args = compileArgs rhs[-1][1:-1]
-            - lhs = compileExpr a.b(args1).c.d(args2).e
-            - M(lhs, "id").apply(args)
-        - else:
-            - id = rhs
-            - lhs = compileExpr a.b(args1).c.d(args2).e
-            - F(lhs, "id")
-
-    - function()
-    - 
-
+- Fix issues with ArrayList<Integer> and <T>
+    - Make type annotations use []
+    - Create compile functions for each context
+        - compileTypeArgs
+        - Make function calling "eat" type these type args
+    - Switch () to [] for function type args
+- Fix:
+    - var.code = var.code + code
+    - var.code += code
+- Add enums
+- Make functions callable with a space like in ruby
 - Make JBB installable as a command
     - Add to path
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
+- Add ArrayList << elem
 - Add /* */
 - Add standard library somehow?
-- Make functions callable with a space like in ruby
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
@@ -58,6 +46,8 @@
     - str = (s => s.toUpperCase())("hello")
     - Define functions called _anon0, _anon1, etc. in the current class and replace the lambda with it
     - Upon further consideration, I don't think this will work very well
+- Make JBB syntax highlighting
+    - Extend from Java syntax highlighting
 
 
 

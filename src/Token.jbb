@@ -7,6 +7,7 @@ inline(public enum Type)
     EXPR,
     SQUARE_EXPR,
     BRACE_EXPR,
+    TYPE_EXPR, // :<T>
     OPTION,
     NULL,
     TRUE,
@@ -22,8 +23,8 @@ inline(public enum Type)
     DOT,
     COMMA,
     RANGE,
-    LAMBDA, // =>
-    ARROW,  // ->
+    LAMBDA,     // =>
+    ARROW,      // ->
     NULL_CHECK, // ?.
     INCREMENT,
     DECREMENT,
@@ -112,6 +113,8 @@ static Token fromString(string v, Token.Type lastToken):
         t = Type.SQUARE_EXPR
     elif f == '{' && l == '}'
         t = Type.BRACE_EXPR
+    elif v.startsWith(':<') && l == '>'
+        t = Type.TYPE_EXPR
     elif v in [
         "+", "-", "*", "/", "%", "&", "|",
         "and", "or", "xor", "nor",

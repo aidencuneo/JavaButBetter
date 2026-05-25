@@ -105,15 +105,15 @@ ArrayList<string> splitFile(string file):
     return lines
 
 ArrayList<Token> tokLine(string line, bool keepIndent):
-    let tok = new ArrayList<Token>()
-    return tok if !line
+    tok = new ArrayList<Token>()
+    ret tok if !line
 
     // Gather indent for this line
-    string indent = ""
-    int i = 0
+    indent = ""
+    i = 0
 
     inline(for (; i < line.length(); ++i))
-        let c = line.charAt(i)
+        c = line[i]
 
         if c == ' '
             indent += c
@@ -123,34 +123,34 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
             break
 
     // Add indent as the first token
-    tok.add(new Token(Token.Type.INDENT, indent)) if keepIndent
+    tok.add(Token(Token.Type.INDENT, indent)) if keepIndent
 
-    if i == line.length()
-        return tok
+    ret tok if i == len(line)
 
     // State
-    string current = ""
-    CharType type = charType(line.charAt(i))
-    CharType lastType = CharType.W
-    CharType nextType = CharType.W
-    CharType lastLastType = lastType
-    char lastChar = 0
-    char lastLastChar = 0
-    char nextChar = 0
-    int comment = 0
+    current = ""
+    type = charType(line[i])
+    lastType = CharType.W
+    nextType = CharType.W
+    lastLastType = lastType
+    lastChar = '\0'
+    lastLastChar = '\0'
+    nextChar = '\0'
+    comment = 0
 
     // Context
-    bool backslash = false
-    bool sq = false
-    bool dq = false
-    bool bt = false
-    int rb = 0
-    int sb = 0
-    int cb = 0
+    backslash = false
+    sq = false
+    dq = false
+    bt = false
+    rb = 0 // ()
+    sb = 0 // []
+    cb = 0 // {}
+    tb = 0 // <>
 
     // Start tokenising
     inline(for (; i < line.length(); ++i))
-        char c = line.charAt(i)
+        c = line[i]
         nextChar = line.charAt(i + 1) if i + 1 < line.length() else 0
         nextType = charType(nextChar) if i + 1 < line.length() else CharType.W
         lastLastType = lastType
@@ -202,6 +202,8 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
         ) && !(
             lastChar == '|' && c == '|' // Join together all '|' tokens
         ) && !(
+            lastChar == ':' && c == ':' // Join together all ':' tokens
+        ) && !(
             lastChar == '\'' && c == '\'' // Join together all single quotes
         ) && !(
             lastChar == '"' && c == '"' // Join together all double quotes
@@ -218,14 +220,22 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
             dq = !dq
         elif c == '`' && !(sq || dq || backslash)
             bt = !bt
-        elif c == '(' && !(sq || dq || bt || sb > 0 || cb > 0)
+        elif c == '(' && !(sq || dq || bt || sb > 0 || cb > 0 || tb > 0)
             ++rb
-        elif c == ')' && !(sq || dq || bt || sb > 0 || cb > 0)
+        elif c == ')' && !(sq || dq || bt || sb > 0 || cb > 0 || tb > 0)
             --rb
-        elif c == '[' && !(sq || dq || bt || rb > 0 || cb > 0)
+        elif c == '[' && !(sq || dq || bt || rb > 0 || cb > 0 || tb > 0)
             ++sb
-        elif c == ']' && !(sq || dq || bt || rb > 0 || cb > 0)
+        elif c == ']' && !(sq || dq || bt || rb > 0 || cb > 0 || tb > 0)
             --sb
+        elif c == '{' && !(sq || dq || bt || sb > 0 || rb > 0 || tb > 0)
+            ++cb
+        elif c == '}' && !(sq || dq || bt || sb > 0 || rb > 0 || tb > 0)
+            --cb
+        elif lastChar == ':' && c == '<' && !(sq || dq || bt || sb > 0 || rb > 0 || cb > 0)
+            ++tb
+        elif c == '>' && !(sq || dq || bt || sb > 0 || rb > 0)
+            --tb if tb
         elif c == '/' && !(sq || dq || bt)
             if ++comment >= 2
                 // Remove last token, since it will be a '/'
@@ -248,6 +258,7 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
         lastChar = c
 
     tok.add(Token.fromString(current.trim())) if current
+    println tok
 
     // Perform identifier conversion
     tok = Parser.convertIdentifiers(tok)

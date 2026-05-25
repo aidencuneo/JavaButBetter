@@ -11,6 +11,7 @@ public class Token {
         EXPR,
         SQUARE_EXPR,
         BRACE_EXPR,
+        TYPE_EXPR,
         OPTION,
         NULL,
         TRUE,
@@ -127,6 +128,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(f, '{'))) ? (Extensions.operEq(l, '}')) : (Extensions.operEq(f, '{')))) {
             t = Type.BRACE_EXPR;
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith(":<"))) ? (Extensions.operEq(l, '>')) : (v.startsWith(":<")))) {
+            t = Type.TYPE_EXPR;
         }
         else if (LangUtil.isTruthy(Extensions.operIn(v, List.of("+", "-", "*", "/", "%", "&", "|", "and", "or", "xor", "nor", "&&", "||", "^", ">", "<", ">=", "<=", "==", "!=", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-"))))) ? (List.of(Type.BIN_OPER, Type.BLANK).contains(lastToken)) : (((LangUtil.isTruthy(Extensions.operEq(v, "+"))) ? (Extensions.operEq(v, "+")) : (Extensions.operEq(v, "-")))))) {

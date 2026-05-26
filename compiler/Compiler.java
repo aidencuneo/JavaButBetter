@@ -801,7 +801,7 @@ public class Compiler {
     }
     public static String compileTypeArgs(ArrayList<Token> tok) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return "[]"; }
-        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "*")) : (Extensions.operEq(Extensions.len(tok), 1)))) { return "<>"; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operIn(Extensions.operGetIndex(tok, 0).value, List.of("*", "."))) : (Extensions.operEq(Extensions.len(tok), 1)))) { return "<>"; }
         var out = "";
         var buffer = new ArrayList<Token>();
         tok.add(Token.fromString(","));

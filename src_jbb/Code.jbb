@@ -1,7 +1,7 @@
 public static class Code
 
 // These fields persist for all files
-ArrayList[RegexRule] regexRules = new ArrayList[*]()
+ArrayList[RegexRule] regexRules = new ArrayList[.]()
 
 main:
     println "Hello, world!"

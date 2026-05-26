@@ -2,7 +2,13 @@
     - var.code = var.code + code
     - var.code += code
     - ArrayList[Token] exprTok = tok[f + 1:]
-- Fix T[], char[], String[], etc.
+- F-strings or `` strings (TEMPLATE_STRING token)
+- Mutable for loops
+    - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
+    - for i to 0..length
+    - for i to 0..length..1
+    - for i to length
+    - Allow for (let i = 10; i; --i) (?)
 - Add compileType
 - Add sum, min, max, exit
 - TODOs in "function calls"
@@ -33,13 +39,6 @@
     - XOR can be xor or ^
 - Add custom operator overloading
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- F-strings or `` strings (TEMPLATE_STRING token)
-- Mutable for loops
-    - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
-    - for i to 0..length
-    - for i to 0..length..1
-    - for i to length
-    - Allow for (let i = 10; i; --i) (?)
 - set/get
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
@@ -53,6 +52,8 @@
 
 
 Done:
+- Fixed arrays (such as T[], char[], String[], etc.)
+- Added diamond operator ([*] in JBB)
 - Fixed type arguments and made them use [] instead of <>
     - Switched () to [] for function type args
 - Made string and String both evaluate to String

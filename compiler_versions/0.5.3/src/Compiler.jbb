@@ -26,9 +26,9 @@ CompResult compileFile(string className, string code):
     endTemplate = ""
 
     // Reset class data
-    classes = new HashMap[]()
-    aliases = new HashMap[]()
-    locals = new HashMap[]()
+    classes = new HashMap[string, Class]()
+    aliases = new HashMap[string, Alias]()
+    locals = new HashMap[string, Int]()
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -1050,12 +1050,17 @@ string compileMethodArgs(ArrayList[Token] tok):
     return compileMethodArgs(tok, false)
 
 string compileTypeArgs(ArrayList[Token] tok):
+    // If tok is empty, interpret this as "[]", which is an array definition
+    ret "[]" if not tok
+
+    // If the only token is ".", interpret this as "<>", which is the diamond operator
+    ret "<>" if len(tok) == 1 && tok[0].value in ["*", "."]
+
     out = ""
     buffer = new ArrayList[Token]()
     tok.add(Token.fromString(",")) // Comma to end last argument
 
     // Add arguments one by one
-
     for t in tok
         if t.type == Token.Type.COMMA && buffer
             // type, typeArgs?
@@ -1073,7 +1078,7 @@ string compileTypeArgs(ArrayList[Token] tok):
         else
             buffer.add(t)
 
-    return "<" + StringParser.trimComma(out) + ">"
+    ret "<" + StringParser.trimComma(out) + ">"
 
 string compileRange(ArrayList[Token] tok):
     // [start]?, .., [end]?, (.., [step])?

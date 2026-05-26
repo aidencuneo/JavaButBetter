@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Precompiler {
-    public static List<RegexRule> regexRules = new ArrayList<>();
+    public static ArrayList<RegexRule> regexRules = new ArrayList<RegexRule>();
     public static ArrayList<String> precompileFile(String className, String code) {
         var lines = Tokeniser.splitFile(code);
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {

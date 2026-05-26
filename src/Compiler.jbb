@@ -1053,8 +1053,8 @@ string compileTypeArgs(ArrayList[Token] tok):
     // If tok is empty, interpret this as "[]", which is an array definition
     ret "[]" if not tok
 
-    // If the only token is "*", interpret this as "<>", which is the diamond operator
-    ret "<>" if len(tok) == 1 && tok[0].value == "*"
+    // If the only token is ".", interpret this as "<>", which is the diamond operator
+    ret "<>" if len(tok) == 1 && tok[0].value == "."
 
     out = ""
     buffer = new ArrayList[Token]()

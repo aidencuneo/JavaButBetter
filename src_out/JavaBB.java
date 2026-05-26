@@ -3,6 +3,7 @@ import java.util.*;
 
 public class JavaBB {
     public static void main(String[] args) {
+        System.out.println("\n\n\nRunning...\n\n\n");
         var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {

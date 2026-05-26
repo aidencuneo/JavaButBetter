@@ -16,69 +16,11 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
-public static class Compiler
-
-// Definitions
-alias INDENT_SIZE = 4
-
-// These fields persist only for the current file
-string mainClassName = ""
-string currentClass = ""
-string startTemplate = ""
-string endTemplate = ""
-string packagePath = ""
-HashMap[String, Class] classes = new HashMap[String, Class]()
-HashMap[String, Alias] aliases = new HashMap[String, Alias]()
-HashMap[String, Int] locals = HashMap[String, Int]() // name -> scope
-
 main:
-    ...
-    // Something.Cool[Vector.Int, Vector.Something.Else, Hi]('a', 'b', 3)
-
-[T] T cast2(v):
-    ret (T) v
-
-// use java.util.regex.*;
-
-// class RegexRule
-
-// string find = ""
-// string replace = ""
-// string stage = "pre"
-// Pattern pattern = null
-
-// RegexRule(string find, string replace, string stage):
-//     this.find = find
-//     this.replace = replace
-//     this.stage = stage
-//     inline(this.pattern = Pattern.compile(find);)
-
-// bool find(string s):
-//     return pattern.matcher(s).find()
-
-// string apply(string s):
-//     return pattern.matcher(s).replaceAll(replace) + "..."
-
-// class Code
-
-// main:
-//     RegexRule r = new RegexRule("a", "b", "pre")
-//     println r.find("a")
-//     println r.apply("a")
-
-// main:
-//     // inline(
-//     //     Dynamic.registerAll(Extensions.class);
-//     // )
-
-//     println inline(Arrays.toString(Dynamic.registry.keySet().toArray()))
-//     option default_decimal d
-//     a = 1.5 + 2.0
-//     println a
-//     System.out.println(Math.round(a))
-
-// main:
-//     println a.b(args1.h).c.d(args2.jjj()).e.f
+    option default_decimal d
+    a = 1.5 + 2.0
+    println a
+    println round(a)
 
 // package aidenbc.UVABOC
 

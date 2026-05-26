@@ -69,7 +69,7 @@ bool isTruthy(object v):
     )
 
 // asIterable
-inline(public static <T> T[] asIterable(T[] v))
+[T] T[] asIterable(T[] v):
     ret v
 
 List<Int> asIterable(int n):

@@ -19,7 +19,7 @@ public class Util {
         try {
             start = indexConvert(start, lst.size());
             end = indexConvert(end, lst.size());
-            return new ArrayList<>(lst.subList(start, end));
+            return new ArrayList[](lst.subList(start, end));
         }
         catch (IndexOutOfBoundsException | IllegalArgumentException e) {
             return new ArrayList<T>();

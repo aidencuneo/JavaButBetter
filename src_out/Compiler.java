@@ -19,9 +19,9 @@ public class Compiler {
         currentClass = className;
         startTemplate = "import java.io.*;\nimport java.util.*;\n";
         endTemplate = "";
-        classes = new HashMap<>();
-        aliases = new HashMap<>();
-        locals = new HashMap<>();
+        classes = new HashMap<String, Class>();
+        aliases = new HashMap<String, Alias>();
+        locals = new HashMap<String, Integer>();
         nextTempVar = 0;
         defaultStatic = false;
         var lines = Tokeniser.splitFile(code);
@@ -800,6 +800,8 @@ public class Compiler {
         return compileMethodArgs(tok, false);
     }
     public static String compileTypeArgs(ArrayList<Token> tok) {
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return "[]"; }
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "*")) : (Extensions.operEq(Extensions.len(tok), 1)))) { return "<>"; }
         var out = "";
         var buffer = new ArrayList<Token>();
         tok.add(Token.fromString(","));

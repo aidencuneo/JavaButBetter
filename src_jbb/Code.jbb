@@ -1,7 +1,10 @@
 public static class Code
 
 // These fields persist for all files
-List[RegexRule] regexRules = new ArrayList[]()
+ArrayList[RegexRule] regexRules = new ArrayList[*]()
+
+main:
+    println "Hello, world!"
 
 ArrayList[string] precompileFile(string className, string code):
     lines = Tokeniser.splitFile(code)

@@ -2,6 +2,10 @@
     - var.code = var.code + code
     - var.code += code
     - ArrayList[Token] exprTok = tok[f + 1:]
+- << and >> operators
+    - ArrayList << elem
+    - elem >> ArrayList
+    - list >>> 1 to rotate right, same for left
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
@@ -13,13 +17,13 @@
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
-- Add compileType
-- TODOs in "function calls"
+- Add compileType (?)
+- TODOs in "function calls" (?)
 - Add "as" keyword (?)
+- Add raise/throw
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
-- Add ArrayList << elem
 - Add /* */
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR])
 - Add standard library somehow?

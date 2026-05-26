@@ -33,6 +33,9 @@ public class LangUtil {
     public static String roundstr(double v) {
         return String.format("%f", v);
     }
+    public static <T> List<T> listOf(T ... args) {
+        return new ArrayList<>(Arrays.asList(args));
+    }
     public static <T> Stream<T> arrstream(T[] v) {
         return Arrays.stream(v);
     }

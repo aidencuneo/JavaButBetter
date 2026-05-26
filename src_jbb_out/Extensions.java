@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class Extensions {
     public static int len(String s) {
@@ -182,6 +183,78 @@ public class Extensions {
     }
     public static double operMod(double a, double b) {
         return a % b;
+    }
+    public static int operShl(int a, int b) {
+        return a << b;
+    }
+    public static long operShl(long a, long b) {
+        return a << b;
+    }
+    public static String operShl(String a, Object b) {
+        return Extensions.operAdd(a, b);
+    }
+    public static String operShl(Object a, String b) {
+        return Extensions.operAdd(a, b);
+    }
+    public static String operShl(String a, String b) {
+        return Extensions.operAdd(a, b);
+    }
+    public static <T> T[] operShl(T[] arr, T elem) {
+        var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
+        copy [arr.length] = elem;
+        return copy;
+    }
+    public static <T, C extends Collection<T>> C operShl(C c, T elem) {
+        c.add(elem);
+        return c;
+    }
+    public static <T> Iterable<T> operShl(Iterable<T> v, T elem) {
+        return () -> Stream.concat(StreamSupport.stream(v.spliterator(), false), Stream.of(elem)).iterator();
+    }
+    public static int operShr(int a, int b) {
+        return a >> b;
+    }
+    public static long operShr(long a, long b) {
+        return a >> b;
+    }
+    public static String operShr(String a, Object b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static String operShr(Object a, String b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static String operShr(String a, String b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static <T> T[] operShr(T elem, T[] arr) {
+        var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
+        copy [0] = elem;
+        return copy;
+    }
+    public static <T, C extends Collection<T>> C operShr(T elem, C c) {
+        c.add(elem);
+        return c;
+    }
+    public static <T> Iterable<T> operShr(T elem, Iterable<T> v) {
+        return () -> Stream.concat(Stream.of(elem), StreamSupport.stream(v.spliterator(), false)).iterator();
+    }
+    public static <T> T[] operShr(T[] arr, int count) {
+        return Arrays.copyOf(arr, Extensions.operSub(arr.length, count));
+    }
+    public static <T, C extends Collection<T>> C operShr(C c, int count) {
+        return LangUtil.slice(c, null, Extensions.operUnarySub(count), 1);
+    }
+    public static <T> Iterable<T> operShr(Iterable<T> v, int count) {
+        return LangUtil.slice(v, null, Extensions.operUnarySub(count), 1);
+    }
+    public static Object operUshl(Object a, Object b) {
+        throw new UnsupportedOperationException();
+    }
+    public static int operUshr(int a, int b) {
+        return a >>> b;
+    }
+    public static long operUshr(long a, long b) {
+        return a >>> b;
     }
 }
 

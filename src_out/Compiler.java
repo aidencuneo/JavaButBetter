@@ -478,7 +478,7 @@ public class Compiler {
             }
             if (LangUtil.isTruthy(nested)) { out += "("; }
             var exprTok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
-            if (LangUtil.isTruthy(Extensions.operIn(oper, List.of(".", "**", "??")))) {
+            if (LangUtil.isTruthy(Extensions.operIn(oper, LangUtil.listOf(".", "**", "??")))) {
                 exprTok.add(0, Token.fromString(varname));
                 exprTok.add(1, Token.fromString(oper));
                 out += Extensions.operAdd(varname, " = ");
@@ -515,12 +515,12 @@ public class Compiler {
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("((", lhs), ") != null) ? ("), lhs), ") : ("), rhs), ")");
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyToken(tok, List.of("||", "or")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyToken(tok, LangUtil.listOf("||", "or")))), Extensions.operUnarySub(1))))) {
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("(LangUtil.isTruthy(", lhs), ")) ? ("), lhs), ") : ("), rhs), ")");
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyToken(tok, List.of("&&", "and")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyToken(tok, LangUtil.listOf("&&", "and")))), Extensions.operUnarySub(1))))) {
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("(LangUtil.isTruthy(", lhs), ")) ? ("), rhs), ") : ("), lhs), ")");
@@ -540,7 +540,7 @@ public class Compiler {
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out += Extensions.operAdd(Extensions.operAdd(lhs, " & "), rhs);
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, List.of("==", "!=", "===", "!==")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("==", "!=", "===", "!==")))), Extensions.operUnarySub(1))))) {
             var oper = Extensions.operGetIndex(tok, f).value;
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -557,7 +557,7 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(lhs, " != "), rhs);
             }
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, List.of("<", ">", "<=", ">=", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("<", ">", "<=", ">=", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))), Extensions.operUnarySub(1))))) {
             var oper = Extensions.operGetIndex(tok, f).value;
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -589,7 +589,24 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(lhs, " "), oper), " "), rhs);
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(((f = findAnyTokenRev(tok, List.of("+", "-")))), 0))) ? (Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.BIN_OPER)) : (Extensions.operGt(((f = findAnyTokenRev(tok, List.of("+", "-")))), 0)))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("<<", ">>", "<<<", ">>>")))), Extensions.operUnarySub(1))))) {
+            var oper = Extensions.operGetIndex(tok, f).value;
+            var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+            if (LangUtil.isTruthy(Extensions.operEq(oper, "<<"))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operShl(", lhs), ", "), rhs), ")");
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>"))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operShr(", lhs), ", "), rhs), ")");
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "<<<"))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operUshl(", lhs), ", "), rhs), ")");
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>>"))) {
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operUshr(", lhs), ", "), rhs), ")");
+            }
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(((f = findAnyTokenRev(tok, LangUtil.listOf("+", "-")))), 0))) ? (Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.BIN_OPER)) : (Extensions.operGt(((f = findAnyTokenRev(tok, LangUtil.listOf("+", "-")))), 0)))) {
             var oper = Extensions.operGetIndex(tok, f).value;
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -600,7 +617,7 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operSub(", lhs), ", "), rhs), ")");
             }
         }
-        else if (LangUtil.isTruthy(Extensions.operGt(((f = findAnyTokenRev(tok, List.of("*", "/", "%")))), 0))) {
+        else if (LangUtil.isTruthy(Extensions.operGt(((f = findAnyTokenRev(tok, LangUtil.listOf("*", "/", "%")))), 0))) {
             var oper = Extensions.operGetIndex(tok, f).value;
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -614,7 +631,7 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operMod(", lhs), ", "), rhs), ")");
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (List.of("+", "-").contains(Extensions.operGetIndex(tok, 0).value)))) : (Extensions.operGt(Extensions.len(tok), 1)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.UNARY_OPER)) : (LangUtil.listOf("+", "-").contains(Extensions.operGetIndex(tok, 0).value)))) : (Extensions.operGt(Extensions.len(tok), 1)))) {
             var oper = Extensions.operGetIndex(tok, 0).value;
             var expr = compileExpr(LangUtil.slice(tok, 1, null, 1));
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "not"))) ? (Extensions.operEq(oper, "not")) : (Extensions.operEq(oper, "!")))) {
@@ -655,7 +672,7 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("LangUtil.nullCheck(", lhs), ", "), tempVar), " -> "), tempVar), "."), rhs), ")");
             }
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (Extensions.operGt(((f = findAnyTokenTypeRev(tok, List.of(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR)))), 0)) : (Extensions.operGt(Extensions.len(tok), 1)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (Extensions.operGt(((f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR)))), 0)) : (Extensions.operGt(Extensions.len(tok), 1)))) {
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.EXPR))) {
                 if (LangUtil.isTruthy(!((boolean) Extensions.operEq(f, Extensions.operSub(Extensions.len(tok), 1))))) {
                     return "";
@@ -676,10 +693,10 @@ public class Compiler {
                 }
                 var name = compileExpr(tok);
                 var isClassName = StringParser.isPascalCase(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value);
-                if (LangUtil.isTruthy(Extensions.operIn(name, List.of("len")))) {
+                if (LangUtil.isTruthy(Extensions.operIn(name, LangUtil.listOf("len")))) {
                     name = Extensions.operAdd("Extensions.", name);
                 }
-                else if (LangUtil.isTruthy(Extensions.operIn(name, List.of("round", "roundstr", "sum", "min", "max", "exit")))) {
+                else if (LangUtil.isTruthy(Extensions.operIn(name, LangUtil.listOf("round", "roundstr", "sum", "min", "max", "exit")))) {
                     name = Extensions.operAdd("LangUtil.", name);
                 }
                 if (LangUtil.isTruthy((LangUtil.isTruthy(isClassName)) ? (isClassName) : (isNew))) { name = Extensions.operAdd("new ", name); }
@@ -736,7 +753,7 @@ public class Compiler {
                 out += compileRange(tok);
             }
             else {
-                out += Extensions.operAdd(Extensions.operAdd("List.of(", StringParser.trimComma(compileExpr(tok))), ")");
+                out += Extensions.operAdd(Extensions.operAdd("LangUtil.listOf(", StringParser.trimComma(compileExpr(tok))), ")");
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {

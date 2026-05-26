@@ -46,6 +46,10 @@ string roundstr(double v, int places):
 string roundstr(double v):
     return string.format("%f", v)
 
+// listOf
+[T] List[T] listOf(T ... args):
+    return ArrayList[.](Arrays.asList(args))
+
 // arrstream
 [T] Stream[T] arrstream(T[] v):
     ret Arrays.stream(v)

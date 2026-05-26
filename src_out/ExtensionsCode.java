@@ -4,6 +4,8 @@ import java.util.*;
 public class ExtensionsCode {
     public static CompResult get() {
         return Compiler.compileFile("Extensions", """
+use java.util.stream.*
+
 public static class Extensions
 
 // len
@@ -206,6 +208,89 @@ long operMod(long a, long b):
 
 double operMod(double a, double b):
     inline(return a % b;)
+
+// <<
+int operShl(int a, int b):
+    inline(return a << b;)
+
+long operShl(long a, long b):
+    inline(return a << b;)
+
+string operShl(string a, b):
+    ret a + b
+
+string operShl(a, string b):
+    ret a + b
+
+string operShl(string a, string b):
+    ret a + b
+
+[T] T[] operShl(T[] arr, T elem):
+    copy = Arrays.copyOf(arr, arr.length + 1)
+    copy[arr.length] = elem
+    ret copy
+
+[T, C extends Collection[T]] C operShl(C c, T elem):
+    c.add(elem)
+    ret c
+
+[T] Iterable[T] operShl(Iterable[T] v, T elem):
+    ret () -> Stream.concat(
+        StreamSupport.stream(v.spliterator(), false), 
+        Stream.of(elem),
+    ).iterator()
+
+// >>
+int operShr(int a, int b):
+    inline(return a >> b;)
+
+long operShr(long a, long b):
+    inline(return a >> b;)
+
+string operShr(string a, b):
+    ret b + a
+
+string operShr(a, string b):
+    ret b + a
+
+string operShr(string a, string b):
+    ret b + a
+
+[T] T[] operShr(T elem, T[] arr):
+    copy = Arrays.copyOf(arr, arr.length + 1)
+    copy[0] = elem
+    ret copy
+
+[T, C extends Collection[T]] C operShr(T elem, C c):
+    c.add(elem)
+    ret c
+
+[T] Iterable[T] operShr(T elem, Iterable[T] v):
+    ret () -> Stream.concat(
+        Stream.of(elem),
+        StreamSupport.stream(v.spliterator(), false),
+    ).iterator()
+
+[T] T[] operShr(T[] arr, int count):
+    ret Arrays.copyOf(arr, arr.length - count)
+
+[T, C extends Collection[T]] C operShr(C c, int count):
+    ret c[:-count]
+
+[T] Iterable[T] operShr(Iterable[T] v, int count):
+    ret v[:-count]
+
+// <<<
+Object operUshl(Object a, Object b):
+    inline(throw new UnsupportedOperationException();)
+
+// >>>
+int operUshr(int a, int b):
+    inline(return a >>> b;)
+
+long operUshr(long a, long b):
+    inline(return a >>> b;)
+
     """.trim());
     }
 }

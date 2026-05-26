@@ -23,6 +23,10 @@ main:
     b = 5.7
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"
-    lst = [5, 4, 3]
+    println "aiden" << "blishen" << "cuneo"
+    // lst = [5, 4, 3]
+    lst = [5, 4, 3] >> 1
+    lst << 6
+    lst >> 1
     println lst
     println max(lst), min(lst), sum(lst)

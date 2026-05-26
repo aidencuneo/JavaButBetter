@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class Extensions {
     public static int len(String s) {
@@ -182,6 +183,42 @@ public class Extensions {
     }
     public static double operMod(double a, double b) {
         return a % b;
+    }
+    public static int operShl(int a, int b) {
+        return a << b;
+    }
+    public static long operShl(long a, long b) {
+        return a << b;
+    }
+    public static String operShl(String a, Object b) {
+        return Extensions.operAdd(a, String.valueOf(b));
+    }
+    public static <T> T[] operShl(T[] arr, T elem) {
+        var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
+        copy [arr.length] = elem;
+        return copy;
+    }
+    public static <T, C extends Collection<T>> C operShl(C c, T elem) {
+        c.add(elem);
+        return c;
+    }
+    public static <T> Iterable<T> operShl(Iterable<T> v, T elem) {
+        return () -> Stream.concat(StreamSupport.stream(v.spliterator(), false), Stream.of(elem)).iterator();
+    }
+    public static int operShr(int a, int b) {
+        return a >> b;
+    }
+    public static long operShr(long a, long b) {
+        return a >> b;
+    }
+    public static Object operUshl(Object a, Object b) {
+        throw new UnsupportedOperationException();
+    }
+    public static int operUshr(int a, int b) {
+        return a >>> b;
+    }
+    public static long operUshr(long a, long b) {
+        return a >>> b;
     }
 }
 

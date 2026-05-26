@@ -27,9 +27,9 @@ string currentClass = ""
 string startTemplate = ""
 string endTemplate = ""
 string packagePath = ""
-HashMap:<string, Class> classes = new HashMap:<string, Class>()
-HashMap:<string, Alias> aliases = new HashMap:<string, Alias>()
-HashMap:<string, Int> locals = HashMap:<string, Int>() // name -> scope
+HashMap[String, Class] classes = new HashMap[String, Class]()
+HashMap[String, Alias] aliases = new HashMap[String, Alias]()
+HashMap[String, Int] locals = HashMap[String, Int]() // name -> scope
 
 // use java.util.regex.*;
 

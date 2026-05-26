@@ -12,15 +12,11 @@ ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
         if t.type == Token.Type.ID && !lastWasDot
             // Perform identifier conversion
 
-            // String and object are in lowercase
-            if t.value == "string"
+            // String and Object can be in lowercase
+            if t.value == "string" // string || String => String
                 t.value = "String"
-            elif t.value == "String"
-                t.value = "string"
-            elif t.value == "object"
+            elif t.value == "object" // object || Object => Object
                 t.value = "Object"
-            elif t.value == "Object"
-                t.value = "object"
 
             // Some primitive type classes are shortened
             elif t.value == "Int"

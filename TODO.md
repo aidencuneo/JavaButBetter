@@ -52,6 +52,8 @@
 
 
 Done:
+- Made string and String both evaluate to String
+    - Same for object and Object
 - Add null conditional operator
     - name?.operation()?.niceness => ???
 - Fix automatic var insertion

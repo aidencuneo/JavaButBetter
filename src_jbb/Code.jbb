@@ -1,10 +1,41 @@
+// // JavaScript template strings
+// regex (
+//     "(`.*?)\$\{(.+)\}(.*?`)"
+//     "$1\" + ($2) + \"$3"
+// )
+
+// // Python f-strings
+// regex (
+//     "f(\".*?)\{([^\{\}]+)\}(.*?\")"
+//     "$1\" + ($2) + \"$3"
+// )
+
+// // Python f-strings for all strings
+// regex (
+//     "(\".*?)\{([^\{\}]+)\}(.*?\")"
+//     "$1\" + ($2) + \"$3"
+// )
+
 public static class Code
 
 // These fields persist for all files
 ArrayList[RegexRule] regexRules = new ArrayList[.]()
 
 main:
-    println "Hello, world!"
+    a = 16
+    b = 5.7
+    ccc = "hi"
+    println f"Hello, world! I'm {a} + {b}"
+
+static
+    // Built-in regex rules (temporary)
+
+    // Python f-strings
+    regexRules.add(RegexRule(
+        "f(\".*?)\\{([^\\{\\}]+)\\}(.*?\")",
+        "$1\" + ($2) + \"$3",
+        "pre",
+    ))
 
 ArrayList[string] precompileFile(string className, string code):
     lines = Tokeniser.splitFile(code)

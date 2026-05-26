@@ -683,7 +683,7 @@ public class Compiler {
                     name = Extensions.operAdd("LangUtil.", name);
                 }
                 if (LangUtil.isTruthy((LangUtil.isTruthy(isClassName)) ? (isClassName) : (isNew))) { name = Extensions.operAdd("new ", name); }
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(name, typeArgs), "("), compArgs), ")");
+                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(name, typeArgs), "("), StringParser.trimComma(compArgs)), ")");
             }
             else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.DOT))) {
                 var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));

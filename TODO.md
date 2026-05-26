@@ -3,6 +3,7 @@
     - var.code += code
     - ArrayList[Token] exprTok = tok[f + 1:]
 - F-strings or `` strings (TEMPLATE_STRING token)
+- Make functions callable with a space like in ruby
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -13,7 +14,6 @@
 - Add sum, min, max, exit
 - TODOs in "function calls"
 - Add "as" keyword (?)
-- Make functions callable with a space like in ruby
 - Make JBB installable as a command
     - Add to path
     - Add CLI args

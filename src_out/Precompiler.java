@@ -2,7 +2,10 @@ import java.io.*;
 import java.util.*;
 
 public class Precompiler {
-    public static ArrayList<RegexRule> regexRules = new ArrayList<RegexRule>();
+    public static ArrayList<RegexRule> regexRules = new ArrayList<>();
+    static {
+        regexRules.add(new RegexRule("f(\".*?)\\{([^\\{\\}]+)\\}(.*?\")", "$1\" + ($2) + \"$3", "pre"));
+    }
     public static ArrayList<String> precompileFile(String className, String code) {
         var lines = Tokeniser.splitFile(code);
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {

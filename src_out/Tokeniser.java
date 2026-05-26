@@ -19,8 +19,8 @@ public class Tokeniser {
             return CharType.S;
         }
     }
-    public static ArrayList [string] splitFile(String file) {
-        ArrayList [string] lines = Extensions.operGetIndex(new ArrayList, )();
+    public static ArrayList < String > splitFile(String file) {
+        ArrayList < String > lines = new ArrayList < > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(file))) { return lines; }
         String current = "";
         CharType type = charType(file.charAt(0));
@@ -108,8 +108,8 @@ public class Tokeniser {
         if (LangUtil.isTruthy(current)) { lines.add(current); }
         return lines;
     }
-    public static ArrayList [Token] tokLine(String line , boolean keepIndent) {
-        var tok = Extensions.operGetIndex(new ArrayList, Token)();
+    public static ArrayList < Token > tokLine(String line , boolean keepIndent) {
+        var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
         var indent = "";
         var i = 0;
@@ -214,25 +214,25 @@ public class Tokeniser {
         tok = Parser.convertIdentifiers(tok);
         return tok;
     }
-    public static ArrayList [Token] tokLine(String line) {
+    public static ArrayList < Token > tokLine(String line) {
         return tokLine(line, false);
     }
-    public static ArrayList [string] extractArgsFromExpr(String s) {
-        var args = Extensions.operGetIndex(new ArrayList, String)();
+    public static ArrayList < String > extractArgsFromExpr(String s) {
+        var args = new ArrayList < String > ();
         var tok = Tokeniser.tokLine(s.substring(1, Extensions.operSub(s.length(), 1)));
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) { args.add(t.value); }
         }
         return args;
     }
-    public static ArrayList [ArrayList[Token]] extractCommaExpr(String s) {
-        var elems = Extensions.operGetIndex(new ArrayList, Extensions.operGetIndex(ArrayList, Token))();
+    public static ArrayList < ArrayList < Token > > extractCommaExpr(String s) {
+        var elems = new ArrayList < ArrayList < Token > > ();
         var tok = Tokeniser.tokLine(s.substring(1, Extensions.operSub(s.length(), 1)));
-        var current = Extensions.operGetIndex(new ArrayList, Token)();
+        var current = new ArrayList < Token > ();
         for (var t : LangUtil.asIterable(tok)) {
             if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) {
                 elems.add(current);
-                current = Extensions.operGetIndex(new ArrayList, Token)();
+                current = new ArrayList < Token > ();
             }
             else if (LangUtil.isTruthy(!Extensions.operEq(t.type, Token.Type.INDENT))) {
                 current.add(t);
@@ -241,8 +241,8 @@ public class Tokeniser {
         elems.add(current);
         return elems;
     }
-    public static ArrayList [Token.Type] getTokenTypes(ArrayList [Token] tok) {
-        var types = Extensions.operGetIndex(new ArrayList, Token.Type)();
+    public static ArrayList < Token . Type > getTokenTypes(ArrayList < Token > tok) {
+        var types = new ArrayList < Token.Type > ();
         for (var t : LangUtil.asIterable(tok)) { types.add(t.type); }
         return types;
     }

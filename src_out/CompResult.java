@@ -2,10 +2,10 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    public HashMap [string, Class] classes;
+    public HashMap < String , Class > classes;
     public String startTemplate;
     public String endTemplate;
-    public CompResult(HashMap [string, Class] classes , String startTemplate , String endTemplate) {
+    public CompResult(HashMap < String , Class > classes , String startTemplate , String endTemplate) {
         this . classes = classes;
         this . startTemplate = startTemplate;
         this . endTemplate = endTemplate;

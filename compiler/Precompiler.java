@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class Precompiler {
-    public static List [RegexRule] regexRules = Extensions.operGetIndex(new ArrayList, )();
-    public static ArrayList [string] precompileFile(String className , String code) {
+    public static List < RegexRule > regexRules = new ArrayList < > ();
+    public static ArrayList < String > precompileFile(String className , String code) {
         var lines = Tokeniser.splitFile(code);
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
@@ -14,7 +14,7 @@ public class Precompiler {
         }
         return lines;
     }
-    public static boolean precompileStatement(ArrayList [Token] tok) {
+    public static boolean precompileStatement(ArrayList < Token > tok) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return false; }
         var types = Tokeniser.getTokenTypes(tok);
         var startTok = Extensions.operGetIndex(types, 0);

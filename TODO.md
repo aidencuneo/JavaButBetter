@@ -8,6 +8,7 @@
 - Make functions callable with a space like in ruby
 - Make JBB installable as a command
     - Add to path
+    - Add CLI args
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b

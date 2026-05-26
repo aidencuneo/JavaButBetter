@@ -1,9 +1,8 @@
-- Fix issues with type args
 - Fix:
     - var.code = var.code + code
     - var.code += code
 - Add sum, min, max
-- TODOs in "function calls (no dots)"
+- TODOs in "function calls"
 - Add "as" keyword (?)
 - Make functions callable with a space like in ruby
 - Make JBB installable as a command

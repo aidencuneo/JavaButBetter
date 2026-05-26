@@ -7,8 +7,14 @@ public class Compiler {
     public static String startTemplate = "";
     public static String endTemplate = "";
     public static String packagePath = "";
-    public static HashMap : < String , Class > classes = Extensions.operLt(new HashMap :, String), Extensions.operGt(Class, ());
-    public static HashMap : < String , Alias > aliases = Extensions.operLt(new HashMap :, String), Extensions.operGt(Alias, ());
-    public static HashMap : < String , Integer > locals = Extensions.operLt(HashMap :, String), Extensions.operGt(Integer, ());
+    public static HashMap<String, Class> classes = new HashMap<String, Class>();
+    public static HashMap<String, Alias> aliases = new HashMap<String, Alias>();
+    public static HashMap<String, Integer> locals = new HashMap<String, Integer>();
+    public static void main(String[] args) {
+        
+    }
+    public static <T> T cast2(Object v) {
+        return (T)v;
+    }
 }
 

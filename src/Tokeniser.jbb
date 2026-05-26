@@ -258,7 +258,6 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
         lastChar = c
 
     tok.add(Token.fromString(current.trim())) if current
-    println tok
 
     // Perform identifier conversion
     tok = Parser.convertIdentifiers(tok)

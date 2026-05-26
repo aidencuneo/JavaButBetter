@@ -11,14 +11,8 @@ public class Parser {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
                     t . value = "String";
                 }
-                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "String"))) {
-                    t . value = "string";
-                }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "object"))) {
                     t . value = "Object";
-                }
-                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Object"))) {
-                    t . value = "object";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Int"))) {
                     t . value = "Integer";

@@ -31,6 +31,13 @@ HashMap[String, Class] classes = new HashMap[String, Class]()
 HashMap[String, Alias] aliases = new HashMap[String, Alias]()
 HashMap[String, Int] locals = HashMap[String, Int]() // name -> scope
 
+main:
+    ...
+    // Something.Cool[Vector.Int, Vector.Something.Else, Hi]('a', 'b', 3)
+
+[T] T cast2(v):
+    ret (T) v
+
 // use java.util.regex.*;
 
 // class RegexRule

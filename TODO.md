@@ -8,6 +8,9 @@
     - var.code = var.code + code
     - var.code += code
 - Add enums
+- Add sum, min, max
+- TODOs in "function calls (no dots)"
+- Add "as" keyword (?)
 - Make functions callable with a space like in ruby
 - Make JBB installable as a command
     - Add to path

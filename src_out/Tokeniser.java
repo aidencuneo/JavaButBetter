@@ -211,7 +211,6 @@ public class Tokeniser {
             lastChar = c;
         }
         if (LangUtil.isTruthy(current)) { tok.add(Token.fromString(current.trim())); }
-        LangUtil.println(tok);
         tok = Parser.convertIdentifiers(tok);
         return tok;
     }

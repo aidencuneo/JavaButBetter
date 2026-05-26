@@ -18,7 +18,7 @@ main:
 
     // Precompile all files
     println "\n\nPrecompiling " + compDir + "..."
-    fileContentMap = HashMap[String, String]()
+    inline(HashMap<String, String> fileContentMap = new HashMap<>();)
 
     for i in len(files)
         fileContent = ""
@@ -46,9 +46,6 @@ main:
         toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
         className = files[i].split("\\.")[0]
         fileContent = fileContentMap[files[i]]
-
-        // Temporary
-        continue if !fileContent
 
         // Apply regex rules
         fileContent = Precompiler.applyRegexRules(fileContent)

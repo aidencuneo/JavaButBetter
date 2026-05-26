@@ -4,49 +4,49 @@ import java.lang.reflect.*;
 import java.util.function.Function;
 
 public class LangUtil {
-    public static void print(Object ... args ) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
+    public static void print(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { new System.out.print(new String.valueOf(x)); }
     }
-    public static void println(Object ... args ) {
-        for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
-        System.out.println("");
+    public static void println(Object ... args) {
+        for (var x : LangUtil.asIterable(args)) { new System.out.print(new String.valueOf(x)); }
+        new System.out.println("");
     }
-    public static <T, R> R nullCheck(T value , Function < T , R > func ) {
+    public static <T, R> R nullCheck(T value, Function < T, R > func) {
         return LangUtil.isTruthy(!((boolean) Extensions.operEq(value, null))) ? (func.apply(value)) : (null);
     }
-    public static double round(double v , int places ) {
+    public static double round(double v, int places) {
         return Math.round(v * Math.pow(10, places)) / Math.pow(10, places);
     }
-    public static double round(double v ) {
+    public static double round(double v) {
         return Math.round(v);
     }
-    public static String roundstr(double v , int places ) {
-        return String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
+    public static String roundstr(double v, int places) {
+        return new String.format(Extensions.operAdd(Extensions.operAdd("%.", places), "f"), v);
     }
-    public static String roundstr(double v ) {
-        return String.format("%f", v);
+    public static String roundstr(double v) {
+        return new String.format("%f", v);
     }
-    public static boolean isTruthy(boolean v ) {
+    public static boolean isTruthy(boolean v) {
         return v;
     }
-    public static boolean isTruthy(int v ) {
+    public static boolean isTruthy(int v) {
         return !((boolean) Extensions.operEq(v, 0));
     }
-    public static boolean isTruthy(double v ) {
+    public static boolean isTruthy(double v) {
         return !((boolean) Extensions.operEq(v, 0));
     }
-    public static boolean isTruthy(String v ) {
+    public static boolean isTruthy(String v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static <T> boolean isTruthy(T [] v ) {
+    public static <T> boolean isTruthy(T<> v) {
         return v.length > 0;
     }
-    public static <T> boolean isTruthy(List < T > v ) {
+    public static <T> boolean isTruthy(List < T > v) {
         if (LangUtil.isTruthy(v == null)) { return false; }
         return !v.isEmpty();
     }
-    public static boolean isTruthy(Object v ) {
+    public static boolean isTruthy(Object v) {
         
         if (v instanceof Boolean x) return isTruthy(x);
         if (v instanceof Integer x) return isTruthy(x);
@@ -56,29 +56,29 @@ public class LangUtil {
         return v != null;
     
     }
-    public static <T> T [] asIterable(T [] v ) {
+    public static <T> T [] asIterable(T<> v) {
         return v;
     }
-    public static List < Integer > asIterable(int n ) {
+    public static List < Integer > asIterable(int n) {
         var lst = new ArrayList<Integer>();
         for (int i = 0; i < n; ++i) {
             lst.add(i);
         }
         return lst;
     }
-    public static <T> Iterable < T > asIterable(Iterable < T > v ) {
+    public static <T> Iterable < T > asIterable(Iterable < T > v) {
         return v;
     }
-    public static <T> Iterable < T > asIterable(Iterator < T > v ) {
+    public static <T> Iterable < T > asIterable(Iterator < T > v) {
         return new IteratorToIterable<T>(v);
     }
-    public static <TK, TV> Set < TK > asIterable(Map < TK , TV > v ) {
+    public static <TK, TV> Set < TK > asIterable(Map < TK, TV > v) {
         return v.keySet();
     }
-    public static char [] asIterable(String s ) {
+    public static char [] asIterable(String s) {
         return s.toCharArray();
     }
-    public static int indexConvert(int index , int size ) {
+    public static int indexConvert(int index, int size) {
         if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
         return index;
     }

@@ -10,7 +10,7 @@ public static class Extensions
 int len(string s):
     ret s.length()
 
-[T] int len(Iterable[T] v):
+[T] int len(Iterable<T> v):
     c = 0
     ++c for x in v
     ret c
@@ -27,11 +27,11 @@ char operGetIndex(string s, int i):
     i = LangUtil.indexConvert(i, v.length)
     inline(return v[i];)
 
-[T] T operGetIndex(List[T] v, int i):
+[T] T operGetIndex(List<T> v, int i):
     i = LangUtil.indexConvert(i, v.size())
     ret v.get(i)
 
-[TK, TV] TV operGetIndex(Map[TK, TV] v, TK key):
+[TK, TV] TV operGetIndex(Map<TK, TV> v, TK key):
     ret v.get(key)
 
 // ==

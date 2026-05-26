@@ -27,7 +27,7 @@ println(object ... args):
     System.out.println("")
 
 // nullCheck
-[T, R] R nullCheck(T value, Function[T, R] func):
+[T, R] R nullCheck(T value, Function<T, R> func):
     ret func.apply(value) if value != null else null
 
 // round
@@ -61,7 +61,7 @@ bool isTruthy(string v):
 [T] bool isTruthy(T[] v):
     inline(return v.length > 0;)
 
-[T] bool isTruthy(List[T] v):
+[T] bool isTruthy(List<T> v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
@@ -79,19 +79,19 @@ bool isTruthy(object v):
 [T] T[] asIterable(T[] v):
     ret v
 
-List[Int] asIterable(int n):
+List<Int> asIterable(int n):
     lst = inline(new ArrayList<Integer>())
     inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
 
-[T] Iterable[T] asIterable(Iterable[T] v):
+[T] Iterable<T> asIterable(Iterable<T> v):
     ret v
 
-[T] Iterable[T] asIterable(Iterator[T] v):
+[T] Iterable<T> asIterable(Iterator<T> v):
     ret inline(new IteratorToIterable<T>(v))
 
-[TK, TV] Set[TK] asIterable(Map[TK, TV] v):
+[TK, TV] Set<TK> asIterable(Map<TK, TV> v):
     ret v.keySet()
 
 char[] asIterable(string s):
@@ -120,22 +120,22 @@ char[] asIterable(string s):
 //     return slice(s, start, step > 0 ? s.length() : -1, step)
 
 // // slice (ArrayList)
-// [T] ArrayList[T] slice(ArrayList[T] v, int start, int end, int step):
+// [T] ArrayList<T> slice(ArrayList<T> v, int start, int end, int step):
 //     start = indexConvert(start, v.size())
 //     end = indexConvert(end, v.size())
 //     inline(return new ArrayList<>(v.subList(start, end));)
 
-// [T] ArrayList[T] slice(ArrayList[T] v, Null start, Null end, int step):
+// [T] ArrayList<T> slice(ArrayList<T> v, Null start, Null end, int step):
 //     return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
 
-// [T] ArrayList[T] slice(ArrayList[T] v, Null start, int end, int step):
+// [T] ArrayList<T> slice(ArrayList<T> v, Null start, int end, int step):
 //     return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
 
-// [T] ArrayList[T] slice(ArrayList[T] v, int start, Null end, int step):
+// [T] ArrayList<T> slice(ArrayList<T> v, int start, Null end, int step):
 //     return slice(v, start, step > 0 ? v.size() : -1, step)
 
 // // slice (List)
-// [T] List[T] slice(List[T] v, int start, int end, int step):
+// [T] List<T> slice(List<T> v, int start, int end, int step):
 //     start = indexConvert(start, v.size())
 //     end = indexConvert(end, v.size())
 
@@ -145,17 +145,17 @@ char[] asIterable(string s):
 //         lst.add(v.get(i))
 //     ret lst
 
-// [T] List[T] slice(List[T] v, Null start, Null end, int step):
+// [T] List<T> slice(List<T> v, Null start, Null end, int step):
 //     return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
 
-// [T] List[T] slice(List[T] v, Null start, int end, int step):
+// [T] List<T> slice(List<T> v, Null start, int end, int step):
 //     return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
 
-// [T] List[T] slice(List[T] v, int start, Null end, int step):
+// [T] List<T> slice(List<T> v, int start, Null end, int step):
 //     return slice(v, start, step > 0 ? v.size() : -1, step)
 
 // // slice (array)
-// [T] List[T] slice(T[] v, int start, int end, int step):
+// [T] List<T> slice(T[] v, int start, int end, int step):
 //     start = indexConvert(start, v.length)
 //     end = indexConvert(end, v.length)
 
@@ -164,13 +164,13 @@ char[] asIterable(string s):
 //         lst.add(v[i])
 //     ret lst
 
-// [T] List[T] slice(T[] v, Null start, Null end, int step):
+// [T] List<T> slice(T[] v, Null start, Null end, int step):
 //     return slice(v, step > 0 ? 0 : v.length - 1, step > 0 ? v.length : -v.length - 1, step)
 
-// [T] List[T] slice(T[] v, Null start, int end, int step):
+// [T] List<T> slice(T[] v, Null start, int end, int step):
 //     return slice(v, step > 0 ? 0 : v.length - 1, end, step)
 
-// [T] List[T] slice(T[] v, int start, Null end, int step):
+// [T] List<T> slice(T[] v, int start, Null end, int step):
 //     return slice(v, start, step > 0 ? v.length : -1, step)
 
 // indexConvert (helper function)

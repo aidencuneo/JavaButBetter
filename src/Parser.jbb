@@ -1,6 +1,6 @@
 public static class Parser
 
-ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
+ArrayList<Token> convertIdentifiers(ArrayList<Token> tok):
     let lastWasDot = false
 
     inline(for (int i = 0; i < tok.size(); ++i))
@@ -74,9 +74,9 @@ ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
 
     return tok
 
-ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] names, ArrayList[ArrayList[Token]] values):
+ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<string> names, ArrayList<ArrayList<Token>> values):
     let lastWasDot = false
-    let newTok = new ArrayList[Token]()
+    let newTok = new ArrayList<Token>()
 
     for t in tok
         if t.type == Token.Type.ID && !lastWasDot
@@ -101,7 +101,7 @@ ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] name
 
     return newTok
 
-// static ArrayList[Token] parseAccessMods(ArrayList[Token] tok):
+// static ArrayList<Token> parseAccessMods(ArrayList<Token> tok):
 //     let accessMod = AccessMod.DEFAULT
 //     let isStatic = false
 
@@ -124,7 +124,7 @@ ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] name
 
 //     println tok
 
-//     let newTok = new ArrayList[Token]()
+//     let newTok = new ArrayList<Token>()
 
 //     newTok.add(new Token(Token.Type.ACCESS_MOD, ("" + accessMod).toLowerCase()))
 //     if isStatic
@@ -135,7 +135,7 @@ ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] name
 
 //     return newTok
 
-// static ArrayList[Token] parseDeclaration(ArrayList[Token] tok):
+// static ArrayList<Token> parseDeclaration(ArrayList<Token> tok):
 //     // Parse access modifiers
 //     tok = Parser.parseAccessMods(tok)
 

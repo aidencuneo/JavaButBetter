@@ -111,10 +111,10 @@ public class Tokeniser {
     public static ArrayList < Token > tokLine(String line , boolean keepIndent) {
         var tok = new ArrayList < Token > ();
         if (LangUtil.isTruthy(!LangUtil.isTruthy(line))) { return tok; }
-        var indent = "";
-        var i = 0;
+        String indent = "";
+        int i = 0;
         for (; i < line.length(); ++i) {
-            var c = Extensions.operGetIndex(line, i);
+            var c = line.charAt(i);
             if (LangUtil.isTruthy(Extensions.operEq(c, ' '))) {
                 indent += c;
             }
@@ -126,26 +126,27 @@ public class Tokeniser {
             }
         }
         if (LangUtil.isTruthy(keepIndent)) { tok.add(new Token(Token.Type.INDENT, indent)); }
-        if (LangUtil.isTruthy(Extensions.operEq(i, Extensions.len(line)))) { return tok; }
-        var current = "";
-        var type = charType(Extensions.operGetIndex(line, i));
-        var lastType = CharType.W;
-        var nextType = CharType.W;
-        var lastLastType = lastType;
-        var lastChar = '\0';
-        var lastLastChar = '\0';
-        var nextChar = '\0';
-        var comment = 0;
-        var backslash = false;
-        var sq = false;
-        var dq = false;
-        var bt = false;
-        var rb = 0;
-        var sb = 0;
-        var cb = 0;
-        var tb = 0;
+        if (LangUtil.isTruthy(Extensions.operEq(i, line.length()))) {
+            return tok;
+        }
+        String current = "";
+        CharType type = charType(line.charAt(i));
+        CharType lastType = CharType.W;
+        CharType nextType = CharType.W;
+        CharType lastLastType = lastType;
+        char lastChar = 0;
+        char lastLastChar = 0;
+        char nextChar = 0;
+        int comment = 0;
+        boolean backslash = false;
+        boolean sq = false;
+        boolean dq = false;
+        boolean bt = false;
+        int rb = 0;
+        int sb = 0;
+        int cb = 0;
         for (; i < line.length(); ++i) {
-            var c = Extensions.operGetIndex(line, i);
+            char c = line.charAt(i);
             nextChar = LangUtil.isTruthy(Extensions.operAdd(i, 1) < line.length()) ? (line.charAt(Extensions.operAdd(i, 1))) : (0);
             nextType = LangUtil.isTruthy(Extensions.operAdd(i, 1) < line.length()) ? (charType(nextChar)) : (CharType.W);
             lastLastType = lastType;
@@ -168,29 +169,17 @@ public class Tokeniser {
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '`'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (backslash))))) : (Extensions.operEq(c, '`')))) {
                 bt = !LangUtil.isTruthy(bt);
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '('))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : ((LangUtil.isTruthy(cb > 0)) ? (cb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, '(')))) {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '('))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))) : (Extensions.operEq(c, '(')))) {
                 ++ rb;
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ')'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : ((LangUtil.isTruthy(cb > 0)) ? (cb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, ')')))) {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ')'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (cb > 0))))))) : (Extensions.operEq(c, ')')))) {
                 -- rb;
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '['))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(cb > 0)) ? (cb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, '[')))) {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '['))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : (cb > 0))))))) : (Extensions.operEq(c, '[')))) {
                 ++ sb;
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ']'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : ((LangUtil.isTruthy(cb > 0)) ? (cb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, ']')))) {
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ']'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : (cb > 0))))))) : (Extensions.operEq(c, ']')))) {
                 -- sb;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '{'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, '{')))) {
-                ++ cb;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '}'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : (tb > 0)))))))) : (Extensions.operEq(c, '}')))) {
-                -- cb;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(lastChar, ':'))) ? ((LangUtil.isTruthy(Extensions.operEq(c, '<'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : ((LangUtil.isTruthy(rb > 0)) ? (rb > 0) : (cb > 0)))))))) : (Extensions.operEq(c, '<'))) : (Extensions.operEq(lastChar, ':')))) {
-                ++ tb;
-            }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '>'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(sb > 0)) ? (sb > 0) : (rb > 0))))))) : (Extensions.operEq(c, '>')))) {
-                if (LangUtil.isTruthy(tb)) { -- tb; }
             }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(c, '/')))) {
                 if (LangUtil.isTruthy(++ comment >= 2)) {

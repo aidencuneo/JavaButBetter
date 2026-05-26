@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class Precompiler {
-    public static List<RegexRule> regexRules = new ArrayList<>();
-    public static ArrayList [string] precompileFile(String className , String code ) {
+    public static List < RegexRule > regexRules = new ArrayList < > ();
+    public static ArrayList < String > precompileFile(String className , String code) {
         var lines = Tokeniser.splitFile(code);
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
@@ -14,7 +14,7 @@ public class Precompiler {
         }
         return lines;
     }
-    public static boolean precompileStatement(ArrayList [Token] tok ) {
+    public static boolean precompileStatement(ArrayList < Token > tok) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return false; }
         var types = Tokeniser.getTokenTypes(tok);
         var startTok = Extensions.operGetIndex(types, 0);
@@ -22,7 +22,7 @@ public class Precompiler {
         var f = Extensions.operUnarySub(1);
         var f2 = Extensions.operUnarySub(1);
         if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.REGEX))) {
-            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(tok), 2))) {
+            if (LangUtil.isTruthy(Extensions.len(tok) < 2)) {
                 return false;
             }
             var stage = "pre";
@@ -32,20 +32,20 @@ public class Precompiler {
             if (LangUtil.isTruthy(Extensions.operEq(((f = Compiler.findTokenType(tok, Token.Type.EXPR))), Extensions.operUnarySub(1)))) {
                 return false;
             }
-            var pair = Extensions.operGetIndex(tok, f).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
+            var pair = LangUtil.slice(Extensions.operGetIndex(tok, f).value, 1, Extensions.operUnarySub(1), 1);
             var pairTok = Tokeniser.tokLine(pair);
             LangUtil.println(pairTok);
-            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(pairTok), 2))) {
+            if (LangUtil.isTruthy(Extensions.len(pairTok) < 2)) {
                 return false;
             }
-            var find = Extensions.operGetIndex(pairTok, 0).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
-            var replace = Extensions.operGetIndex(pairTok, 1).LangUtil.slice(value, 1, Extensions.operUnarySub(1), 1);
+            var find = LangUtil.slice(Extensions.operGetIndex(pairTok, 0).value, 1, Extensions.operUnarySub(1), 1);
+            var replace = LangUtil.slice(Extensions.operGetIndex(pairTok, 1).value, 1, Extensions.operUnarySub(1), 1);
             regexRules.add(new RegexRule(find, replace, stage));
             return false;
         }
         return true;
     }
-    public static String applyRegexRules(String code , int attempts ) {
+    public static String applyRegexRules(String code , int attempts) {
         for (var rule : LangUtil.asIterable(regexRules)) {
             for (var i : LangUtil.asIterable(LangUtil.range(0, attempts, null))) {
                 if (LangUtil.isTruthy(!LangUtil.isTruthy(rule.find(code)))) { break; }
@@ -54,7 +54,7 @@ public class Precompiler {
         }
         return code;
     }
-    public static String applyRegexRules(String code ) {
+    public static String applyRegexRules(String code) {
         return applyRegexRules(code, 10000);
     }
 }

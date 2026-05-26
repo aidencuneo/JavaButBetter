@@ -8,7 +8,7 @@ public class Class {
     public String implementsType = "";
     public String extendsType = "";
     public String code = "";
-    public Class(String name) {
+    public Class(String name ) {
         this . name = name;
     }
     public String toString() {

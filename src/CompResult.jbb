@@ -1,9 +1,9 @@
-HashMap<string, Class> classes
+HashMap[string, Class] classes
 string startTemplate
 string endTemplate
 
 CompResult(
-    HashMap<string, Class> classes,
+    HashMap[string, Class] classes,
     string startTemplate,
     string endTemplate
 ):

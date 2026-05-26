@@ -1,9 +1,9 @@
 public static class Precompiler
 
 // These fields persist for all files
-List<RegexRule> regexRules = new ArrayList<>()
+List[RegexRule] regexRules = new ArrayList[]()
 
-ArrayList<string> precompileFile(string className, string code):
+ArrayList[string] precompileFile(string className, string code):
     lines = Tokeniser.splitFile(code)
 
     for i in len(lines)
@@ -16,7 +16,7 @@ ArrayList<string> precompileFile(string className, string code):
 
     return lines
 
-bool precompileStatement(ArrayList<Token> tok):
+bool precompileStatement(ArrayList[Token] tok):
     return false if !tok
 
     types = Tokeniser.getTokenTypes(tok)

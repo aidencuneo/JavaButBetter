@@ -9,9 +9,9 @@ string currentClass = ""
 string startTemplate = ""
 string endTemplate = ""
 string packagePath = ""
-HashMap<string, Class> classes = null
-HashMap<string, Alias> aliases = null
-HashMap<string, Int> locals = null // name -> scope
+HashMap[string, Class] classes = null
+HashMap[string, Alias] aliases = null
+HashMap[string, Int] locals = null // name -> scope
 
 int nextTempVar = 0
 int indent = 0
@@ -26,9 +26,9 @@ CompResult compileFile(string className, string code):
     endTemplate = ""
 
     // Reset class data
-    classes = new HashMap<>()
-    aliases = new HashMap<>()
-    locals = new HashMap<>()
+    classes = new HashMap[]()
+    aliases = new HashMap[]()
+    locals = new HashMap[]()
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -101,7 +101,7 @@ Class getOrCreateClass(string name):
 
     return classes.get(currentClass)
 
-string compileStatement(ArrayList<Token> tok, string out):
+string compileStatement(ArrayList[Token] tok, string out):
     return "" if !tok
 
     types = Tokeniser.getTokenTypes(tok)
@@ -154,7 +154,7 @@ string compileStatement(ArrayList<Token> tok, string out):
             return ""
 
         name = tok[1].value
-        args = new ArrayList<string>()
+        args = new ArrayList[string]()
 
         if f > 2
             args = Tokeniser.extractArgsFromExpr(tok[2].value)
@@ -541,7 +541,7 @@ string compileStatement(ArrayList<Token> tok, string out):
 
     return out
 
-string compileExpr(ArrayList<Token> tok, bool nested):
+string compileExpr(ArrayList[Token] tok, bool nested):
     string out = ""
     int f = -1
     int f2 = -1
@@ -624,7 +624,7 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
         out += "(" if nested
 
-        ArrayList<Token> exprTok = tok[f + 1:]
+        ArrayList[Token] exprTok = tok[f + 1:]
 
         // For custom operators, convert to 'name = (name oper value)'
         if oper in [".", "**", "??"]
@@ -921,9 +921,9 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         if findToken(tok, ":") != -1
             // start?, :?, end?, :?, step?
 
-            startTokens = new ArrayList<Token>()
-            endTokens = new ArrayList<Token>()
-            stepTokens = new ArrayList<Token>()
+            startTokens = new ArrayList[Token]()
+            endTokens = new ArrayList[Token]()
+            stepTokens = new ArrayList[Token]()
 
             // Eat start
             while tok && tok[0].value != ":"
@@ -1012,12 +1012,12 @@ string compileExpr(ArrayList<Token> tok, bool nested):
 
     return out.trim()
 
-string compileExpr(ArrayList<Token> tok):
+string compileExpr(ArrayList[Token] tok):
     return compileExpr(tok, true)
 
-string compileMethodArgs(ArrayList<Token> tok, bool declareLocals):
+string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
     out = ""
-    buffer = new ArrayList<Token>()
+    buffer = new ArrayList[Token]()
     tok.add(Token.fromString(",")) // Comma to end last argument
 
     ++scope // Increase scope for method arguments
@@ -1044,12 +1044,12 @@ string compileMethodArgs(ArrayList<Token> tok, bool declareLocals):
 
     return "(" + StringParser.trimComma(out) + ")"
 
-string compileMethodArgs(ArrayList<Token> tok):
+string compileMethodArgs(ArrayList[Token] tok):
     return compileMethodArgs(tok, false)
 
-string compileTypeArgs(ArrayList<Token> tok):
+string compileTypeArgs(ArrayList[Token] tok):
     out = ""
-    buffer = new ArrayList<Token>()
+    buffer = new ArrayList[Token]()
     tok.add(Token.fromString(",")) // Comma to end last argument
 
     // Add arguments one by one
@@ -1063,11 +1063,11 @@ string compileTypeArgs(ArrayList<Token> tok):
 
     return "<" + StringParser.trimComma(out) + ">"
 
-string compileRange(ArrayList<Token> tok):
+string compileRange(ArrayList[Token] tok):
     // [start]?, .., [end]?, (.., [step])?
-    let startTokens = new ArrayList<Token>()
-    let endTokens = new ArrayList<Token>()
-    let stepTokens = new ArrayList<Token>()
+    let startTokens = new ArrayList[Token]()
+    let endTokens = new ArrayList[Token]()
+    let stepTokens = new ArrayList[Token]()
 
     // Eat start
     while tok && tok[0].type != Token.Type.RANGE
@@ -1102,48 +1102,48 @@ string compileRange(ArrayList<Token> tok):
 string getNextTemp():
     return "_t" + nextTempVar++
 
-int findToken(ArrayList<Token> tok, string value):
+int findToken(ArrayList[Token] tok, string value):
     // return i if t.value.equals(value) for t in tok
     for i in len(tok)
         return i if tok[i].value == value
     return -1
 
-int findTokenRev(ArrayList<Token> tok, string value):
+int findTokenRev(ArrayList[Token] tok, string value):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if tok[i].value == value
     return -1
 
-int findAnyToken(ArrayList<Token> tok, List<string> values):
+int findAnyToken(ArrayList[Token] tok, List[string] values):
     for i in len(tok)
         return i if values.contains(tok[i].value)
     return -1
 
-int findAnyTokenRev(ArrayList<Token> tok, List<string> values):
+int findAnyTokenRev(ArrayList[Token] tok, List[string] values):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if values.contains(tok[i].value)
     return -1
 
-int findTokenType(ArrayList<Token> tok, Token.Type type):
+int findTokenType(ArrayList[Token] tok, Token.Type type):
     for i in len(tok)
         return i if tok[i].type == type
     return -1
 
-int findTokenTypeRev(ArrayList<Token> tok, Token.Type type):
+int findTokenTypeRev(ArrayList[Token] tok, Token.Type type):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if tok[i].type == type
     return -1
 
-int findAnyTokenType(ArrayList<Token> tok, List<Token.Type> types):
+int findAnyTokenType(ArrayList[Token] tok, List[Token.Type] types):
     for i in len(tok)
         return i if types.contains(tok[i].type)
     return -1
 
-int findAnyTokenTypeRev(ArrayList<Token> tok, List<Token.Type> types):
+int findAnyTokenTypeRev(ArrayList[Token] tok, List[Token.Type] types):
     inline(for (int i = tok.size() - 1; i >= 0; --i))
         return i if types.contains(tok[i].type)
     return -1
 
-MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
+MethodAccess getMethodAccess(ArrayList[Token] tok, int end):
     let accessMod = AccessMod.NONE
     let isStatic = defaultStatic // Default static value for this class
 
@@ -1161,10 +1161,10 @@ MethodAccess getMethodAccess(ArrayList<Token> tok, int end):
 
     return new MethodAccess(accessMod, isStatic)
 
-MethodAccess getMethodAccess(ArrayList<Token> tok):
+MethodAccess getMethodAccess(ArrayList[Token] tok):
     return getMethodAccess(tok, len(tok))
 
-ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
+ArrayList[Token] stripMethodAccess(ArrayList[Token] tok, int end):
     for i in end
         let t = tok[i]
         let v = t.value
@@ -1176,7 +1176,7 @@ ArrayList<Token> stripMethodAccess(ArrayList<Token> tok, int end):
 
     return tok
 
-ArrayList<Token> stripMethodAccess(ArrayList<Token> tok):
+ArrayList[Token] stripMethodAccess(ArrayList[Token] tok):
     return stripMethodAccess(tok, len(tok))
 
 declareLocal(string name, int scope):
@@ -1192,7 +1192,7 @@ bool localInScope(string name):
 
 cleanLocals(int scope):
     // Remove all locals that are out of scope
-    let toRemove = new ArrayList<string>()
+    let toRemove = new ArrayList[string]()
 
     for name in locals.keySet()
         toRemove.add(name) if locals.get(name) > scope

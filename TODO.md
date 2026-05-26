@@ -1,13 +1,7 @@
-- Fix issues with ArrayList<Integer> and <T>
-    - Make type annotations use []
-    - Create compile functions for each context
-        - compileTypeArgs
-        - Make function calling "eat" type these type args
-    - Switch () to [] for function type args
+- Fix issues with type args
 - Fix:
     - var.code = var.code + code
     - var.code += code
-- Add enums
 - Add sum, min, max
 - TODOs in "function calls (no dots)"
 - Add "as" keyword (?)
@@ -55,6 +49,8 @@
 
 
 Done:
+- Fixed type arguments and made them use [] instead of <>
+    - Switched () to [] for function type args
 - Made string and String both evaluate to String
     - Same for object and Object
 - Add null conditional operator

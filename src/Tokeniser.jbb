@@ -13,8 +13,8 @@ CharType charType(char c):
     else
         return CharType.S
 
-ArrayList<string> splitFile(string file):
-    ArrayList<string> lines = new ArrayList<>()
+ArrayList[string] splitFile(string file):
+    ArrayList[string] lines = new ArrayList[]()
     return lines if !file
 
     // State
@@ -104,8 +104,8 @@ ArrayList<string> splitFile(string file):
     lines.add(current) if current
     return lines
 
-ArrayList<Token> tokLine(string line, bool keepIndent):
-    tok = new ArrayList<Token>()
+ArrayList[Token] tokLine(string line, bool keepIndent):
+    tok = new ArrayList[Token]()
     ret tok if !line
 
     // Gather indent for this line
@@ -264,11 +264,11 @@ ArrayList<Token> tokLine(string line, bool keepIndent):
 
     return tok
 
-ArrayList<Token> tokLine(string line):
+ArrayList[Token] tokLine(string line):
     return tokLine(line, false)
 
-ArrayList<string> extractArgsFromExpr(string s):
-    let args = new ArrayList<string>()
+ArrayList[string] extractArgsFromExpr(string s):
+    let args = new ArrayList[string]()
 
     // Tokenise expr
     let tok = Tokeniser.tokLine(s.substring(1, s.length() - 1))
@@ -279,26 +279,26 @@ ArrayList<string> extractArgsFromExpr(string s):
 
     return args
 
-ArrayList<ArrayList<Token>> extractCommaExpr(string s):
-    let elems = new ArrayList<ArrayList<Token>>()
+ArrayList[ArrayList[Token]] extractCommaExpr(string s):
+    let elems = new ArrayList[ArrayList[Token]]()
 
     // Tokenise expr
     let tok = Tokeniser.tokLine(s.substring(1, s.length() - 1))
 
     // Add tokens and split at commas
-    let current = new ArrayList<Token>()
+    let current = new ArrayList[Token]()
 
     for t in tok
         if t.type == Token.Type.COMMA
             elems.add(current)
-            current = new ArrayList<Token>()
+            current = new ArrayList[Token]()
         elif t.type != Token.Type.INDENT // Not really necessary in the end, but feels nicer
             current.add(t)
 
     elems.add(current)
     return elems
 
-ArrayList<Token.Type> getTokenTypes(ArrayList<Token> tok):
-    types = new ArrayList<Token.Type>()
+ArrayList[Token.Type] getTokenTypes(ArrayList[Token] tok):
+    types = new ArrayList[Token.Type]()
     types.add(t.type) for t in tok
     return types

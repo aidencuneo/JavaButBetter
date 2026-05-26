@@ -17,10 +17,114 @@
 // )
 
 main:
-    option default_decimal d
-    a = 1.5 + 2.0
-    println a
-    println round(a)
+    // Get input and output directories
+    compDir = args[0] if args else "src"
+    outDir = args[1] if len(args) > 1 else compDir + "_out"
+
+    // Create directory if it doesn't exist
+    if !File(outDir).exists()
+        File(outDir).mkdir()
+
+    // Compile files one by one
+    // files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb") || name.endsWith(".java"))
+    files = File(compDir).list()
+
+    println "\nCompiling Extensions..."
+
+    // Extensions code
+    extensionsClassRes = ExtensionsCode.get()
+
+    // Precompile all files
+    println "\n\nPrecompiling " + compDir + "..."
+    inline(HashMap<String, String> fileContentMap = new HashMap<>();)
+
+    for i in len(files)
+        fileContent = ""
+        fromPath = compDir + "/" + files[i]
+        className = files[i].split("\\.")[0]
+
+        // Read input file
+        try let scanner = Scanner(File(fromPath))
+            fileContent = scanner.useDelimiter("\\Z").next()
+        catch FileNotFoundException e
+            ...
+
+        if files[i].endsWith(".jbb")
+            lines = Precompiler.precompileFile(className, fileContent)
+
+            // Join lines back together
+            fileContent = string.join("\n", lines)
+            fileContentMap.put(files[i], fileContent)
+
+    // Compile all files
+    println "\n\nCompiling " + compDir + "..."
+
+    for i in len(files)
+        fromPath = compDir + "/" + files[i]
+        toPath = outDir + "/" + files[i].split("\\.")[0] + ".java"
+        className = files[i].split("\\.")[0]
+        fileContent = fileContentMap[files[i]]
+
+        // Apply regex rules
+        fileContent = Precompiler.applyRegexRules(fileContent)
+
+        // Compile this file (if .jbb)
+        compiled = ""
+
+        if files[i].endsWith(".jbb")
+            res = Compiler.compileFile(className, fileContent)
+
+            // Extract Extensions class if it exists
+            if "Extensions" in res.classes
+                // Add code to current Extensions class
+                newCode = res.classes["Extensions"].code
+                extensionsClass = extensionsClassRes.classes["Extensions"]
+                inline(extensionsClass.code = extensionsClass.code + newCode;)
+
+                // Remove Extensions class from this file's output
+                res.classes.remove("Extensions")
+
+            // Get final compiled code
+            compiled = res.getCompiledCode(className)
+
+        // Copy regular files over (including .java)
+        else
+            compiled = fileContent
+            toPath = outDir + "/" + files[i] // Keep full name intact
+
+        // Write to output file
+        try writer = PrintWriter(toPath)
+            File(toPath).createNewFile()
+            writer.println(compiled)
+        catch IOException e
+            ...
+
+    // Write Extensions.java
+    try let writer = PrintWriter(outDir + "/Extensions.java")
+        File(outDir + "/Extensions.java").createNewFile()
+        writer.println(extensionsClassRes.getCompiledCode("Extensions"))
+    catch IOException e
+        ...
+
+    println "\n\nCompiling LangUtil..."
+
+    // Compile LangUtil
+    res = LangUtilCode.get()
+    langUtilCode = res.getCompiledCode("LangUtil")
+
+    try let writer = PrintWriter(outDir + "/LangUtil.java")
+        File(outDir + "/LangUtil.java").createNewFile()
+        writer.println(langUtilCode)
+    catch IOException e
+        ...
+
+    println "\n\nDone."
+
+// main:
+//     option default_decimal d
+//     a = 1.5 + 2.0
+//     println a
+//     println round(a)
 
 // package aidenbc.UVABOC
 

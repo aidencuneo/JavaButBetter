@@ -15,6 +15,7 @@
     - int add(int a, int b): a + b
 - Add ArrayList << elem
 - Add /* */
+- ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR])
 - Add standard library somehow?
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void

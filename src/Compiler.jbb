@@ -827,139 +827,117 @@ string compileExpr(ArrayList<Token> tok, bool nested):
         else
             out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ")"
 
-    // Last occurrence of dot
-    elif len(tok) > 1 && (f = findTokenTypeRev(tok, Token.Type.DOT)) > 0
-        lhs = tok[:f]
-        rhs = tok[f + 1:]
-        compLhs = compileExpr(lhs)
+    // Last occurrence of function call, dot, or slice/index
+    elif len(tok) > 1 && (f = findAnyTokenTypeRev(
+        tok, [Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR]
+    )) > 0
+        // Function calls
+        if tok[f].type == Token.Type.EXPR
+            if f != len(tok) - 1
+                // Error!
+                // Tokens found after function argument list
+                return ""
 
-        // // Detect class names (pascal case)
-        // if len(lhs) == 1 && StringParser.isPascalCase(lhs[0].value)
-        //     compLhs += ".class"
-
-        // Dotted function calls
-        if rhs[-1].type == Token.Type.EXPR
             // Eat and compile args as expression
-            args = rhs[-1].value[1:-1]
+            args = tok[-1].value[1:-1]
             compArgs = compileExpr(Tokeniser.tokLine(args))
-            rhs = rhs[:-1]
+            tok = tok[:-1]
 
             // Eat type args
             typeArgs = ""
-            if rhs[-1].type == Token.Type.SQUARE_EXPR
-                v = rhs[-1].value[1:-1]
+            if tok[-1].type == Token.Type.SQUARE_EXPR
+                v = tok[-1].value[1:-1]
                 typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-                rhs = rhs[:-1]
+                tok = tok[:-1]
 
-            id = compileExpr(rhs)
-            out += compLhs + "." + id + typeArgs + "(" + compArgs + ")"
-            // compArgs = ", new Object[] {" + compArgs + "}" if compArgs
-            // println ":::" + "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
-            // out += "LangUtil.callMethod(" + compLhs + ", \"" + id + "\"" + compArgs + ")"
-
-        // Fields
-        else
-            id = compileExpr(rhs)
-            out += compLhs + "." + id
-            // println ":::" + "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
-            // out += "LangUtil.getField(" + compLhs + ", \"" + id + "\")"
-
-    // Function calls (no dots)
-    elif len(tok) > 1 && tok[-1].type == Token.Type.EXPR
-        // Eat and compile args as expression
-        args = tok[-1].value[1:-1]
-        compArgs = compileExpr(Tokeniser.tokLine(args))
-        tok = tok[:-1]
-
-        // Eat type args
-        typeArgs = ""
-        if tok[-1].type == Token.Type.SQUARE_EXPR
-            v = tok[-1].value[1:-1]
-            typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-            tok = tok[:-1]
-
-        // Eat "new"
-        isNew = false
-        if tok[0].value == "new"
-            isNew = true
-            tok.remove(0)
-
-        // Why compile this as an expression? TODO: Test without
-        name = compileExpr(tok)
-
-        // Detect class names (pascal case)
-        isClassName = StringParser.isPascalCase(name)
-
-        // Name replacements
-        if name in [
-            "len",
-        ]
-            name = "Extensions." + name // Why use extensions? TODO: Find out why
-
-        elif name in [
-            "round",
-            "roundstr",
-            "sum",
-            "min",
-            "max",
-        ]
-            name = "LangUtil." + name
-
-        // Add "new" if needed (is a class OR already has "new")
-        name = "new " + name if isClassName || isNew
-
-        out += name + typeArgs + "(" + compArgs + ")"
-
-    // Index/slice expressions ([tokens], square brackets)
-    elif len(tok) > 1 && tok[-1].type == Token.Type.SQUARE_EXPR
-        // Get the iterable expression and replace tok with the tokens from this slice
-        iterable = compileExpr(tok[:-1])
-        expr = tok[-1].value[1:-1]
-        tok = Tokeniser.tokLine(expr)
-
-        // Slice
-        if findToken(tok, ":") != -1
-            // start?, :?, end?, :?, step?
-
-            startTokens = new ArrayList<Token>()
-            endTokens = new ArrayList<Token>()
-            stepTokens = new ArrayList<Token>()
-
-            // Eat start
-            while tok && tok[0].value != ":"
-                startTokens.add(tok[0])
+            // Eat "new"
+            isNew = false
+            if tok[0].value == "new"
+                isNew = true
                 tok.remove(0)
 
-            // Eat :
-            tok.remove(0)
+            // Why compile this as an expression? TODO: Test without
+            name = compileExpr(tok)
 
-            // Eat end
-            while tok && tok[0].value != ":"
-                endTokens.add(tok[0])
+            // Detect class names (pascal case)
+            isClassName = StringParser.isPascalCase(name)
+
+            // Name replacements
+            if name in [
+                "len",
+            ]
+                name = "Extensions." + name // Why use extensions? TODO: Find out why
+
+            elif name in [
+                "round",
+                "roundstr",
+                "sum",
+                "min",
+                "max",
+            ]
+                name = "LangUtil." + name
+
+            // Add "new" if needed (is a class OR already has "new")
+            name = "new " + name if isClassName || isNew
+
+            out += name + typeArgs + "(" + compArgs + ")"
+
+        // Dotted expressions (.)
+        elif tok[f].type == Token.Type.DOT
+            lhs = compileExpr(tok[:f])
+            rhs = compileExpr(tok[f + 1:])
+            out += lhs + "." + rhs
+
+        // Index/slice expressions ([tokens], square brackets)
+        elif tok[f].type == Token.Type.SQUARE_EXPR
+            // Get the iterable expression and replace tok with the tokens from this slice
+            iterable = compileExpr(tok[:-1])
+            expr = tok[-1].value[1:-1]
+            tok = Tokeniser.tokLine(expr)
+
+            // Slice
+            if findToken(tok, ":") != -1
+                // start?, :?, end?, :?, step?
+
+                startTokens = new ArrayList<Token>()
+                endTokens = new ArrayList<Token>()
+                stepTokens = new ArrayList<Token>()
+
+                // Eat start
+                while tok && tok[0].value != ":"
+                    startTokens.add(tok[0])
+                    tok.remove(0)
+
+                // Eat :
                 tok.remove(0)
 
-            // Eat step (and :)
-            if tok && tok[0].value == ":"
-                // Step becomes the remaining tokens
-                stepTokens = tok
-                tok.remove(0)
+                // Eat end
+                while tok && tok[0].value != ":"
+                    endTokens.add(tok[0])
+                    tok.remove(0)
 
-            // Compile tokens
-            start = compileExpr(startTokens)
-            end = compileExpr(endTokens)
-            step = compileExpr(stepTokens)
+                // Eat step (and :)
+                if tok && tok[0].value == ":"
+                    // Step becomes the remaining tokens
+                    stepTokens = tok
+                    tok.remove(0)
 
-            start = "null" if !start
-            end = "null" if !end
-            step = "1" if !step
+                // Compile tokens
+                start = compileExpr(startTokens)
+                end = compileExpr(endTokens)
+                step = compileExpr(stepTokens)
 
-            out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
-            // println iterable + "[" + start + ':' + end + ':' + step + "]"
+                start = "null" if !start
+                end = "null" if !end
+                step = "1" if !step
 
-        // Index
-        else
-            out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
-            // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
+                out += "LangUtil.slice(" + iterable + ", " + start + ", " + end + ", " + step + ")"
+                // println iterable + "[" + start + ':' + end + ':' + step + "]"
+
+            // Index
+            else
+                out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
+                // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
 
     // Expressions (parentheses)
     elif len(tok) == 1 && tok[0].type == Token.Type.EXPR

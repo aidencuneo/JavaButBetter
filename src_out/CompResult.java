@@ -2,10 +2,10 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    public HashMap < String , Class > classes;
+    public HashMap<String, Class> classes;
     public String startTemplate;
     public String endTemplate;
-    public CompResult(HashMap < String , Class > classes , String startTemplate , String endTemplate) {
+    public CompResult(HashMap<String, Class> classes, String startTemplate, String endTemplate) {
         this . classes = classes;
         this . startTemplate = startTemplate;
         this . endTemplate = endTemplate;
@@ -19,7 +19,7 @@ public class CompResult {
             if (LangUtil.isTruthy(Extensions.operEq(c, "null"))) {
                 out += Extensions.operGetIndex(classes, c).code;
             }
-            else if (LangUtil.isTruthy(!Extensions.operEq(c, mainClassName))) {
+            else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, mainClassName)))) {
                 out += Extensions.operGetIndex(classes, c);
             }
         }

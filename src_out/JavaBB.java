@@ -4,7 +4,7 @@ import java.util.*;
 public class JavaBB {
     public static void main(String[] args) {
         var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
-        var outDir = LangUtil.isTruthy(Extensions.len(args) > 1) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
+        var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(args), 1)) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
@@ -12,7 +12,7 @@ public class JavaBB {
         LangUtil.println("\nCompiling Extensions...");
         var extensionsClassRes = ExtensionsCode.get();
         LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
-        HashMap<String, String> fileContentMap = new HashMap<>();
+        var fileContentMap = new HashMap<String, String>();
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fileContent = "";
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));

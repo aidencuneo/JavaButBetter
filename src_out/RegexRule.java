@@ -7,7 +7,7 @@ public class RegexRule {
     public String replace = "";
     public String stage = "pre";
     public Pattern pattern = null;
-    public RegexRule(String find , String replace , String stage) {
+    public RegexRule(String find, String replace, String stage) {
         this . find = find;
         this . replace = replace;
         this . stage = stage;

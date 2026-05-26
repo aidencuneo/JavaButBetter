@@ -1,7 +1,10 @@
 - Fix:
     - var.code = var.code + code
     - var.code += code
-- Add sum, min, max
+    - ArrayList[Token] exprTok = tok[f + 1:]
+- Fix T[], char[], String[], etc.
+- Add compileType
+- Add sum, min, max, exit
 - TODOs in "function calls"
 - Add "as" keyword (?)
 - Make functions callable with a space like in ruby

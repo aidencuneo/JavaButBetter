@@ -5,27 +5,27 @@ public class Extensions {
     public static int len(String s) {
         return s.length();
     }
-    public static <T> int len(Iterable < T > v) {
+    public static <T> int len(Iterable<T> v) {
         var c = 0;
         for (var x : LangUtil.asIterable(v)) { ++ c; }
         return c;
     }
-    public static <T> int len(T<> v) {
+    public static <T> int len(T[] v) {
         return v.length;
     }
     public static char operGetIndex(String s, int i) {
-        i = new LangUtil.indexConvert(i, s.length());
+        i = LangUtil.indexConvert(i, s.length());
         return s.charAt(i);
     }
-    public static <T> T operGetIndex(T<> v, int i) {
-        i = new LangUtil.indexConvert(i, v.length);
+    public static <T> T operGetIndex(T[] v, int i) {
+        i = LangUtil.indexConvert(i, v.length);
         return v[i];
     }
-    public static <T> T operGetIndex(List < T > v, int i) {
-        i = new LangUtil.indexConvert(i, v.size());
+    public static <T> T operGetIndex(List<T> v, int i) {
+        i = LangUtil.indexConvert(i, v.size());
         return v.get(i);
     }
-    public static <TK, TV> TV operGetIndex(Map < TK, TV > v, TK key) {
+    public static <TK, TV> TV operGetIndex(Map<TK, TV> v, TK key) {
         return v.get(key);
     }
     public static boolean operEq(int a, int b) {
@@ -57,7 +57,7 @@ public class Extensions {
     public static boolean operIn(Object o, List lst) {
         return lst.contains(o);
     }
-    public static boolean operIn(Object o, Object<> lst) {
+    public static boolean operIn(Object o, Object[] lst) {
         return Arrays.stream(lst).anyMatch(x -> x.equals(o));
     }
     public static boolean operIn(Object o, Set s) {
@@ -84,22 +84,22 @@ public class Extensions {
     public static boolean operLt(double a, double b) {
         return a < b;
     }
-    public static boolean operGte(int a, int b) {
+    public static boolean operGe(int a, int b) {
         return a >= b;
     }
-    public static boolean operGte(long a, long b) {
+    public static boolean operGe(long a, long b) {
         return a >= b;
     }
-    public static boolean operGte(double a, double b) {
+    public static boolean operGe(double a, double b) {
         return a >= b;
     }
-    public static boolean operLte(int a, int b) {
+    public static boolean operLe(int a, int b) {
         return a <= b;
     }
-    public static boolean operLte(long a, long b) {
+    public static boolean operLe(long a, long b) {
         return a <= b;
     }
-    public static boolean operLte(double a, double b) {
+    public static boolean operLe(double a, double b) {
         return a <= b;
     }
     public static int operUnaryAdd(int a) {

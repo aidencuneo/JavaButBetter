@@ -1,0 +1,17 @@
+static string defaultDecimal
+
+static reset:
+    defaultDecimal = "f"
+
+static
+    reset()
+
+static setOption(string name, string value):
+    name .= toLowerCase()
+    let valueLower = value.toLowerCase()
+
+    if name == "decimal" || name == "default_decimal"
+        if valueLower == "float" || valueLower == "f"
+            defaultDecimal = "f"
+        elif valueLower == "double" || valueLower == "d"
+            defaultDecimal = "d"

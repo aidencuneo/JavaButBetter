@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 import java.util.function.Function;
+import java.util.stream.*;
 
 public class LangUtil {
     public static void print(Object ... args) {
@@ -10,6 +11,12 @@ public class LangUtil {
     public static void println(Object ... args) {
         for (var x : LangUtil.asIterable(args)) { System.out.print(String.valueOf(x)); }
         System.out.println("");
+    }
+    public static void exit(int code) {
+        System.exit(code);
+    }
+    public static void exit() {
+        System.exit(0);
     }
     public static <T, R> R nullCheck(T value, Function < T, R > func) {
         return LangUtil.isTruthy(!((boolean) Extensions.operEq(value, null))) ? (func.apply(value)) : (null);
@@ -25,6 +32,72 @@ public class LangUtil {
     }
     public static String roundstr(double v) {
         return String.format("%f", v);
+    }
+    public static <T> Stream<T> arrstream(T[] v) {
+        return Arrays.stream(v);
+    }
+    public static <T> Stream<T> arrstream(Iterable<T> v) {
+        return StreamSupport.stream(v.spliterator(), false);
+    }
+    public static <T> Stream<T> arrstream(Iterator<T> v) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(v, Spliterator.ORDERED), false);
+    }
+    public static <TK, TV> Stream<Map.Entry<TK, TV>> arrstream(Map<TK, TV> v) {
+        return arrstream(v.entrySet());
+    }
+    public static <T extends Comparable<? super T>> T min(T[] v) {
+        return arrstream(v).min(Comparator.naturalOrder()).orElse(null);
+    }
+    public static <T extends Comparable<? super T>> T min(Iterable<T> v) {
+        return arrstream(v).min(Comparator.naturalOrder()).orElse(null);
+    }
+    public static <TK, TV extends Comparable<? super TV>> TK min(Map<TK, TV> v) {
+        return (v.entrySet().stream().min(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null));
+    }
+    public static <T extends Comparable<? super T>> T max(T[] v) {
+        return arrstream(v).max(Comparator.naturalOrder()).orElse(null);
+    }
+    public static <T extends Comparable<? super T>> T max(Iterable<T> v) {
+        return arrstream(v).max(Comparator.naturalOrder()).orElse(null);
+    }
+    public static <TK, TV extends Comparable<? super TV>> TK max(Map<TK, TV> v) {
+        return (v.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null));
+    }
+    public static int sum(int[] v) {
+        return Arrays.stream(v).sum();
+    }
+    public static int sum(Iterable<Integer> v, int ... ignore) {
+        return arrstream(v).mapToInt(Integer::intValue).sum();
+    }
+    public static int sum(Iterator<Integer> v, int ... ignore) {
+        return arrstream(v).mapToInt(Integer::intValue).sum();
+    }
+    public static long sum(long[] v) {
+        return Arrays.stream(v).sum();
+    }
+    public static long sum(Iterable<Long> v, long ... ignore) {
+        return arrstream(v).mapToLong(Long::longValue).sum();
+    }
+    public static long sum(Iterator<Long> v, long ... ignore) {
+        return arrstream(v).mapToLong(Long::longValue).sum();
+    }
+    public static double sum(double[] v) {
+        return Arrays.stream(v).sum();
+    }
+    public static double sum(Iterable<Double> v, double ... ignore) {
+        return arrstream(v).mapToDouble(Double::doubleValue).sum();
+    }
+    public static double sum(Iterator<Double> v, double ... ignore) {
+        return arrstream(v).mapToDouble(Double::doubleValue).sum();
+    }
+    public static String sum(String[] v) {
+        return arrstream(v).collect(Collectors.joining());
+    }
+    public static String sum(Iterable<String> v, String ... ignore) {
+        return arrstream(v).collect(Collectors.joining());
+    }
+    public static String sum(Iterator<String> v, String ... ignore) {
+        return arrstream(v).collect(Collectors.joining());
     }
     public static boolean isTruthy(boolean v) {
         return v;
@@ -72,7 +145,7 @@ public class LangUtil {
     public static <T> Iterable<T> asIterable(Iterator<T> v) {
         return new IteratorToIterable<T>(v);
     }
-    public static <TK, TV> Set < TK > asIterable(Map < TK, TV > v) {
+    public static <TK, TV> Set<TK> asIterable(Map<TK, TV> v) {
         return v.keySet();
     }
     public static char[] asIterable(String s) {

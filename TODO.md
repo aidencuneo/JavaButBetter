@@ -2,7 +2,10 @@
     - var.code = var.code + code
     - var.code += code
     - ArrayList[Token] exprTok = tok[f + 1:]
-- F-strings or `` strings (TEMPLATE_STRING token)
+- Add single line functions
+    Either of:
+    - int add(int a, int b) => a + b
+    - int add(int a, int b): a + b
 - Make functions callable with a space like in ruby
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
@@ -11,16 +14,11 @@
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
 - Add compileType
-- Add sum, min, max, exit
 - TODOs in "function calls"
 - Add "as" keyword (?)
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
-- Add single line functions
-    Either of:
-    - int add(int a, int b) => a + b
-    - int add(int a, int b): a + b
 - Add ArrayList << elem
 - Add /* */
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR])
@@ -42,21 +40,19 @@
 - set/get
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
-- Add lambdas (?)
-    - str = (s => s.toUpperCase())("hello")
-    - Define functions called _anon0, _anon1, etc. in the current class and replace the lambda with it
-    - Upon further consideration, I don't think this will work very well
+- F-strings and `` strings (TEMPLATE_STRING token) (?)
 - Make JBB syntax highlighting
     - Extend from Java syntax highlighting
 
 
 
 Done:
-- Fixed arrays (such as T[], char[], String[], etc.)
-- Added diamond operator ([*] in JBB)
-- Fixed type arguments and made them use [] instead of <>
-    - Switched () to [] for function type args
-- Made string and String both evaluate to String
+- Add sum, min, max, exit
+- Fix arrays (such as T[], char[], String[], etc.)
+- Add diamond operator ([.] in JBB)
+- Fix type arguments and make them use [] instead of <>
+    - Switch () to [] for function type args
+- Make string and String both evaluate to String
     - Same for object and Object
 - Add null conditional operator
     - name?.operation()?.niceness => ???

@@ -4,20 +4,29 @@ import java.util.*;
 public class LangUtilCode {
     public static CompResult get() {
         return Compiler.compileFile("LangUtil", """
-import java.lang.reflect.*
-import java.util.function.Function
+use java.lang.reflect.*
+use java.util.function.Function
+use java.util.stream.*
 
 class Null
     ...
 
 public static class LangUtil
 
+// print & println
 print(object ... args):
     System.out.print(string.valueOf(x)) for x in args
 
 println(object ... args):
     System.out.print(string.valueOf(x)) for x in args
     System.out.println("")
+
+// exit
+exit(int code):
+    System.exit(code)
+
+exit:
+    System.exit(0)
 
 // nullCheck
 [T, R] R nullCheck(T value, Function<T, R> func):
@@ -36,6 +45,86 @@ string roundstr(double v, int places):
 
 string roundstr(double v):
     return string.format("%f", v)
+
+// arrstream
+[T] Stream[T] arrstream(T[] v):
+    ret Arrays.stream(v)
+
+[T] Stream[T] arrstream(Iterable[T] v):
+    ret StreamSupport.stream(v.spliterator(), false)
+
+[T] Stream[T] arrstream(Iterator[T] v):
+    ret StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(v, Spliterator.ORDERED),
+        false)
+
+[TK, TV] Stream[Map.Entry[TK, TV]] arrstream(Map[TK, TV] v):
+    ret arrstream(v.entrySet())
+
+// min
+[T extends Comparable[? super T]] T min(T[] v):
+    ret arrstream(v).min(Comparator.naturalOrder()).orElse(null)
+
+[T extends Comparable[? super T]] T min(Iterable[T] v):
+    ret arrstream(v).min(Comparator.naturalOrder()).orElse(null)
+
+[TK, TV extends Comparable[? super TV]] TK min(Map[TK, TV] v):
+    ret (v.entrySet().stream()
+        .min(Map.Entry.comparingByValue())
+        .map(inline(Map.Entry::getKey))
+        .orElse(null)
+    )
+
+// max
+[T extends Comparable[? super T]] T max(T[] v):
+    ret arrstream(v).max(Comparator.naturalOrder()).orElse(null)
+
+[T extends Comparable[? super T]] T max(Iterable[T] v):
+    ret arrstream(v).max(Comparator.naturalOrder()).orElse(null)
+
+[TK, TV extends Comparable[? super TV]] TK max(Map[TK, TV] v):
+    ret (v.entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(inline(Map.Entry::getKey))
+        .orElse(null)
+    )
+
+// sum
+int sum(int[] v):
+    ret Arrays.stream(v).sum()
+
+int sum(Iterable[Int] v, int ... ignore):
+    ret arrstream(v).mapToInt(inline(Integer::intValue)).sum()
+
+int sum(Iterator[Int] v, int ... ignore):
+    ret arrstream(v).mapToInt(inline(Integer::intValue)).sum()
+
+long sum(long[] v):
+    ret Arrays.stream(v).sum()
+
+long sum(Iterable[Long] v, long ... ignore):
+    ret arrstream(v).mapToLong(inline(Long::longValue)).sum()
+
+long sum(Iterator[Long] v, long ... ignore):
+    ret arrstream(v).mapToLong(inline(Long::longValue)).sum()
+
+double sum(double[] v):
+    ret Arrays.stream(v).sum()
+
+double sum(Iterable[Double] v, double ... ignore):
+    ret arrstream(v).mapToDouble(inline(Double::doubleValue)).sum()
+
+double sum(Iterator[Double] v, double ... ignore):
+    ret arrstream(v).mapToDouble(inline(Double::doubleValue)).sum()
+
+string sum(string[] v):
+    ret arrstream(v).collect(Collectors.joining())
+
+string sum(Iterable[String] v, string ... ignore):
+    ret arrstream(v).collect(Collectors.joining())
+
+string sum(Iterator[String] v, string ... ignore):
+    ret arrstream(v).collect(Collectors.joining())
 
 // isTruthy
 bool isTruthy(bool v):
@@ -84,7 +173,7 @@ List<Int> asIterable(int n):
 [T] Iterable[T] asIterable(Iterator[T] v):
     ret inline(new IteratorToIterable<T>(v))
 
-[TK, TV] Set<TK> asIterable(Map<TK, TV> v):
+[TK, TV] Set[TK] asIterable(Map[TK, TV] v):
     ret v.keySet()
 
 inline(public static char[] asIterable(String s))

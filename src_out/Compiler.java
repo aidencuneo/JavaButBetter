@@ -679,7 +679,7 @@ public class Compiler {
                 if (LangUtil.isTruthy(Extensions.operIn(name, List.of("len")))) {
                     name = Extensions.operAdd("Extensions.", name);
                 }
-                else if (LangUtil.isTruthy(Extensions.operIn(name, List.of("round", "roundstr", "sum", "min", "max")))) {
+                else if (LangUtil.isTruthy(Extensions.operIn(name, List.of("round", "roundstr", "sum", "min", "max", "exit")))) {
                     name = Extensions.operAdd("LangUtil.", name);
                 }
                 if (LangUtil.isTruthy((LangUtil.isTruthy(isClassName)) ? (isClassName) : (isNew))) { name = Extensions.operAdd("new ", name); }

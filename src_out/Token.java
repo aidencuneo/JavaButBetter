@@ -57,7 +57,7 @@ public class Token {
     }
     public Type type;
     public String value;
-    public Token(Type type , String value ) {
+    public Token(Type type , String value) {
         this . type = type;
         this . value = value;
     }
@@ -65,7 +65,7 @@ public class Token {
         this . type = Type.BLANK;
         this . value = "";
     }
-    public static Token fromString(String v , Token . Type lastToken ) {
+    public static Token fromString(String v , Token . Type lastToken) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
         Type t = Type.BLANK;
         char f = v.charAt(0);
@@ -73,7 +73,7 @@ public class Token {
         if (LangUtil.isTruthy(Extensions.operEq(v.length(), 0))) {
             t = Type.BLANK;
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(v.length(), 0))) ? (v.isBlank()) : (Extensions.operGt(v.length(), 0)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(v.length() > 0)) ? (v.isBlank()) : (v.length() > 0))) {
             t = Type.INDENT;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, ":"))) {
@@ -97,7 +97,7 @@ public class Token {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(v.startsWith("'''"))) ? (v.endsWith("'''")) : (v.startsWith("'''")))) {
             String vNoQuotes = v.substring(3, Extensions.operSub(v.length(), 3));
             String realStr = StringParser.unescapeString(vNoQuotes);
-            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(realStr.length(), 1)))) {
+            if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
                 v = Extensions.operAdd(Extensions.operAdd("\"\"\"", vNoQuotes), "\"\"\"");
             }
@@ -108,7 +108,7 @@ public class Token {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(f, '\''))) ? (Extensions.operEq(l, '\'')) : (Extensions.operEq(f, '\'')))) {
             String vNoQuotes = v.substring(1, Extensions.operSub(v.length(), 1));
             String realStr = StringParser.unescapeString(vNoQuotes);
-            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(realStr.length(), 1)))) {
+            if (LangUtil.isTruthy(!Extensions.operEq(realStr.length(), 1))) {
                 t = Type.STRING;
                 v = Extensions.operAdd(Extensions.operAdd('"', StringParser.escapeDoubleQuotes(vNoQuotes)), '"');
             }
@@ -252,13 +252,13 @@ public class Token {
         }
         return new Token(t, v);
     }
-    public static Token fromString(String v ) {
+    public static Token fromString(String v) {
         return fromString(v, Type.BLANK);
     }
-    public static boolean isAlpha(String s ) {
+    public static boolean isAlpha(String s) {
         return s.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
     }
-    public static boolean isNum(String s ) {
+    public static boolean isNum(String s) {
         return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$");
     }
     public String toString() {

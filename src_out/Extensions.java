@@ -2,185 +2,149 @@ import java.io.*;
 import java.util.*;
 
 public class Extensions {
-    public static int len(String s ) {
+    public static int len(String s) {
         return s.length();
     }
-    public static (T) int len(Iterable < T > v ) {
+    public static <T> int len(Iterable < T > v) {
         var c = 0;
         for (var x : LangUtil.asIterable(v)) { ++ c; }
         return c;
     }
-    public static (T) int len(T [] v ) {
+    public static <T> int len(T [] v) {
         return v.length;
     }
-    public static char operGetIndex(String s , int i ) {
+    public static char operGetIndex(String s , int i) {
         i = LangUtil.indexConvert(i, s.length());
         return s.charAt(i);
     }
-    public static (T) T operGetIndex(T [] v , int i ) {
+    public static <T> T operGetIndex(T [] v , int i) {
         i = LangUtil.indexConvert(i, v.length);
         return v[i];
     }
-    public static (T) T operGetIndex(List < T > v , int i ) {
+    public static <T> T operGetIndex(List < T > v , int i) {
         i = LangUtil.indexConvert(i, v.size());
         return v.get(i);
     }
-    public static (TK, TV) TV operGetIndex(Map < TK , TV > v , TK key ) {
+    public static <TK, TV> TV operGetIndex(Map < TK , TV > v , TK key) {
         return v.get(key);
     }
-    public static boolean operEq(int a , int b ) {
+    public static boolean operEq(int a , int b) {
         return a == b;
     }
-    public static boolean operEq(long a , long b ) {
+    public static boolean operEq(long a , long b) {
         return a == b;
     }
-    public static boolean operEq(double a , double b ) {
+    public static boolean operEq(double a , double b) {
         return a == b;
     }
-    public static boolean operEq(boolean a , boolean b ) {
+    public static boolean operEq(boolean a , boolean b) {
         return a == b;
     }
-    public static boolean operEq(String a , String b ) {
+    public static boolean operEq(String a , String b) {
         if (a == null) return b == null;
         return a.equals(b);
     }
-    public static boolean operEq(Object a , Object b ) {
+    public static boolean operEq(Object a , Object b) {
         if (a == null) return b == null;
         return a.equals(b);
     }
-    public static boolean operIn(char c , String s ) {
-        return !((boolean) Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1)));
+    public static boolean operIn(char c , String s) {
+        return !Extensions.operEq(s.indexOf(c), Extensions.operUnarySub(1));
     }
-    public static boolean operIn(String part , String s ) {
-        return !((boolean) Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1)));
+    public static boolean operIn(String part , String s) {
+        return !Extensions.operEq(s.indexOf(part), Extensions.operUnarySub(1));
     }
-    public static boolean operIn(Object o , List lst ) {
+    public static boolean operIn(Object o , List lst) {
         return lst.contains(o);
     }
-    public static boolean operIn(Object o , Object [] lst ) {
+    public static boolean operIn(Object o , Object [] lst) {
         return Arrays.stream(lst).anyMatch(x -> x.equals(o));
     }
-    public static boolean operIn(Object o , Set s ) {
+    public static boolean operIn(Object o , Set s) {
         return s.contains(o);
     }
-    public static boolean operIn(Object o , Map m ) {
+    public static boolean operIn(Object o , Map m) {
         return m.containsKey(o);
     }
-    public static boolean operGt(int a , int b ) {
-        return a > b;
-    }
-    public static boolean operGt(long a , long b ) {
-        return a > b;
-    }
-    public static boolean operGt(double a , double b ) {
-        return a > b;
-    }
-    public static boolean operLt(int a , int b ) {
-        return a < b;
-    }
-    public static boolean operLt(long a , long b ) {
-        return a < b;
-    }
-    public static boolean operLt(double a , double b ) {
-        return a < b;
-    }
-    public static boolean operGte(int a , int b ) {
-        return a >= b;
-    }
-    public static boolean operGte(long a , long b ) {
-        return a >= b;
-    }
-    public static boolean operGte(double a , double b ) {
-        return a >= b;
-    }
-    public static boolean operLte(int a , int b ) {
-        return a <= b;
-    }
-    public static boolean operLte(long a , long b ) {
-        return a <= b;
-    }
-    public static boolean operLte(double a , double b ) {
-        return a <= b;
-    }
-    public static int operUnaryAdd(int a ) {
+    public static int operUnaryAdd(int a) {
         return a;
     }
-    public static long operUnaryAdd(long a ) {
+    public static long operUnaryAdd(long a) {
         return a;
     }
-    public static double operUnaryAdd(double a ) {
+    public static double operUnaryAdd(double a) {
         return a;
     }
-    public static int operUnarySub(int a ) {
+    public static int operUnarySub(int a) {
         return -a;
     }
-    public static long operUnarySub(long a ) {
+    public static long operUnarySub(long a) {
         return -a;
     }
-    public static double operUnarySub(double a ) {
+    public static double operUnarySub(double a) {
         return -a;
     }
-    public static int operAdd(int a , int b ) {
+    public static int operAdd(int a , int b) {
         return a + b;
     }
-    public static long operAdd(long a , long b ) {
+    public static long operAdd(long a , long b) {
         return a + b;
     }
-    public static double operAdd(double a , double b ) {
+    public static double operAdd(double a , double b) {
         return a + b;
     }
-    public static String operAdd(String a , Object b ) {
+    public static String operAdd(String a , Object b) {
         return a + b;
     }
-    public static String operAdd(Object a , String b ) {
+    public static String operAdd(Object a , String b) {
         return a + b;
     }
-    public static String operAdd(String a , String b ) {
+    public static String operAdd(String a , String b) {
         return a + b;
     }
-    public static int operSub(int a , int b ) {
+    public static int operSub(int a , int b) {
         return a - b;
     }
-    public static long operSub(long a , long b ) {
+    public static long operSub(long a , long b) {
         return a - b;
     }
-    public static double operSub(double a , double b ) {
+    public static double operSub(double a , double b) {
         return a - b;
     }
-    public static int operMul(int a , int b ) {
+    public static int operMul(int a , int b) {
         return a * b;
     }
-    public static long operMul(long a , long b ) {
+    public static long operMul(long a , long b) {
         return a * b;
     }
-    public static double operMul(double a , double b ) {
+    public static double operMul(double a , double b) {
         return a * b;
     }
-    public static String operMul(String a , int b ) {
-        if (LangUtil.isTruthy(Extensions.operLt(b, 0))) {
+    public static String operMul(String a , int b) {
+        if (LangUtil.isTruthy(b < 0)) {
             return new StringBuilder(a).reverse().toString().repeat(Extensions.operUnarySub(b));
         }
         return a.repeat(b);
     }
-    public static String operMul(int a , String b ) {
+    public static String operMul(int a , String b) {
         return operMul(b, a);
     }
-    public static int operDiv(int a , int b ) {
+    public static int operDiv(int a , int b) {
         return a / b;
     }
-    public static long operDiv(long a , long b ) {
+    public static long operDiv(long a , long b) {
         return a / b;
     }
-    public static double operDiv(double a , double b ) {
+    public static double operDiv(double a , double b) {
         return a / b;
     }
-    public static int operMod(int a , int b ) {
+    public static int operMod(int a , int b) {
         return a % b;
     }
-    public static long operMod(long a , long b ) {
+    public static long operMod(long a , long b) {
         return a % b;
     }
-    public static double operMod(double a , double b ) {
+    public static double operMod(double a , double b) {
         return a % b;
     }
 }

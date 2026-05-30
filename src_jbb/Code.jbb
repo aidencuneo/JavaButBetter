@@ -36,4 +36,3 @@ main:
     1 << lst
     println lst
     println max(lst), ' ', min(lst), ' ', sum(lst)
-    raise Exception('hi!') if 1

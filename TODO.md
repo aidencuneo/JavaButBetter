@@ -1,10 +1,11 @@
 - Fix:
+    - lst += x
     - var.code = var.code + code
+    - var.code .= trim() --> var.code = var.code.trim()
     - var.code += code
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - list >>> 1 to rotate right, same for left
 - Add "throws ..." to methods
-- Add "as" keyword (?)
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
@@ -47,6 +48,7 @@
 
 
 Done:
+- Add "as" keyword to replace casting
 - Add raise/throw
 - << and >> operators
     - ArrayList << elem

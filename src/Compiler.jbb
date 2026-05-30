@@ -736,7 +736,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyTokenRev(tok, ["<", ">", "<=", ">=", "is", "isnt", "isnot", "in", "inside", "notin", "outside"])) != -1
+    elif (f = findAnyTokenRev(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "isnot", "in", "inside", "notin", "outside"])) != -1
         oper = tok[f].value
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
@@ -758,6 +758,8 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += "Extensions.operLt(" + lhs + ", " + rhs + ")"
         elif oper == "<="
             out += "Extensions.operLe(" + lhs + ", " + rhs + ")"
+        elif oper == "as"
+            out += "((" + rhs + ") " + lhs + ")"
         else
             out += lhs + " " + oper + " " + rhs
 

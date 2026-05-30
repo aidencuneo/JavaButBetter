@@ -6,10 +6,13 @@
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - list >>> 1 to rotate right, same for left
 - Add "throws ..." to methods
+- Add support for implementing and extending classes
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
+- Fix java lambdas (->)
+    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -17,7 +20,6 @@
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
 - Add compileType (?)
-- TODOs in "function calls" (?)
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
@@ -27,10 +29,6 @@
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
-- Change this to self (?)
-- Fix java lambdas (->)
-    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
-- Add support for implementing and extending classes
 - Add more operator overloads
     - string * int
     - char * int

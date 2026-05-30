@@ -894,7 +894,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             if name in [
                 "len",
             ]
-                name = "Extensions." + name // Why use extensions? TODO: Find out why
+                name = "Extensions." + name
 
             elif name in [
                 "round",

@@ -165,6 +165,11 @@ string operAdd(string a, string b):
 // int operAdd(bool a, bool b):
 //     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
 
+[T] ArrayList[T] +(List[T] a, List[T] b):
+    copy = ArrayList[.](a)
+    copy.addAll(b)
+    ret copy
+
 // -
 int operSub(int a, int b):
     inline(return a - b;)
@@ -237,15 +242,16 @@ string operShl(string a, string b):
     copy[arr.length] = elem
     ret copy
 
-[T, C extends Collection[T]] C operShl(C c, T elem):
+[T] List[T] operShl(List[T] c, T elem):
     c.add(elem)
     ret c
 
-[T] Iterable[T] operShl(Iterable[T] v, T elem):
-    ret () -> Stream.concat(
-        StreamSupport.stream(v.spliterator(), false), 
-        Stream.of(elem),
-    ).iterator()
+[T] T[] operShl(int count, T[] arr):
+    ret Arrays.copyOfRange(arr, count, arr.length)
+
+[T] List[T] operShl(int count, List[T] arr):
+    arr.subList(0, count).clear()
+    ret arr
 
 // >>
 int operShr(int a, int b):
@@ -268,24 +274,16 @@ string operShr(string a, string b):
     copy[0] = elem
     ret copy
 
-[T, C extends Collection[T]] C operShr(T elem, C c):
+[T] List[T] operShr(T elem, List[T] c):
     c.add(elem)
     ret c
-
-[T] Iterable[T] operShr(T elem, Iterable[T] v):
-    ret () -> Stream.concat(
-        Stream.of(elem),
-        StreamSupport.stream(v.spliterator(), false),
-    ).iterator()
 
 [T] T[] operShr(T[] arr, int count):
     ret Arrays.copyOf(arr, arr.length - count)
 
-[T, C extends Collection[T]] C operShr(C c, int count):
-    ... // ret c[:-count]
-
-[T] Iterable[T] operShr(Iterable[T] v, int count):
-    ... // ret v[:-count]
+[T] List[T] operShr(List[T] arr, int count):
+    arr.subList(arr.size() - count, arr.size()).clear()
+    ret arr
 
 // <<<
 Object operUshl(Object a, Object b):

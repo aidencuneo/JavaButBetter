@@ -144,7 +144,7 @@ bool isTruthy(string v):
     ret false if v is null
     inline(return !v.isEmpty();)
 
-inline(public static <T> boolean isTruthy(T[] v))
+[T] bool isTruthy(T[] v):
     inline(return v.length > 0;)
 
 [T] bool isTruthy(List[T] v):
@@ -166,7 +166,7 @@ bool isTruthy(object v):
     ret v
 
 List<Int> asIterable(int n):
-    lst = inline(new ArrayList<Integer>())
+    lst = ArrayList[Int]()
     inline(for (int i = 0; i < n; ++i))
         lst.add(i)
     ret lst
@@ -175,12 +175,12 @@ List<Int> asIterable(int n):
     ret v
 
 [T] Iterable[T] asIterable(Iterator[T] v):
-    ret inline(new IteratorToIterable<T>(v))
+    ret IteratorToIterable[T](v)
 
 [TK, TV] Set[TK] asIterable(Map[TK, TV] v):
     ret v.keySet()
 
-inline(public static char[] asIterable(String s))
+char[] asIterable(string s):
     ret s.toCharArray()
 
 // slice (string)
@@ -209,7 +209,7 @@ string slice(string s, int start, Null end, int step):
 [T] ArrayList[T] slice(ArrayList[T] v, int start, int end, int step):
     start = indexConvert(start, v.size())
     end = indexConvert(end, v.size())
-    inline(return new ArrayList<>(v.subList(start, end));)
+    return ArrayList[.](v.subList(start, end))
 
 [T] ArrayList[T] slice(ArrayList[T] v, Null start, Null end, int step):
     return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
@@ -221,50 +221,41 @@ string slice(string s, int start, Null end, int step):
     return slice(v, start, step > 0 ? v.size() : -1, step)
 
 // slice (List)
-[T] List[T] slice(List[T] v, int start, int end, int step):
+[T] ArrayList[T] slice(List[T] v, int start, int end, int step):
     start = indexConvert(start, v.size())
     end = indexConvert(end, v.size())
 
-    lst = inline(new ArrayList<T>())
+    lst = ArrayList[T]()
     inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
-        println i + ", " + start + ", " + end + ", " + step
         lst.add(v.get(i))
     ret lst
 
-[T] List[T] slice(List[T] v, Null start, Null end, int step):
+[T] ArrayList[T] slice(List[T] v, Null start, Null end, int step):
     return slice(v, step > 0 ? 0 : v.size() - 1, step > 0 ? v.size() : -v.size() - 1, step)
 
-[T] List[T] slice(List[T] v, Null start, int end, int step):
+[T] ArrayList[T] slice(List[T] v, Null start, int end, int step):
     return slice(v, step > 0 ? 0 : v.size() - 1, end, step)
 
-[T] List[T] slice(List[T] v, int start, Null end, int step):
+[T] ArrayList[T] slice(List[T] v, int start, Null end, int step):
     return slice(v, start, step > 0 ? v.size() : -1, step)
 
 // slice (array)
-inline(public static <T> List<T> slice(T[] v, int start, int end, int step))
-    // start = indexConvert(start, v.length)
-    // end = indexConvert(end, v.length)
+[T] ArrayList[T] slice(T[] v, int start, int end, int step):
+    start = indexConvert(start, v.length)
+    end = indexConvert(end, v.length)
 
-    // lst = inline(new ArrayList<T>())
-    // inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
-    //     lst.add(v[i])
-    // ret lst
-
-    inline(start = indexConvert(start, v.length);)
-    inline(end = indexConvert(end, v.length);)
-
-    lst = inline(new ArrayList<T>())
+    lst = ArrayList[T]()
     inline(for (int i = start; step > 0 ? (i < end) : (i > end); i += step))
         lst.add(v[i])
     ret lst
 
-inline(public static <T> List<T> slice(T[] v, Null start, Null end, int step))
+[T] ArrayList[T] slice(T[] v, Null start, Null end, int step):
     return slice(v, step > 0 ? 0 : v.length - 1, step > 0 ? v.length : -v.length - 1, step)
 
-inline(public static <T> List<T> slice(T[] v, Null start, int end, int step))
+[T] ArrayList[T] slice(T[] v, Null start, int end, int step):
     return slice(v, step > 0 ? 0 : v.length - 1, end, step)
 
-inline(public static <T> List<T> slice(T[] v, int start, Null end, int step))
+[T] ArrayList[T] slice(T[] v, int start, Null end, int step):
     return slice(v, start, step > 0 ? v.length : -1, step)
 
 // indexConvert (helper function)

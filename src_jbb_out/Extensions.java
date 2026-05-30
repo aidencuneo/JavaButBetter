@@ -139,6 +139,11 @@ public class Extensions {
     public static String operAdd(String a, String b) {
         return a + b;
     }
+    public static <T> ArrayList<T> operAdd(List<T> a, List<T> b) {
+        var copy = new ArrayList<>(a);
+        copy.addAll(b);
+        return copy;
+    }
     public static int operSub(int a, int b) {
         return a - b;
     }
@@ -204,12 +209,16 @@ public class Extensions {
         copy [arr.length] = elem;
         return copy;
     }
-    public static <T, C extends Collection<T>> C operShl(C c, T elem) {
+    public static <T> List<T> operShl(List<T> c, T elem) {
         c.add(elem);
         return c;
     }
-    public static <T> Iterable<T> operShl(Iterable<T> v, T elem) {
-        return () -> Stream.concat(StreamSupport.stream(v.spliterator(), false), Stream.of(elem)).iterator();
+    public static <T> T[] operShl(int count, T[] arr) {
+        return Arrays.copyOfRange(arr, count, arr.length);
+    }
+    public static <T> List<T> operShl(int count, List<T> arr) {
+        arr.subList(0, count).clear();
+        return arr;
     }
     public static int operShr(int a, int b) {
         return a >> b;
@@ -231,21 +240,16 @@ public class Extensions {
         copy [0] = elem;
         return copy;
     }
-    public static <T, C extends Collection<T>> C operShr(T elem, C c) {
+    public static <T> List<T> operShr(T elem, List<T> c) {
         c.add(elem);
         return c;
-    }
-    public static <T> Iterable<T> operShr(T elem, Iterable<T> v) {
-        return () -> Stream.concat(Stream.of(elem), StreamSupport.stream(v.spliterator(), false)).iterator();
     }
     public static <T> T[] operShr(T[] arr, int count) {
         return Arrays.copyOf(arr, Extensions.operSub(arr.length, count));
     }
-    public static <T, C extends Collection<T>> C operShr(C c, int count) {
-        return LangUtil.slice(c, null, Extensions.operUnarySub(count), 1);
-    }
-    public static <T> Iterable<T> operShr(Iterable<T> v, int count) {
-        return LangUtil.slice(v, null, Extensions.operUnarySub(count), 1);
+    public static <T> List<T> operShr(List<T> arr, int count) {
+        arr.subList(Extensions.operSub(arr.size(), count), arr.size()).clear();
+        return arr;
     }
     public static Object operUshl(Object a, Object b) {
         throw new UnsupportedOperationException();

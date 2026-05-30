@@ -2,15 +2,13 @@
     - var.code = var.code + code
     - var.code += code
     - ArrayList[Token] exprTok = tok[f + 1:]
-- << and >> operators
-    - ArrayList << elem
-    - elem >> ArrayList
-    - list >>> 1 to rotate right, same for left
+- list >>> 1 to rotate right, same for left
+- Add raise/throw
+- Add "as" keyword (?)
 - Add single line functions
     Either of:
     - int add(int a, int b) => a + b
     - int add(int a, int b): a + b
-- Make functions callable with a space like in ruby
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -19,8 +17,6 @@
     - Allow for (let i = 10; i; --i) (?)
 - Add compileType (?)
 - TODOs in "function calls" (?)
-- Add "as" keyword (?)
-- Add raise/throw
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
@@ -51,6 +47,11 @@
 
 
 Done:
+- << and >> operators
+    - ArrayList << elem
+    - elem >> ArrayList
+    - ArrayList >> int to pop end
+    - int << arraylist to pop start
 - Add sum, min, max, exit
 - Fix arrays (such as T[], char[], String[], etc.)
 - Add diamond operator ([.] in JBB)

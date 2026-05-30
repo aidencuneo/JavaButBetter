@@ -40,6 +40,7 @@ inline(public enum Type)
     FOR,
     TRY,
     CATCH,
+    THROW,
     DEFAULT,
     ACCESS_MOD,
     STATIC,
@@ -173,6 +174,8 @@ static Token fromString(string v, Token.Type lastToken):
         t = Type.TRY
     elif v == "catch" || v == "except"
         t = Type.CATCH
+    elif v == "throw" || v == "raise"
+        t = Type.THROW
     elif v == "default"
         t = Type.DEFAULT
     elif v == "public" || v == "private" || v == "protected" || v == "internal"

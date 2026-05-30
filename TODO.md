@@ -1,9 +1,9 @@
 - Fix:
     - var.code = var.code + code
     - var.code += code
-    - ArrayList[Token] exprTok = tok[f + 1:]
+- Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - list >>> 1 to rotate right, same for left
-- Add raise/throw
+- Add "throws ..." to methods
 - Add "as" keyword (?)
 - Add single line functions
     Either of:
@@ -47,6 +47,7 @@
 
 
 Done:
+- Add raise/throw
 - << and >> operators
     - ArrayList << elem
     - elem >> ArrayList

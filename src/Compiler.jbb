@@ -304,6 +304,10 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         out += s + ")"
 
+    // Raise
+    elif startTok == Token.Type.THROW
+        out += "throw (" + compileExpr(tok[1:]) + ");"
+
     // Inline code
     elif startTok == Token.Type.INLINE
         if len(tok) < 2

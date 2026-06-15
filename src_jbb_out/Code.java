@@ -3,6 +3,11 @@ import java.util.*;
 
 public class Code {
     public static int five() { return (5); }
+    public static void something1() {
+        LangUtil.println("something");
+    }
+    public static String retwhat() { return ("what"); }
+    public static void something() { something1(); }
     public static void main(String[] args) {
         LangUtil.println(five());
         LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 1));

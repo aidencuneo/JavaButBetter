@@ -8,7 +8,6 @@
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- Remove need for : in function definitions
 - Fix java lambdas (->)
     - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Mutable for loops
@@ -37,6 +36,9 @@
 
 
 Done:
+- Remove need for : in function definitions
+- Add single line procedures (usually void)
+    - add(int a, int b): println a + b
 - Add single line functions (lambdas)
     - int add(int a, int b) => a + b
 - Add <<< and >>> overloads

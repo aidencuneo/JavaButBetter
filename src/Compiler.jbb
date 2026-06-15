@@ -257,7 +257,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         if tok[f].type == Token.Type.IF
             out += "if (LangUtil.isTruthy("
-            string cond = compileExpr(tok[f + 1:])
+            cond = compileExpr(tok[f + 1:])
             out += cond.isEmpty() ? "true" : cond
             out += ")) { "
             out = compileStatement(tok[:f], out)
@@ -265,7 +265,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         elif tok[f].type == Token.Type.WHILE
             out += "while (LangUtil.isTruthy("
-            string cond = compileExpr(tok[f + 1:])
+            cond = compileExpr(tok[f + 1:])
             out += cond.isEmpty() ? "true" : cond
             out += ")) { "
             out = compileStatement(tok[:f], out)
@@ -273,7 +273,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         elif tok[f].type == Token.Type.UNTIL
             out += "while (!LangUtil.isTruthy("
-            string cond = compileExpr(tok[f + 1:])
+            cond = compileExpr(tok[f + 1:])
             out += cond.isEmpty() ? "false" : cond
             out += ")) { "
             out = compileStatement(tok[:f], out)
@@ -281,7 +281,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         elif tok[f].type == Token.Type.FOR
             // For-in
-            int f_in = findTokenRev(tok, "in")
+            f_in = findTokenRev(tok, "in")
             if f_in != -1
                 out += "for ("
                 varname = tok[f + 1].value
@@ -324,19 +324,37 @@ string compileStatement(ArrayList[Token] tok, string out):
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
     // Scoped statements - methods only (?)
-    elif endTok == Token.Type.SCOPE
+    elif (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
         // TODO: get/set
         if false
             ...
 
         // Methods
         else
-            // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
-            out += compileMethodDef(tok)
+            // Nothing after scope token
+            if f == len(tok) - 1
+                // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
+                out += compileMethodDef(tok)
+
+            // Code found after scope token (single line procedure)
+            else
+                out += compileMethodDef(tok[:f], false) + " { "
+                println tok[f + 1:]
+                ++scope
+                out = compileStatement(tok[f + 1:], out)
+                --scope
+                out += " }"
 
     // Single line functions
     elif (f = findTokenTypeRev(tok, Token.Type.LAMBDA)) != -1
+        // override?, access?, typeargs?, throws?, [returntype|void], name, args?, lambda, expr
         out += compileMethodDef(tok[:f], false) + " { return (" + compileExpr(tok[f + 1:]) + "); }"
+
+    // Alternative function definition (no scope token, only works with no indentation)
+    elif scope == 0 && endTok == Token.Type.EXPR
+        println "scope: " + scope + ", " + tok
+        // override?, access?, typeargs?, throws?, [returntype|void], name, args
+        out += compileMethodDef(tok)
 
     // Static block
     elif len(tok) == 1 && startTok == Token.Type.STATIC
@@ -399,8 +417,8 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         out += methodAccess + " enum " + name
 
-    // Field declarations (two tokens minimum with no indentation)
-    elif len(tok) >= 2 && !indent
+    // Field declarations (two tokens minimum with no scope or indentation)
+    elif len(tok) >= 2 && !indent && !scope
         // access?, static?, [type], name, (equals, [expr])?
 
         // Eat access tokens

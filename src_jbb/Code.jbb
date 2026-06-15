@@ -20,6 +20,12 @@ public static class Code
 
 int five => 5
 
+something1()
+    println "something"
+
+string retwhat => "what"
+something: something1()
+
 main:
     println five()
     println [5, 3, 8, 0] >>> 1

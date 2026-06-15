@@ -174,7 +174,7 @@ public class Compiler {
             f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.IF, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR));
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.IF))) {
                 out += "if (LangUtil.isTruthy(";
-                String cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+                var cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
                 out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
                 out += ")) { ";
                 out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
@@ -182,7 +182,7 @@ public class Compiler {
             }
             else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.WHILE))) {
                 out += "while (LangUtil.isTruthy(";
-                String cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+                var cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
                 out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
                 out += ")) { ";
                 out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
@@ -190,14 +190,14 @@ public class Compiler {
             }
             else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.UNTIL))) {
                 out += "while (!LangUtil.isTruthy(";
-                String cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+                var cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
                 out += LangUtil.isTruthy(cond.isEmpty()) ? ("false") : (cond);
                 out += ")) { ";
                 out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
                 out += " }";
             }
             else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.FOR))) {
-                int f_in = findTokenRev(tok, "in");
+                var f_in = findTokenRev(tok, "in");
                 if (LangUtil.isTruthy(!((boolean) Extensions.operEq(f_in, Extensions.operUnarySub(1))))) {
                     out += "for (";
                     var varname = Extensions.operGetIndex(tok, Extensions.operAdd(f, 1)).value;
@@ -231,16 +231,30 @@ public class Compiler {
             }
             out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1);
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.SCOPE))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.SCOPE))), Extensions.operUnarySub(1))))) {
             if (LangUtil.isTruthy(false)) {
                 
             }
             else {
-                out += compileMethodDef(tok);
+                if (LangUtil.isTruthy(Extensions.operEq(f, Extensions.operSub(Extensions.len(tok), 1)))) {
+                    out += compileMethodDef(tok);
+                }
+                else {
+                    out += Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { ");
+                    LangUtil.println(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+                    ++ scope;
+                    out = compileStatement(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1), out);
+                    -- scope;
+                    out += " }";
+                }
             }
         }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.LAMBDA))), Extensions.operUnarySub(1))))) {
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { return ("), compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1))), "); }");
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? (Extensions.operEq(endTok, Token.Type.EXPR)) : (Extensions.operEq(scope, 0)))) {
+            LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("scope: ", scope), ", "), tok));
+            out += compileMethodDef(tok);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "static";
@@ -286,7 +300,7 @@ public class Compiler {
             }
             out += Extensions.operAdd(Extensions.operAdd(methodAccess, " enum "), name);
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(Extensions.len(tok), 2))) ? (!LangUtil.isTruthy(indent)) : (Extensions.operGe(Extensions.len(tok), 2)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(Extensions.len(tok), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(Extensions.len(tok), 2)))) {
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {

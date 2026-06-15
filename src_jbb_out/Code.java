@@ -2,15 +2,16 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
-    public static add (a, b) => a + b;
-    public static int add (a, b) => a + b;
-    public static [T] (Exception) int one => 1 ;
     public static int add(int a, int b) throws Exception {
         throw (new Exception());
     }
     public static void main(String[] args) {
         var a = 16;
         var b = 5.7f;
+        LangUtil.println(Extensions.operAnd(142, 15));
+        LangUtil.println(Extensions.operOr(142, 15));
+        LangUtil.println(Extensions.operXor(142, 15));
+        LangUtil.println(Extensions.operBitNot(142), ' ', Extensions.operBitNot(15));
         var ccc = "hi";
         LangUtil.println("Hello, world! I'm {a} + {b}. {ccc}!");
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));

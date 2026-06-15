@@ -103,6 +103,63 @@ public class Extensions {
     public static boolean operLe(double a, double b) {
         return a <= b;
     }
+    public static int operOr(int a, int b) {
+        return a | b;
+    }
+    public static long operOr(long a, long b) {
+        return a | b;
+    }
+    public static boolean operOr(boolean a, boolean b) {
+        return (LangUtil.isTruthy(a)) ? (a) : (b);
+    }
+    public static <T> List<T> operOr(List<T> a, List<T> b) {
+        var res = new ArrayList<T>(a);
+        for (var x : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, res)))) { res.add(x); } }
+        return res;
+    }
+    public static <T> List<T> operOr(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { res.add(x); }
+        for (var x : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, res)))) { res.add(x); } }
+        return res;
+    }
+    public static int operXor(int a, int b) {
+        return a ^ b;
+    }
+    public static long operXor(long a, long b) {
+        return a ^ b;
+    }
+    public static boolean operXor(boolean a, boolean b) {
+        return !((boolean) Extensions.operEq(a, b));
+    }
+    public static int operAnd(int a, int b) {
+        return a & b;
+    }
+    public static long operAnd(long a, long b) {
+        return a & b;
+    }
+    public static boolean operAnd(boolean a, boolean b) {
+        return (LangUtil.isTruthy(a)) ? (b) : (a);
+    }
+    public static <T> List<T> operAnd(List<T> a, List<T> b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy((Extensions.operIn(x, b)))) { res.add(x); } }
+        return res;
+    }
+    public static <T> List<T> operAnd(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy((Extensions.operIn(x, b)))) { res.add(x); } }
+        return res;
+    }
+    public static int operBitNot(int a) {
+        return ~a;
+    }
+    public static long operBitNot(long a) {
+        return ~a;
+    }
+    public static boolean operBitNot(boolean a) {
+        return !LangUtil.isTruthy(a);
+    }
     public static int operUnaryAdd(int a) {
         return a;
     }

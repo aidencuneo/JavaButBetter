@@ -237,7 +237,7 @@ string compileStatement(ArrayList[Token] tok, string out):
             out += ")" if startTok == Token.Type.UNTIL
 
     // For-in loops
-    elif startTok == Token.Type.FOR && (f = findToken(tok, "in")) != -1
+    elif startTok == Token.Type.FOR && (f = findTokenRev(tok, "in")) != -1
         out += "for ("
         string varname = tok[1].value
         out += "var " + varname + " : LangUtil.asIterable("
@@ -247,45 +247,52 @@ string compileStatement(ArrayList[Token] tok, string out):
         // Declare local (inside the for loop)
         declareLocal(varname, scope + 1)
 
-    // Statement control flow (TODO: combine these together so precedence is the same)
-    elif (f = findTokenTypeRev(tok, Token.Type.IF)) != -1 && findTokenTypeRev(tok, Token.Type.ELSE) == -1
-        out += "if (LangUtil.isTruthy("
-        string cond = compileExpr(tok[f + 1:])
-        out += cond.isEmpty() ? "true" : cond
-        out += ")) { "
-        out = compileStatement(tok[:f], out)
-        out += " }"
+    // Statement control flow
+    elif (
+        (findTokenTypeRev(tok, Token.Type.ELSE) < findTokenTypeRev(tok, Token.Type.IF)) ||
+        (f = findAnyTokenTypeRev(tok, [Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR])) != -1
+    )
+        // Recalculate index
+        f = findAnyTokenTypeRev(tok, [Token.Type.IF, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR])
 
-    elif (f = findTokenTypeRev(tok, Token.Type.WHILE)) != -1
-        out += "while (LangUtil.isTruthy("
-        string cond = compileExpr(tok[f + 1:])
-        out += cond.isEmpty() ? "true" : cond
-        out += ")) { "
-        out = compileStatement(tok[:f], out)
-        out += " }"
-
-    elif (f = findTokenTypeRev(tok, Token.Type.UNTIL)) != -1
-        out += "while (!LangUtil.isTruthy("
-        string cond = compileExpr(tok[f + 1:])
-        out += cond.isEmpty() ? "false" : cond
-        out += ")) { "
-        out = compileStatement(tok[:f], out)
-        out += " }"
-
-    elif (f = findTokenTypeRev(tok, Token.Type.FOR)) != -1
-        // For-in
-        int f_in = findTokenRev(tok, "in")
-        if f_in != -1
-            out += "for ("
-            varname = tok[f + 1].value
-            out += "var " + varname + " : LangUtil.asIterable("
-            out += compileExpr(tok[f_in + 1:])
+        if tok[f].type == Token.Type.IF
+            out += "if (LangUtil.isTruthy("
+            string cond = compileExpr(tok[f + 1:])
+            out += cond.isEmpty() ? "true" : cond
             out += ")) { "
             out = compileStatement(tok[:f], out)
             out += " }"
 
-            // Declare local (inside the for loop)
-            declareLocal(varname, scope + 1)
+        elif tok[f].type == Token.Type.WHILE
+            out += "while (LangUtil.isTruthy("
+            string cond = compileExpr(tok[f + 1:])
+            out += cond.isEmpty() ? "true" : cond
+            out += ")) { "
+            out = compileStatement(tok[:f], out)
+            out += " }"
+
+        elif tok[f].type == Token.Type.UNTIL
+            out += "while (!LangUtil.isTruthy("
+            string cond = compileExpr(tok[f + 1:])
+            out += cond.isEmpty() ? "false" : cond
+            out += ")) { "
+            out = compileStatement(tok[:f], out)
+            out += " }"
+
+        elif tok[f].type == Token.Type.FOR
+            // For-in
+            int f_in = findTokenRev(tok, "in")
+            if f_in != -1
+                out += "for ("
+                varname = tok[f + 1].value
+                out += "var " + varname + " : LangUtil.asIterable("
+                out += compileExpr(tok[f_in + 1:])
+                out += ")) { "
+                out = compileStatement(tok[:f], out)
+                out += " }"
+
+                // Declare local (inside the for loop)
+                declareLocal(varname, scope + 1)
 
     // Try
     elif startTok == Token.Type.TRY
@@ -394,6 +401,12 @@ string compileStatement(ArrayList[Token] tok, string out):
                     methodName = "operNot"
                 elif methodName == "~"
                     methodName = "operBitNot"
+                elif methodName == "|"
+                    methodName = "operOr"
+                elif methodName == "^"
+                    methodName = "operXor"
+                elif methodName == "&"
+                    methodName = "operAnd"
                 elif methodName == "=="
                     methodName = "operEq"
                 elif methodName == "!="
@@ -406,10 +419,10 @@ string compileStatement(ArrayList[Token] tok, string out):
                     methodName = "operGte"
                 elif methodName == "<="
                     methodName = "operLte"
-                elif methodName == "&&"
-                    methodName = "operAnd"
-                elif methodName == "||"
-                    methodName = "operOr"
+                // elif methodName == "&&"
+                //     methodName = "operAnd"
+                // elif methodName == "||"
+                //     methodName = "operOr"
             else
                 // Error! Method name not given
                 ...
@@ -556,7 +569,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // if findTokenType(tok, Token.Type.ASSIGN) == -1 && findTokenType(tok, Token.Type.COMP_ASSIGN) == -1
         //     assignment = "Object " + getNextTemp() + " = "
 
-        let ending = endTok == Token.Type.COMMA ? "" : ";"
+        ending = endTok == Token.Type.COMMA ? "" : ";"
         out += compileExpr(tok, false) + ending
 
     return out
@@ -704,6 +717,18 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         rhs = compileExpr(tok[f + 1:])
         out += "(LangUtil.isTruthy(" + lhs + ")) ? (" + lhs + ") : (" + rhs + ")"
 
+    // Logical nor
+    elif (f = findToken(tok, "nor")) != -1
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
+        out += "!(LangUtil.isTruthy(" + lhs + ") || LangUtil.isTruthy(" + rhs + "))"
+
+    // Logical xor
+    elif (f = findToken(tok, "xor")) != -1
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
+        out += "(LangUtil.isTruthy(" + lhs + ") != LangUtil.isTruthy(" + rhs + "))"
+
     // Logical and
     elif (f = findAnyToken(tok, ["&&", "and"])) != -1
         lhs = compileExpr(tok[:f])
@@ -714,19 +739,19 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     elif (f = findTokenRev(tok, "|")) != -1
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
-        out += lhs + " | " + rhs
+        out += "Extensions.operOr(" + lhs + ", " + rhs + ")"
 
     // Bitwise xor
     elif (f = findTokenRev(tok, "^")) != -1
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
-        out += lhs + " ^ " + rhs
+        out += "Extensions.operXor(" + lhs + ", " + rhs + ")"
 
     // Bitwise and
     elif (f = findTokenRev(tok, "&")) != -1
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
-        out += lhs + " & " + rhs
+        out += "Extensions.operAnd(" + lhs + ", " + rhs + ")"
 
     // Equality operators
     elif (f = findAnyTokenRev(tok, ["==", "!=", "===", "!=="])) != -1
@@ -813,13 +838,15 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         // out += lhs + " " + tok[f].value + " " + rhs
 
     // Unary operators
-    elif len(tok) > 1 && (tok[0].type == Token.Type.UNARY_OPER || ["+", "-"].contains(tok[0].value))
+    elif len(tok) > 1 && (tok[0].type == Token.Type.UNARY_OPER || tok[0].value in ["+", "-"])
         oper = tok[0].value
         expr = compileExpr(tok[1:])
 
         // not, !
         if oper == "not" || oper == "!"
             out += "!LangUtil.isTruthy(" + expr + ")"
+        elif oper == "~"
+            out += "Extensions.operBitNot(" + expr + ")"
         elif oper == "+"
             out += "Extensions.operUnaryAdd(" + expr + ")"
         elif oper == "-"

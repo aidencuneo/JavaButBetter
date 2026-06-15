@@ -116,6 +116,92 @@ bool operLe(long a, long b):
 bool operLe(double a, double b):
     inline(return a <= b;)
 
+// |
+int operOr(int a, int b):
+    inline(return a | b;)
+
+long operOr(long a, long b):
+    inline(return a | b;)
+
+bool operOr(bool a, bool b):
+    ret a or b
+
+// Union
+[T] List[T] operOr(List[T] a, List[T] b):
+    res = ArrayList[T](a)
+    res.add(x) if x notin res for x in b
+    ret res
+
+[T] List[T] operOr(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) for x in a
+    res.add(x) if x notin res for x in b
+    ret res
+
+// ^
+int operXor(int a, int b):
+    inline(return a ^ b;)
+
+long operXor(long a, long b):
+    inline(return a ^ b;)
+
+bool operXor(bool a, bool b):
+    ret a != b
+
+// // Symmetric difference
+// [T] List[T] operXor(List[T] a, List[T] b):
+//     result = ArrayList[T]()
+//     for x in a
+//         if !b.contains(x)
+//             result.add(x)
+//     for y in b
+//         if !a.contains(y)
+//             result.add(y)
+//     ret result
+
+// [T] T[] operXor(T[] a, T[] b):
+//     result = ArrayList[T]()
+//     aList = Arrays.asList(a)
+//     bList = Arrays.asList(b)
+//     for x in a
+//         if !bList.contains(x)
+//             result.add(x)
+//     for y in b
+//         if !aList.contains(y)
+//             result.add(y)
+//     ret (T[]) result.toArray(new Object[0])
+
+// &
+int operAnd(int a, int b):
+    inline(return a & b;)
+
+long operAnd(long a, long b):
+    inline(return a & b;)
+
+bool operAnd(bool a, bool b):
+    ret a and b
+
+// Intersection
+[T] List[T] operAnd(List[T] a, List[T] b):
+    res = ArrayList[T]()
+    res.add(x) if (x in b) for x in a
+    ret res
+
+[T] List[T] operAnd(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) if (x in b) for x in a
+    ret res
+
+// ~
+int operBitNot(int a):
+    inline(return ~a;)
+
+long operBitNot(long a):
+    inline(return ~a;)
+
+bool operBitNot(bool a):
+    ret not a
+
 // Unary +
 int operUnaryAdd(int a):
     return a

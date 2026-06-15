@@ -3,14 +3,16 @@
     - var.code = var.code + code
     - var.code .= trim() --> var.code = var.code.trim()
     - var.code += code
-- Add "throws ..." to methods
-- Add support for implementing and extending classes
-- Add more operator overloads (confirm)
-    - string * int
-    - char * int
+- Fix inline if/for statements clashing
 - Add XOR and bitwise operators
     - Add xor as a boolean operator
+    - Add nor as a boolean operator
     - Also add ^, &, | (confirm)
+    - Add ~ and overloads for it
+- For ^, &, |, add relevant overloads for lists
+    - | = Union
+    - & = Intersection
+    - ^ = Symmetric difference
 - Add custom operator overloading
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
@@ -51,6 +53,8 @@
 
 
 Done:
+- Add support for implementing and extending classes
+- Add "throws ..." to methods
 - Add "as" keyword to replace casting
 - Add raise/throw
 - << and >> operators

@@ -18,16 +18,18 @@
 
 public static class Code
 
-add(a, b) => a + b
-int add(a, b) => a + b
-+# [T] (Exception) int one => 1
-
 (Exception) int add(int a, int b):
     raise Exception()
 
 main:
     a = 16
     b = 5.7
+
+    println 142 & 15
+    println 142 | 15
+    println 142 ^ 15
+    println ~142, ' ', ~15
+
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"
     println "aiden" << "blishen" << "cuneo"

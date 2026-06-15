@@ -323,7 +323,7 @@ public class Extensions {
     public static <T> T[] operUshl(T[] arr, int amount) {
         var size = Extensions.len(arr);
         var copy = Arrays.copyOf(arr, size);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy [i] = Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size));
         }
@@ -332,7 +332,7 @@ public class Extensions {
     public static <T> List<T> operUshl(List<T> arr, int amount) {
         var size = Extensions.len(arr);
         var copy = new ArrayList<T>(arr);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy.set(i, Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size)));
         }
@@ -347,7 +347,7 @@ public class Extensions {
     public static <T> T[] operUshr(T[] arr, int amount) {
         var size = Extensions.len(arr);
         var copy = Arrays.copyOf(arr, size);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy [i] = Extensions.operGetIndex(arr, Extensions.operSub(i, amount));
         }
@@ -356,7 +356,7 @@ public class Extensions {
     public static <T> List<T> operUshr(List<T> arr, int amount) {
         var size = Extensions.len(arr);
         var copy = new ArrayList<T>(arr);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy.set(i, Extensions.operGetIndex(arr, Extensions.operSub(i, amount)));
         }

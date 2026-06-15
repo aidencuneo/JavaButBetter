@@ -2,63 +2,31 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
-    public static ArrayList<RegexRule> regexRules = new ArrayList<>();
-    static {
-        
-    }
-    public static ArrayList<String> precompileFile(String className, String code) {
-        var lines = Tokeniser.splitFile(code);
-        for (var i : LangUtil.asIterable(Extensions.len(lines))) {
-            var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
-            if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
-            tok.remove(0);
-            var keep = precompileStatement(tok);
-            if (LangUtil.isTruthy(!LangUtil.isTruthy(keep))) { lines.set(i, ""); }
-        }
-        return lines;
-    }
-    public static boolean precompileStatement(ArrayList<Token> tok) {
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return false; }
-        var types = Tokeniser.getTokenTypes(tok);
-        var startTok = Extensions.operGetIndex(types, 0);
-        var endTok = Extensions.operGetIndex(types, Extensions.operUnarySub(1));
-        var f = Extensions.operUnarySub(1);
-        var f2 = Extensions.operUnarySub(1);
-        if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.REGEX))) {
-            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(tok), 2))) {
-                return false;
-            }
-            var stage = "pre";
-            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 1).type, Token.Type.ID))) {
-                stage = Extensions.operGetIndex(tok, 1).value;
-            }
-            if (LangUtil.isTruthy(Extensions.operEq(((f = Compiler.findTokenType(tok, Token.Type.EXPR))), Extensions.operUnarySub(1)))) {
-                return false;
-            }
-            var pair = LangUtil.slice(Extensions.operGetIndex(tok, f).value, 1, Extensions.operUnarySub(1), 1);
-            var pairTok = Tokeniser.tokLine(pair);
-            LangUtil.println(pairTok);
-            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(pairTok), 2))) {
-                return false;
-            }
-            var find = LangUtil.slice(Extensions.operGetIndex(pairTok, 0).value, 1, Extensions.operUnarySub(1), 1);
-            var replace = LangUtil.slice(Extensions.operGetIndex(pairTok, 1).value, 1, Extensions.operUnarySub(1), 1);
-            regexRules.add(new RegexRule(find, replace, stage));
-            return false;
-        }
-        return true;
-    }
-    public static String applyRegexRules(String code, int attempts) {
-        for (var rule : LangUtil.asIterable(regexRules)) {
-            for (var i : LangUtil.asIterable(LangUtil.range(0, attempts, null))) {
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(rule.find(code)))) { break; }
-                code = rule.apply(code);
-            }
-        }
-        return code;
-    }
-    public static String applyRegexRules(String code) {
-        return applyRegexRules(code, 10000);
+    public static void main(String[] args) {
+        var s = LangUtil.listOf();
+        s = Extensions.operAdd(s, LangUtil.listOf(5));
+        s = Extensions.operAdd(s, (LangUtil.listOf(5)));
+        LangUtil.println(s);
+        LangUtil.println(Extensions.operOr(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
+        LangUtil.println(Extensions.operAnd(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
+        LangUtil.println(Extensions.operXor(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
+        LangUtil.println(Extensions.operOr(142, 15));
+        LangUtil.println(Extensions.operXor(142, 15));
+        LangUtil.println(Extensions.operBitNot(142), ' ', Extensions.operBitNot(15));
+        var ccc = "hi";
+        LangUtil.println("Hello, world! I'm {a} + {b}. {ccc}!");
+        LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));
+        var lst = Extensions.operShr(LangUtil.listOf(5, 4, 3), 1);
+        LangUtil.println(lst);
+        Extensions.operShl(Extensions.operShl(Extensions.operShl(lst, 6), 4), 0);
+        LangUtil.println(lst);
+        lst = Extensions.operAdd(lst, LangUtil.listOf(2, 3));
+        LangUtil.println(lst);
+        Extensions.operShr(lst, 1);
+        LangUtil.println(lst);
+        Extensions.operShl(1, lst);
+        LangUtil.println(lst);
+        LangUtil.println(LangUtil.max(lst), ' ', LangUtil.min(lst), ' ', LangUtil.sum(lst));
     }
 }
 

@@ -232,7 +232,6 @@ public class Compiler {
             out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2)))) {
-            LangUtil.println(Extensions.operAdd("This is a field definition: ", tok));
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
@@ -333,7 +332,6 @@ public class Compiler {
             out += Extensions.operAdd(Extensions.operAdd(methodAccess, " enum "), name);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(Extensions.len(tok), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(Extensions.len(tok), 2)))) {
-            LangUtil.println(Extensions.operAdd("This is a field declaration: ", tok));
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
@@ -413,26 +411,14 @@ public class Compiler {
             if (LangUtil.isTruthy(nested)) { out += ")"; }
         }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.COMP_ASSIGN))), Extensions.operUnarySub(1))))) {
-            var varname = "";
+            LangUtil.println(Extensions.operAdd("This is a comp assign: ", tok));
+            var id = Token.joinTokens(LangUtil.slice(tok, null, f, 1));
             var oper = LangUtil.slice(Extensions.operGetIndex(tok, f).value, null, Extensions.operUnarySub(1), 1);
-            if (LangUtil.isTruthy(Extensions.operEq(f, 1))) {
-                varname = Extensions.operGetIndex(tok, 0).value;
-            }
-            else {
-                
-            }
-            if (LangUtil.isTruthy(nested)) { out += "("; }
-            var exprTok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
-            if (LangUtil.isTruthy(Extensions.operIn(oper, LangUtil.listOf(".", "**", "??")))) {
-                exprTok.add(0, Token.fromString(varname));
-                exprTok.add(1, Token.fromString(oper));
-                out += Extensions.operAdd(varname, " = ");
-            }
-            else {
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(varname, " "), Extensions.operGetIndex(tok, f).value), " ");
-            }
-            out += compileExpr(exprTok);
-            if (LangUtil.isTruthy(nested)) { out += ")"; }
+            var value = Token.joinTokens(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+            var expr = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(id, " = "), id), " "), oper), " ("), value), ")");
+            tok = Tokeniser.tokLine(expr);
+            LangUtil.println(expr);
+            out += compileExpr(tok, nested);
         }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.ARROW))), Extensions.operUnarySub(1))))) {
             if (LangUtil.isTruthy(!((boolean) Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)))) {

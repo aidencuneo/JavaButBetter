@@ -265,6 +265,17 @@ public class Token {
     public static boolean isNum(String s) {
         return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$");
     }
+    public static String joinTokens(ArrayList < Token > tok, String delim) {
+        var joined = "";
+        for (var i : LangUtil.asIterable(LangUtil.range(0, Extensions.len(tok), null))) {
+            joined += Extensions.operGetIndex(tok, i).value;
+            if (LangUtil.isTruthy(Extensions.operLt(i, Extensions.operSub(Extensions.len(tok), 1)))) { joined += delim; }
+        }
+        return joined;
+    }
+    public static String joinTokens(ArrayList < Token > tok) {
+        return joinTokens(tok, " ");
+    }
     public String toString() {
         return Extensions.operAdd(Extensions.operAdd(type, ":"), value);
     }

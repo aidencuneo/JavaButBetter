@@ -162,7 +162,7 @@ public class LangUtil {
         }
         var newStr = "";
         for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            newStr += s.charAt(i);
+            newStr = Extensions.operAdd(newStr, (s.charAt(i)));
         }
         return newStr;
     }
@@ -226,7 +226,7 @@ public class LangUtil {
         return slice(v, start, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.length) : (Extensions.operUnarySub(1)), step);
     }
     public static int indexConvert(int index, int size) {
-        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
+        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index = Extensions.operAdd(index, (size)); }
         return index;
     }
     public static IntRange range(int start, int stop, int step) {

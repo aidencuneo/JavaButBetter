@@ -588,34 +588,19 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
     // Compound assignments (no dots)
     elif (f = findTokenType(tok, Token.Type.COMP_ASSIGN)) != -1
-        varname = ""
+        // [id], oper=, [value]
+
+        id = Token.joinTokens(tok[:f])
         oper = tok[f].value[:-1]
+        value = Token.joinTokens(tok[f + 1:])
 
-        // name = value
-        if f == 1
-            varname = tok[0].value
+        // Transform into "id = id + (value)"
+        // List: [id], =, [id], oper, ([value])
+        expr = id + " = " + id + " " + oper + " (" + value + ")"
+        tok = Tokeniser.tokLine(expr)
 
-        // Error!
-        else
-            ...
-
-        out += "(" if nested
-
-        exprTok = tok[f + 1:]
-
-        // For custom operators, convert to 'name = (name oper value)'
-        if oper in [".", "**", "??"]
-            exprTok.add(0, Token.fromString(varname))
-            exprTok.add(1, Token.fromString(oper))
-            out += varname + " = "
-
-        // Otherwise, use 'name oper= (value)'
-        else
-            out += varname + " " + tok[f].value + " "
-
-        out += compileExpr(exprTok)
-
-        out += ")" if nested
+        println expr
+        out += compileExpr(tok, nested)
 
     // Arrow function (Java lambda)
     elif (f = findTokenType(tok, Token.Type.ARROW)) != -1

@@ -18,146 +18,32 @@
 
 public static class Code
 
-// These fields persist for all files
-ArrayList[RegexRule] regexRules = ArrayList[.]()
+main:
+    s = []
+    s = s + [5]
+    s += [5]
+    println s
 
-static
-    ...
+    println [1, 2, 3] | [2, 3, 4]
+    println [1, 2, 3] & [2, 3, 4]
+    println [1, 2, 3] ^ [2, 3, 4]
+    // println ~[1, 2, 3]
+    println 142 | 15
+    println 142 ^ 15
+    println ~142, ' ', ~15
 
-    // Built-in regex rules (temporary)
-
-    // // Python f-strings
-    // regexRules.add(RegexRule(
-    //     "f(\".*)\\{([^\\{\\}]+)\\}(.*?\")",
-    //     "$1\" + ($2) + \"$3",
-    //     "pre",
-    // ))
-
-    // // JavaScript template strings
-    // regexRules.add(RegexRule(
-    //     "(`.*?)\\$\\{(.+)\\}(.*?`)",
-    //     "$1\" + ($2) + \"$3",
-    //     "pre'",
-    // ))
-
-ArrayList[string] precompileFile(string className, string code):
-    lines = Tokeniser.splitFile(code)
-
-    for i in len(lines)
-        tok = Tokeniser.tokLine(lines[i], true)
-        next if !tok
-        tok.remove(0) // Ignore INDENT token
-
-        keep = precompileStatement(tok)
-        lines.set(i, "") if !keep
-
-    return lines
-
-bool precompileStatement(ArrayList[Token] tok):
-    return false if !tok
-
-    types = Tokeniser.getTokenTypes(tok)
-    startTok = types[0]
-    endTok = types[-1]
-    f = -1
-    f2 = -1
-
-    // Custom regex
-    if startTok == Token.Type.REGEX
-        if len(tok) < 2
-            // Error!
-            return false
-
-        stage = "pre"
-
-        // If there is an identifier after the first token, take this as the regex insertion stage
-        if tok[1].type == Token.Type.ID
-            stage = tok[1].value
-
-        // Find the expression
-        if (f = Compiler.findTokenType(tok, Token.Type.EXPR)) == -1
-            // Error!
-            return false
-
-        pair = tok[f].value[1:-1]
-        pairTok = Tokeniser.tokLine(pair)
-        println pairTok
-
-        // Not enough tokens in the expression?
-        if len(pairTok) < 2
-            // Error!
-            return false
-
-        find = pairTok[0].value[1:-1]
-        replace = pairTok[1].value[1:-1]
-
-        regexRules.add(RegexRule(find, replace, stage))
-        return false
-
-    // Leave line unchanged (keep)
-    return true
-
-string applyRegexRules(string code, int attempts):
-    for rule in regexRules
-        for i in [..attempts]
-            break if !rule.find(code)
-            code = rule.apply(code)
-    return code
-
-string applyRegexRules(string code):
-    return applyRegexRules(code, 10000)
-
-// int five => 5
-
-// something1()
-//     println "something"
-
-// string retwhat => "what"
-// something: something1()
-
-// main:
-//     println five()
-//     println [5, 3, 8, 0] >>> 1
-//     println [5, 3, 8, 0] >>> 2
-//     println [5, 3, 8, 0] >>> 3
-//     println [5, 3, 8, 0] >>> 4
-//     println [5, 3, 8, 0] >>> 5
-//     println [5, 3, 8, 0] >>> 6
-//     println [5, 3, 8, 0] >>> 7
-//     println [5, 3, 8, 0] >>> 8
-
-//     println [5, 3, 8, 0] <<< 1
-//     println [5, 3, 8, 0] <<< 2
-//     println [5, 3, 8, 0] <<< 3
-//     println [5, 3, 8, 0] <<< 4
-//     println [5, 3, 8, 0] <<< 5
-//     println [5, 3, 8, 0] <<< 6
-//     println [5, 3, 8, 0] <<< 7
-//     println [5, 3, 8, 0] <<< 8
-
-//     a = 16
-//     b = 5.7
-
-//     println [1, 2, 3] | [2, 3, 4]
-//     println [1, 2, 3] & [2, 3, 4]
-//     println [1, 2, 3] ^ [2, 3, 4]
-//     // println ~[1, 2, 3]
-//     println 142 | 15
-//     println 142 ^ 15
-//     println ~142, ' ', ~15
-
-//     ccc = "hi"
-//     println "Hello, world! I'm {a} + {b}. {ccc}!"
-//     println "aiden" << "blishen" << "cuneo"
-//     // lst = [5, 4, 3]
-//     lst = [5, 4, 3] >> 1
-//     println lst
-//     lst << 6 << 4 << 0
-//     println lst
-//     lst = lst + [2, 3]
-//     println lst
-//     lst >> 1
-//     println lst
-//     1 << lst
-//     println lst
-//     println max(lst), ' ', min(lst), ' ', sum(lst)
+    ccc = "hi"
+    println "Hello, world! I'm {a} + {b}. {ccc}!"
+    println "aiden" << "blishen" << "cuneo"
+    // lst = [5, 4, 3]
+    lst = [5, 4, 3] >> 1
+    println lst
+    lst << 6 << 4 << 0
+    println lst
+    lst = lst + [2, 3]
+    println lst
+    lst >> 1
+    println lst
+    1 << lst
+    println lst
+    println max(lst), ' ', min(lst), ' ', sum(lst)

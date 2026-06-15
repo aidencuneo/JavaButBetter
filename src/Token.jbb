@@ -216,5 +216,15 @@ static bool isAlpha(string s):
 static bool isNum(string s):
     return s.matches("^[0-9]*\\.?[0-9]*(f|d)?$")
 
+static string joinTokens(ArrayList<Token> tok, string delim):
+    joined = ""
+    for i in [..len(tok)]
+        joined += tok[i].value
+        joined += delim if i < len(tok) - 1
+    return joined
+
+static string joinTokens(ArrayList<Token> tok):
+    return joinTokens(tok, " ")
+
 string toString:
     return type + ":" + value

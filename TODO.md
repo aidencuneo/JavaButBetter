@@ -1,26 +1,30 @@
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
+- Add compileType
+    - Use in variables, methods, method args, etc.
+    - Takes a list of tokens and compiles it as a type
+    - Could contain type args
+- Add custom operator overloading
+    - Add list of symbols to tokeniser to be recognised as binary operators
+    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
+    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
+- Add /* */
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
-- Add custom operator overloading
-    - Add list of symbols to tokeniser to be recognised as binary operators
-    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
-    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
 - Fix java lambdas (->)
     - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
-- Add compileType (?)
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
-- Add /* */
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR]) (?)
 - Add standard library somehow? (?)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
+    - Aliases can be defined anywhere and used anywhere else
 - set/get (?)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}

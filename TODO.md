@@ -3,9 +3,6 @@
     - var.code = var.code + code
     - var.code .= trim() --> var.code = var.code.trim()
     - var.code += code
-- Add <<< and >>> overloads
-    - list >>> int, list <<< int
-    - list >>> 1 to rotate right, same for left
 - Add custom operator overloading
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
@@ -45,6 +42,9 @@
 
 
 Done:
+- Add <<< and >>> overloads
+    - list >>> int, list <<< int
+    - list >>> 1 to rotate right, same for left
 - For ^, &, |, add relevant overloads for lists
     - | = Union
     - & = Intersection

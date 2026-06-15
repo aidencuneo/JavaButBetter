@@ -22,6 +22,24 @@ public static class Code
     raise Exception()
 
 main:
+    println [5, 3, 8, 0] >>> 1
+    println [5, 3, 8, 0] >>> 2
+    println [5, 3, 8, 0] >>> 3
+    println [5, 3, 8, 0] >>> 4
+    println [5, 3, 8, 0] >>> 5
+    println [5, 3, 8, 0] >>> 6
+    println [5, 3, 8, 0] >>> 7
+    println [5, 3, 8, 0] >>> 8
+
+    println [5, 3, 8, 0] <<< 1
+    println [5, 3, 8, 0] <<< 2
+    println [5, 3, 8, 0] <<< 3
+    println [5, 3, 8, 0] <<< 4
+    println [5, 3, 8, 0] <<< 5
+    println [5, 3, 8, 0] <<< 6
+    println [5, 3, 8, 0] <<< 7
+    println [5, 3, 8, 0] <<< 8
+
     a = 16
     b = 5.7
 

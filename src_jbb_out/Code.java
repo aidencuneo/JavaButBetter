@@ -6,6 +6,22 @@ public class Code {
         throw (new Exception());
     }
     public static void main(String[] args) {
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 1));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 2));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 3));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 4));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 5));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 6));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 7));
+        LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 8));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 1));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 2));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 3));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 4));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 5));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 6));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 7));
+        LangUtil.println(Extensions.operUshl(LangUtil.listOf(5, 3, 8, 0), 8));
         var a = 16;
         var b = 5.7f;
         LangUtil.println(Extensions.operOr(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));

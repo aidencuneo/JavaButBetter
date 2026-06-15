@@ -320,14 +320,47 @@ public class Extensions {
         arr.subList(Extensions.operSub(arr.size(), count), arr.size()).clear();
         return arr;
     }
-    public static Object operUshl(Object a, Object b) {
-        throw new UnsupportedOperationException();
+    public static <T> T[] operUshl(T[] arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = Arrays.copyOf(arr, size);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy [i] = Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size));
+        }
+        return copy;
+    }
+    public static <T> List<T> operUshl(List<T> arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = new ArrayList<T>(arr);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy.set(i, Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size)));
+        }
+        return copy;
     }
     public static int operUshr(int a, int b) {
         return a >>> b;
     }
     public static long operUshr(long a, long b) {
         return a >>> b;
+    }
+    public static <T> T[] operUshr(T[] arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = Arrays.copyOf(arr, size);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy [i] = Extensions.operGetIndex(arr, Extensions.operSub(i, amount));
+        }
+        return copy;
+    }
+    public static <T> List<T> operUshr(List<T> arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = new ArrayList<T>(arr);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy.set(i, Extensions.operGetIndex(arr, Extensions.operSub(i, amount)));
+        }
+        return copy;
     }
 }
 

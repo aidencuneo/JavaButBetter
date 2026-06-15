@@ -355,8 +355,23 @@ string operShr(string a, string b):
     ret arr
 
 // <<<
-Object operUshl(Object a, Object b):
-    inline(throw new UnsupportedOperationException();)
+[T] T[] operUshl(T[] arr, int amount):
+    // Rotate left by amount
+    size = len(arr)
+    copy = Arrays.copyOf(arr, size)
+    amount %= size
+    for i in [..size]
+        copy[i] = arr[(i + amount) % size]
+    ret copy
+
+[T] List[T] operUshl(List[T] arr, int amount):
+    // Rotate left by amount
+    size = len(arr)
+    copy = ArrayList[T](arr)
+    amount %= size
+    for i in [..size]
+        copy.set(i, arr[(i + amount) % size])
+    ret copy
 
 // >>>
 int operUshr(int a, int b):
@@ -364,6 +379,24 @@ int operUshr(int a, int b):
 
 long operUshr(long a, long b):
     inline(return a >>> b;)
+
+[T] T[] operUshr(T[] arr, int amount):
+    // Rotate right by amount
+    size = len(arr)
+    copy = Arrays.copyOf(arr, size)
+    amount %= size
+    for i in [..size]
+        copy[i] = arr[i - amount]
+    ret copy
+
+[T] List[T] operUshr(List[T] arr, int amount):
+    // Rotate right by amount
+    size = len(arr)
+    copy = ArrayList[T](arr)
+    amount %= size
+    for i in [..size]
+        copy.set(i, arr[i - amount])
+    ret copy
 
     """.trim());
     }

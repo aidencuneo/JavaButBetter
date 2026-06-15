@@ -239,6 +239,9 @@ public class Compiler {
                 out += compileMethodDef(tok);
             }
         }
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.LAMBDA))), Extensions.operUnarySub(1))))) {
+            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { return ("), compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1))), "); }");
+        }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             out += "static";
         }
@@ -694,7 +697,7 @@ public class Compiler {
     public static String compileExpr(ArrayList<Token> tok) {
         return compileExpr(tok, true);
     }
-    public static String compileMethodDef(ArrayList<Token> tok) {
+    public static String compileMethodDef(ArrayList<Token> tok, boolean declareLocals) {
         var out = "";
         if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "!")))) : (tok))) {
             out += "@Override ";
@@ -718,11 +721,13 @@ public class Compiler {
             tok.remove(0);
         }
         if (LangUtil.isTruthy(thrown)) { thrown = Extensions.operAdd(" throws ", thrown); }
-        tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.SCOPE)) : (tok))) {
+            tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+        }
         var args = "()";
         if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.EXPR)) : (tok))) {
             var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
-            args = compileMethodArgs(Tokeniser.tokLine(v), true);
+            args = compileMethodArgs(Tokeniser.tokLine(v), declareLocals);
             tok.remove(Extensions.operSub(Extensions.len(tok), 1));
         }
         var methodName = "";
@@ -751,6 +756,9 @@ public class Compiler {
             return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), methodName), args), thrown);
         }
         return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), returnType), returnTypeArgs), " "), methodName), args), thrown);
+    }
+    public static String compileMethodDef(ArrayList<Token> tok) {
+        return compileMethodDef(tok, true);
     }
     public static String compileMethodArgs(ArrayList<Token> tok, boolean declareLocals) {
         var out = "";

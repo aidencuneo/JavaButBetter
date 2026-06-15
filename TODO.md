@@ -3,17 +3,12 @@
     - var.code = var.code + code
     - var.code .= trim() --> var.code = var.code.trim()
     - var.code += code
+- Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Add custom operator overloading
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
 - Remove need for : in function definitions
-- Fix: ArrayList[Token] exprTok = tok[f + 1:]
-- Add single line functions
-    Any of:
-    - int add(int a, int b) => a + b
-    - int add(int a, int b) = a + b
-    - int add(int a, int b): a + b
 - Fix java lambdas (->)
     - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Mutable for loops
@@ -42,6 +37,8 @@
 
 
 Done:
+- Add single line functions (lambdas)
+    - int add(int a, int b) => a + b
 - Add <<< and >>> overloads
     - list >>> int, list <<< int
     - list >>> 1 to rotate right, same for left

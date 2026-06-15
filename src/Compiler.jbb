@@ -334,6 +334,10 @@ string compileStatement(ArrayList[Token] tok, string out):
             // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
             out += compileMethodDef(tok)
 
+    // Single line functions
+    elif (f = findTokenTypeRev(tok, Token.Type.LAMBDA)) != -1
+        out += compileMethodDef(tok[:f], false) + " { return (" + compileExpr(tok[f + 1:]) + "); }"
+
     // Static block
     elif len(tok) == 1 && startTok == Token.Type.STATIC
         out += "static"
@@ -939,7 +943,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 string compileExpr(ArrayList[Token] tok):
     return compileExpr(tok, true)
 
-string compileMethodDef(ArrayList[Token] tok):
+string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
     // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
     out = ""
 
@@ -971,15 +975,16 @@ string compileMethodDef(ArrayList[Token] tok):
         tok.remove(0)
     thrown = " throws " + thrown if thrown
 
-    // Eat scope token
-    tok.remove(len(tok) - 1)
+    // Eat scope token (if it exists)
+    if tok && tok[-1].type == Token.Type.SCOPE
+        tok.remove(len(tok) - 1)
 
     // Eat method args
     args = "()"
     if tok && tok[-1].type == Token.Type.EXPR
         // Compile method arguments
         v = tok[-1].value[1:-1]
-        args = compileMethodArgs(Tokeniser.tokLine(v), true)
+        args = compileMethodArgs(Tokeniser.tokLine(v), declareLocals)
         tok.remove(len(tok) - 1)
 
     // Eat method name (can be many different token types)
@@ -1014,6 +1019,9 @@ string compileMethodDef(ArrayList[Token] tok):
     if methodName == currentClass
         ret methodAccess + " " + typeArgs + methodName + args + thrown
     ret methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args + thrown
+
+string compileMethodDef(ArrayList[Token] tok):
+    ret compileMethodDef(tok, true)
 
 string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
     out = ""

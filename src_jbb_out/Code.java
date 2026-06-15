@@ -2,10 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
-    public static int add(int a, int b) throws Exception {
-        throw (new Exception());
-    }
+    public static int five() { return (5); }
     public static void main(String[] args) {
+        LangUtil.println(five());
         LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 1));
         LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 2));
         LangUtil.println(Extensions.operUshr(LangUtil.listOf(5, 3, 8, 0), 3));

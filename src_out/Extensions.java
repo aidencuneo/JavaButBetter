@@ -103,6 +103,75 @@ public class Extensions {
     public static boolean operLe(double a, double b) {
         return a <= b;
     }
+    public static int operOr(int a, int b) {
+        return a | b;
+    }
+    public static long operOr(long a, long b) {
+        return a | b;
+    }
+    public static boolean operOr(boolean a, boolean b) {
+        return (LangUtil.isTruthy(a)) ? (a) : (b);
+    }
+    public static <T> List<T> operOr(List<T> a, List<T> b) {
+        var res = new ArrayList<T>(a);
+        for (var x : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, res)))) { res.add(x); } }
+        return res;
+    }
+    public static <T> List<T> operOr(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { res.add(x); }
+        for (var x : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, res)))) { res.add(x); } }
+        return res;
+    }
+    public static int operXor(int a, int b) {
+        return a ^ b;
+    }
+    public static long operXor(long a, long b) {
+        return a ^ b;
+    }
+    public static boolean operXor(boolean a, boolean b) {
+        return !((boolean) Extensions.operEq(a, b));
+    }
+    public static <T> List<T> operXor(List<T> a, List<T> b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, b)))) { res.add(x); } }
+        for (var y : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(y, a)))) { res.add(y); } }
+        return res;
+    }
+    public static <T> List<T> operXor(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, b)))) { res.add(x); } }
+        for (var y : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(y, a)))) { res.add(y); } }
+        return res;
+    }
+    public static int operAnd(int a, int b) {
+        return a & b;
+    }
+    public static long operAnd(long a, long b) {
+        return a & b;
+    }
+    public static boolean operAnd(boolean a, boolean b) {
+        return (LangUtil.isTruthy(a)) ? (b) : (a);
+    }
+    public static <T> List<T> operAnd(List<T> a, List<T> b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy((Extensions.operIn(x, b)))) { res.add(x); } }
+        return res;
+    }
+    public static <T> List<T> operAnd(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy((Extensions.operIn(x, b)))) { res.add(x); } }
+        return res;
+    }
+    public static int operBitNot(int a) {
+        return ~a;
+    }
+    public static long operBitNot(long a) {
+        return ~a;
+    }
+    public static boolean operBitNot(boolean a) {
+        return !LangUtil.isTruthy(a);
+    }
     public static int operUnaryAdd(int a) {
         return a;
     }
@@ -138,6 +207,11 @@ public class Extensions {
     }
     public static String operAdd(String a, String b) {
         return a + b;
+    }
+    public static <T> ArrayList<T> operAdd(List<T> a, List<T> b) {
+        var copy = new ArrayList<>(a);
+        copy.addAll(b);
+        return copy;
     }
     public static int operSub(int a, int b) {
         return a - b;
@@ -191,19 +265,29 @@ public class Extensions {
         return a << b;
     }
     public static String operShl(String a, Object b) {
-        return Extensions.operAdd(a, String.valueOf(b));
+        return Extensions.operAdd(a, b);
+    }
+    public static String operShl(Object a, String b) {
+        return Extensions.operAdd(a, b);
+    }
+    public static String operShl(String a, String b) {
+        return Extensions.operAdd(a, b);
     }
     public static <T> T[] operShl(T[] arr, T elem) {
         var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
         copy [arr.length] = elem;
         return copy;
     }
-    public static <T, C extends Collection<T>> C operShl(C c, T elem) {
+    public static <T> List<T> operShl(List<T> c, T elem) {
         c.add(elem);
         return c;
     }
-    public static <T> Iterable<T> operShl(Iterable<T> v, T elem) {
-        return () -> Stream.concat(StreamSupport.stream(v.spliterator(), false), Stream.of(elem)).iterator();
+    public static <T> T[] operShl(int count, T[] arr) {
+        return Arrays.copyOfRange(arr, count, arr.length);
+    }
+    public static <T> List<T> operShl(int count, List<T> arr) {
+        arr.subList(0, count).clear();
+        return arr;
     }
     public static int operShr(int a, int b) {
         return a >> b;
@@ -211,14 +295,72 @@ public class Extensions {
     public static long operShr(long a, long b) {
         return a >> b;
     }
-    public static Object operUshl(Object a, Object b) {
-        throw new UnsupportedOperationException();
+    public static String operShr(String a, Object b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static String operShr(Object a, String b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static String operShr(String a, String b) {
+        return Extensions.operAdd(b, a);
+    }
+    public static <T> T[] operShr(T elem, T[] arr) {
+        var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
+        copy [0] = elem;
+        return copy;
+    }
+    public static <T> List<T> operShr(T elem, List<T> c) {
+        c.add(elem);
+        return c;
+    }
+    public static <T> T[] operShr(T[] arr, int count) {
+        return Arrays.copyOf(arr, Extensions.operSub(arr.length, count));
+    }
+    public static <T> List<T> operShr(List<T> arr, int count) {
+        arr.subList(Extensions.operSub(arr.size(), count), arr.size()).clear();
+        return arr;
+    }
+    public static <T> T[] operUshl(T[] arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = Arrays.copyOf(arr, size);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy [i] = Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size));
+        }
+        return copy;
+    }
+    public static <T> List<T> operUshl(List<T> arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = new ArrayList<T>(arr);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy.set(i, Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size)));
+        }
+        return copy;
     }
     public static int operUshr(int a, int b) {
         return a >>> b;
     }
     public static long operUshr(long a, long b) {
         return a >>> b;
+    }
+    public static <T> T[] operUshr(T[] arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = Arrays.copyOf(arr, size);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy [i] = Extensions.operGetIndex(arr, Extensions.operSub(i, amount));
+        }
+        return copy;
+    }
+    public static <T> List<T> operUshr(List<T> arr, int amount) {
+        var size = Extensions.len(arr);
+        var copy = new ArrayList<T>(arr);
+        amount %= size;
+        for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
+            copy.set(i, Extensions.operGetIndex(arr, Extensions.operSub(i, amount)));
+        }
+        return copy;
     }
 }
 

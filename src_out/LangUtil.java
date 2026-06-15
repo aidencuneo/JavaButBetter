@@ -189,26 +189,25 @@ public class LangUtil {
     public static <T> ArrayList<T> slice(ArrayList<T> v, int start, Null end, int step) {
         return slice(v, start, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.size()) : (Extensions.operUnarySub(1)), step);
     }
-    public static <T> List<T> slice(List<T> v, int start, int end, int step) {
+    public static <T> ArrayList<T> slice(List<T> v, int start, int end, int step) {
         start = indexConvert(start, v.size());
         end = indexConvert(end, v.size());
         var lst = new ArrayList<T>();
         for (int i = start; step > 0 ? (i < end) : (i > end); i += step) {
-            LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(i, ", "), start), ", "), end), ", "), step));
             lst.add(v.get(i));
         }
         return lst;
     }
-    public static <T> List<T> slice(List<T> v, Null start, Null end, int step) {
+    public static <T> ArrayList<T> slice(List<T> v, Null start, Null end, int step) {
         return slice(v, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (0) : (Extensions.operSub(v.size(), 1)), LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.size()) : (Extensions.operSub(Extensions.operUnarySub(v.size()), 1)), step);
     }
-    public static <T> List<T> slice(List<T> v, Null start, int end, int step) {
+    public static <T> ArrayList<T> slice(List<T> v, Null start, int end, int step) {
         return slice(v, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (0) : (Extensions.operSub(v.size(), 1)), end, step);
     }
-    public static <T> List<T> slice(List<T> v, int start, Null end, int step) {
+    public static <T> ArrayList<T> slice(List<T> v, int start, Null end, int step) {
         return slice(v, start, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.size()) : (Extensions.operUnarySub(1)), step);
     }
-    public static <T> List<T> slice(T[] v, int start, int end, int step) {
+    public static <T> ArrayList<T> slice(T[] v, int start, int end, int step) {
         start = indexConvert(start, v.length);
         end = indexConvert(end, v.length);
         var lst = new ArrayList<T>();
@@ -217,13 +216,13 @@ public class LangUtil {
         }
         return lst;
     }
-    public static <T> List<T> slice(T[] v, Null start, Null end, int step) {
+    public static <T> ArrayList<T> slice(T[] v, Null start, Null end, int step) {
         return slice(v, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (0) : (Extensions.operSub(v.length, 1)), LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.length) : (Extensions.operSub(Extensions.operUnarySub(v.length), 1)), step);
     }
-    public static <T> List<T> slice(T[] v, Null start, int end, int step) {
+    public static <T> ArrayList<T> slice(T[] v, Null start, int end, int step) {
         return slice(v, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (0) : (Extensions.operSub(v.length, 1)), end, step);
     }
-    public static <T> List<T> slice(T[] v, int start, Null end, int step) {
+    public static <T> ArrayList<T> slice(T[] v, int start, Null end, int step) {
         return slice(v, start, LangUtil.isTruthy(Extensions.operGt(step, 0)) ? (v.length) : (Extensions.operUnarySub(1)), step);
     }
     public static int indexConvert(int index, int size) {

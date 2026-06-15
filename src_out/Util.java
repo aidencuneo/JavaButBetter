@@ -6,7 +6,7 @@ public class Util {
         if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
         return index;
     }
-    public static (T) T get(ArrayList<T> lst, int index) {
+    public static T get(ArrayList<T> lst, int index) throws T {
         try {
             index = indexConvert(index, lst.size());
             return lst.get(index);
@@ -15,7 +15,7 @@ public class Util {
             return null;
         }
     }
-    public static (T) ArrayList<T> select(ArrayList<T> lst, int start, int end) {
+    public static ArrayList<T> select(ArrayList<T> lst, int start, int end) throws T {
         try {
             start = indexConvert(start, lst.size());
             end = indexConvert(end, lst.size());
@@ -25,7 +25,7 @@ public class Util {
             return new ArrayList<T>();
         }
     }
-    public static (T) ArrayList<T> select(ArrayList<T> lst, int start) {
+    public static ArrayList<T> select(ArrayList<T> lst, int start) throws T {
         return select(lst, start, lst.size());
     }
     public static String select(String str, int start, int end) {
@@ -41,7 +41,7 @@ public class Util {
     public static String select(String str, int start) {
         return select(str, start, str.length());
     }
-    public static (T) String d(ArrayList<T> s) {
+    public static String d(ArrayList<T> s) throws T {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(s))) { return "[]"; }
         var out = "[";
         for (var e : LangUtil.asIterable(s)) { out += Extensions.operAdd(e, " "); }

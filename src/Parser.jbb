@@ -1,11 +1,11 @@
 public static class Parser
 
 ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
-    let lastWasDot = false
+    lastWasDot = false
 
     inline(for (int i = 0; i < tok.size(); ++i))
-        let t = tok.get(i)
-        let nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token()
+        t = tok.get(i)
+        nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token()
 
         // println i + ": " + tok
 
@@ -46,8 +46,8 @@ ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
 
             if Compiler.aliases.containsKey(t.value)
                 let alias = Compiler.aliases.get(t.value)
-                let aliasTokens = alias.tokens
-                let hasArgs = !!alias.args && nextTok.type == Token.Type.EXPR
+                aliasTokens = alias.tokens
+                hasArgs = !!alias.args && nextTok.type == Token.Type.EXPR
 
                 // Remove alias name
                 tok.remove(i)
@@ -55,7 +55,7 @@ ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
                 // If this alias has arguments, check for a bracketed expression
                 if hasArgs
                     // Perform identifier replacement on alias tokens
-                    let argTokens = Tokeniser.extractCommaExpr(nextTok.value)
+                    argTokens = Tokeniser.extractCommaExpr(nextTok.value)
                     aliasTokens = replaceIdentifiers(aliasTokens, alias.args, argTokens)
 
                     // Remove expression
@@ -75,12 +75,12 @@ ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
     return tok
 
 ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] names, ArrayList[ArrayList[Token]] values):
-    let lastWasDot = false
-    let newTok = new ArrayList[Token]()
+    lastWasDot = false
+    newTok = ArrayList[Token]()
 
     for t in tok
         if t.type == Token.Type.ID && !lastWasDot
-            let i = names.indexOf(t.value)
+            i = names.indexOf(t.value)
 
             if i != -1
                 newTok.addAll(values.get(i))
@@ -89,11 +89,11 @@ ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] name
         // Perform replacements recursively
         elif t.type == Token.Type.EXPR
             // Split expression apart and perform replacements
-            let exprStr = t.value.substring(1, t.value.length() - 1)
-            let replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values)
+            exprStr = t.value.substring(1, t.value.length() - 1)
+            replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values)
 
             // Piece back together and wait for it to be added
-            let newExpr = ""
+            newExpr = ""
             newExpr += token.value for token in replaced
             t.value = "(" + newExpr + ")"
 

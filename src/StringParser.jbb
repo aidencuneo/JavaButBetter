@@ -24,7 +24,7 @@ string unescapeString(string str):
                 try
                     code = Int.parseInt(str.substring(i + 1, i + 5), 16)
                     inline(out += (char) code;)
-                    i += 4
+                    inline(i += 4;)
                 catch NumberFormatException e
                     out += "\\u"
             else

@@ -96,16 +96,7 @@ public class Compiler {
             var optionValue = Extensions.operGetIndex(tok, 2).value;
             Options.setOption(optionName, optionValue);
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ALIAS))) {
-            if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(tok), 2))) {
-                return "";
-            }
-            if (LangUtil.isTruthy(Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), Extensions.operUnarySub(1)))) {
-                return "";
-            }
-            if (LangUtil.isTruthy(Extensions.operLt(f, 2))) {
-                return "";
-            }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ALIAS))) ? (Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 2)) : (Extensions.operEq(startTok, Token.Type.ALIAS)))) {
             var name = Extensions.operGetIndex(tok, 1).value;
             var args = new ArrayList<String>();
             if (LangUtil.isTruthy(Extensions.operGt(f, 2))) {
@@ -411,13 +402,14 @@ public class Compiler {
             if (LangUtil.isTruthy(nested)) { out += ")"; }
         }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.COMP_ASSIGN))), Extensions.operUnarySub(1))))) {
-            LangUtil.println(Extensions.operAdd("This is a comp assign: ", tok));
             var id = Token.joinTokens(LangUtil.slice(tok, null, f, 1));
             var oper = LangUtil.slice(Extensions.operGetIndex(tok, f).value, null, Extensions.operUnarySub(1), 1);
             var value = Token.joinTokens(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
-            var expr = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(id, " = "), id), " "), oper), " ("), value), ")");
+            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(oper, ".")))) {
+                value = Extensions.operAdd(Extensions.operAdd("(", value), ")");
+            }
+            var expr = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(id, " = "), id), " "), oper), " "), value);
             tok = Tokeniser.tokLine(expr);
-            LangUtil.println(expr);
             out += compileExpr(tok, nested);
         }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.ARROW))), Extensions.operUnarySub(1))))) {

@@ -1,21 +1,16 @@
-- Fix:
-    - lst += x
-    - var.code = var.code + code
-    - var.code .= trim() --> var.code = var.code.trim()
-    - var.code += code
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
-- Add custom operator overloading
-    - Add list of symbols to tokeniser to be recognised as binary operators
-    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
-    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- Fix java lambdas (->)
-    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
+- Add custom operator overloading
+    - Add list of symbols to tokeniser to be recognised as binary operators
+    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
+    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
+- Fix java lambdas (->)
+    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Add compileType (?)
 - Make JBB installable as a command
     - Add to path
@@ -36,6 +31,11 @@
 
 
 Done:
+- Fix:
+    - lst += x
+    - var.code = var.code + code
+    - var.code .= trim() --> var.code = var.code.trim()
+    - var.code += code
 - Remove need for : in function definitions
 - Add single line procedures (usually void)
     - add(int a, int b): println a + b

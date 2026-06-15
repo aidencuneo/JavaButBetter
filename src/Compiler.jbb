@@ -139,20 +139,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         Options.setOption(optionName, optionValue)
 
     // Aliases
-    elif startTok == Token.Type.ALIAS
-        if len(tok) < 2
-            // Error!
-            return ""
-
-        // Find the equals sign
-        if (f = findTokenType(tok, Token.Type.ASSIGN)) == -1
-            // Error!
-            return ""
-
-        if f < 2
-            // Error!
-            return ""
-
+    elif startTok == Token.Type.ALIAS && (f = findTokenType(tok, Token.Type.ASSIGN)) >= 2
         name = tok[1].value
         args = new ArrayList[string]()
 
@@ -594,12 +581,15 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         oper = tok[f].value[:-1]
         value = Token.joinTokens(tok[f + 1:])
 
+        // Dot operator can't have brackets around value
+        if oper != "."
+            value = "(" + value + ")"
+
         // Transform into "id = id + (value)"
         // List: [id], =, [id], oper, ([value])
-        expr = id + " = " + id + " " + oper + " (" + value + ")"
+        expr = id + " = " + id + " " + oper + " " + value
         tok = Tokeniser.tokLine(expr)
 
-        println expr
         out += compileExpr(tok, nested)
 
     // Arrow function (Java lambda)

@@ -231,6 +231,40 @@ public class Compiler {
             }
             out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1);
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2)))) {
+            LangUtil.println(Extensions.operAdd("This is a field definition: ", tok));
+            var methodAccess = getMethodAccess(tok);
+            tok = stripMethodAccess(tok);
+            if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
+                methodAccess . accessMod = AccessMod.PUBLIC;
+            }
+            var value = "";
+            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), Extensions.operUnarySub(1))))) {
+                value = Extensions.operAdd(" = ", compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1)));
+                tok = LangUtil.slice(tok, null, f, 1);
+            }
+            var name = "";
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.ID)) : (tok))) {
+                name = Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value;
+                tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+            }
+            else {
+                
+            }
+            var typeArgs = "";
+            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.SQUARE_EXPR)) : (tok))) {
+                var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
+                typeArgs = compileTypeArgs(Tokeniser.tokLine(v));
+                tok = LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1);
+            }
+            var varType = "";
+            for (var t : LangUtil.asIterable(tok)) { varType += Extensions.operAdd(t.value, " "); }
+            if (LangUtil.isTruthy(!LangUtil.isTruthy(varType))) {
+                
+            }
+            declareLocal(name);
+            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), varType.trim()), typeArgs), " "), name), value), ";");
+        }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? (!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.SCOPE))), Extensions.operUnarySub(1)))) : (Extensions.operEq(scope, 0)))) {
             if (LangUtil.isTruthy(false)) {
                 
@@ -240,7 +274,6 @@ public class Compiler {
                     out += compileMethodDef(tok);
                 }
                 else {
-                    LangUtil.println(Extensions.operAdd("This is a method: ", tok));
                     out += Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { ");
                     ++ scope;
                     out = compileStatement(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1), out);
@@ -300,15 +333,11 @@ public class Compiler {
             out += Extensions.operAdd(Extensions.operAdd(methodAccess, " enum "), name);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(Extensions.len(tok), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(Extensions.len(tok), 2)))) {
+            LangUtil.println(Extensions.operAdd("This is a field declaration: ", tok));
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);
             if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
                 methodAccess . accessMod = AccessMod.PUBLIC;
-            }
-            var value = "";
-            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.ASSIGN))), Extensions.operUnarySub(1))))) {
-                value = Extensions.operAdd(" = ", compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1)));
-                tok = LangUtil.slice(tok, null, f, 1);
             }
             var name = "";
             if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.ID)) : (tok))) {
@@ -330,7 +359,7 @@ public class Compiler {
                 
             }
             declareLocal(name);
-            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), varType.trim()), typeArgs), " "), name), value), ";");
+            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), varType.trim()), typeArgs), " "), name), ";");
         }
         else {
             var ending = LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.COMMA)) ? ("") : (";");

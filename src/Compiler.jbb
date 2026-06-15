@@ -323,6 +323,54 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
+    // Field definitions (assignment after minimum two tokens with no scope or indentation)
+    elif findTokenType(tok, Token.Type.ASSIGN) >= 2 && !indent && !scope
+        // access?, static?, [type], name, (equals, [expr])?
+
+        // Eat access tokens
+        methodAccess = getMethodAccess(tok)
+        tok = stripMethodAccess(tok)
+
+        // Default access modifier for fields is public
+        if methodAccess.accessMod == AccessMod.NONE
+            methodAccess.accessMod = AccessMod.PUBLIC
+
+        // Eat value (and equals sign)
+        value = ""
+        if (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
+            value = " = " + compileExpr(tok[f + 1:])
+            tok = tok[:f]
+
+        // Eat name
+        name = ""
+        if tok && tok[-1].type == Token.Type.ID
+            name = tok[-1].value
+            tok.remove(len(tok) - 1)
+        else
+            // Error! Field name not given
+            ...
+
+        // Eat type args
+        typeArgs = ""
+        if tok && tok[-1].type == Token.Type.SQUARE_EXPR
+            v = tok[-1].value[1:-1]
+            typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+            tok = tok[:-1]
+
+        // Everything remaining is part of the type
+        varType = ""
+        varType += t.value + " " for t in tok
+
+        if !varType
+            // Error! Field missing type
+            ...
+
+        // Declare local
+        // println "Declaring " + name
+        declareLocal(name)
+
+        out += methodAccess + " " + varType.trim() + typeArgs + " " + name + value + ";"
+
     // Scoped statements - methods only (?)
     elif scope == 0 && (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
         // TODO: get/set
@@ -338,7 +386,6 @@ string compileStatement(ArrayList[Token] tok, string out):
 
             // Code found after scope token (single line procedure)
             else
-                println "This is a method: " + tok
                 out += compileMethodDef(tok[:f], false) + " { "
                 ++scope
                 out = compileStatement(tok[f + 1:], out)
@@ -418,7 +465,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
     // Field declarations (two tokens minimum with no scope or indentation)
     elif len(tok) >= 2 && !indent && !scope
-        // access?, static?, [type], name, (equals, [expr])?
+        // access?, static?, [type], name
 
         // Eat access tokens
         methodAccess = getMethodAccess(tok)
@@ -427,12 +474,6 @@ string compileStatement(ArrayList[Token] tok, string out):
         // Default access modifier for fields is public
         if methodAccess.accessMod == AccessMod.NONE
             methodAccess.accessMod = AccessMod.PUBLIC
-
-        // Eat value (and equals sign)
-        value = ""
-        if (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
-            value = " = " + compileExpr(tok[f + 1:])
-            tok = tok[:f]
 
         // Eat name
         name = ""
@@ -462,7 +503,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // println "Declaring " + name
         declareLocal(name)
 
-        out += methodAccess + " " + varType.trim() + typeArgs + " " + name + value + ";"
+        out += methodAccess + " " + varType.trim() + typeArgs + " " + name + ";"
 
     // Expressions
     else

@@ -304,7 +304,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         out += s + ")"
 
-    // Raise
+    // Throw/raise
     elif startTok == Token.Type.THROW
         out += "throw (" + compileExpr(tok[1:]) + ");"
 
@@ -324,7 +324,7 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         // Methods
         else
-            // override?, access?, typeargs?, [returntype|void], name, args?, scope
+            // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
 
             // Eat override token
             if tok && (tok[0].value == "override" || tok[0].value == "!")
@@ -345,6 +345,14 @@ string compileStatement(ArrayList[Token] tok, string out):
                 v = tok[0].value[1:-1]
                 typeArgs = compileTypeArgs(Tokeniser.tokLine(v)) + " "
                 tok.remove(0)
+
+            // Eat thrown types
+            thrown = ""
+            if tok && tok[0].type == Token.Type.EXPR
+                v = tok[0].value[1:-1]
+                thrown = compileExpr(Tokeniser.tokLine(v))
+                tok.remove(0)
+            thrown = " throws " + thrown if thrown
 
             // Eat scope token
             tok.remove(len(tok) - 1)
@@ -427,9 +435,9 @@ string compileStatement(ArrayList[Token] tok, string out):
             // If method name is the same as the class name,
             // it's a constructor, so don't include the return type
             if methodName == currentClass
-                out += methodAccess + " " + typeArgs + methodName + args
+                out += methodAccess + " " + typeArgs + methodName + args + thrown
             else
-                out += methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args
+                out += methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args + thrown
 
     // Static block
     elif len(tok) == 1 && startTok == Token.Type.STATIC

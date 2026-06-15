@@ -248,6 +248,13 @@ public class Compiler {
                     typeArgs = Extensions.operAdd(compileTypeArgs(Tokeniser.tokLine(v)), " ");
                     tok.remove(0);
                 }
+                var thrown = "";
+                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (tok))) {
+                    var v = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
+                    thrown = compileExpr(Tokeniser.tokLine(v));
+                    tok.remove(0);
+                }
+                if (LangUtil.isTruthy(thrown)) { thrown = Extensions.operAdd(" throws ", thrown); }
                 tok.remove(Extensions.operSub(Extensions.len(tok), 1));
                 var args = "()";
                 if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.EXPR)) : (tok))) {
@@ -335,10 +342,10 @@ public class Compiler {
                     methodAccess . isStatic = true;
                 }
                 if (LangUtil.isTruthy(Extensions.operEq(methodName, currentClass))) {
-                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), methodName), args);
+                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), methodName), args), thrown);
                 }
                 else {
-                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), returnType), returnTypeArgs), " "), methodName), args);
+                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), returnType), returnTypeArgs), " "), methodName), args), thrown);
                 }
             }
         }

@@ -5,7 +5,17 @@
     - var.code += code
 - Add "throws ..." to methods
 - Add support for implementing and extending classes
-
+- Add more operator overloads (confirm)
+    - string * int
+    - char * int
+- Add XOR and bitwise operators
+    - Add xor as a boolean operator
+    - Also add ^, &, | (confirm)
+- Add custom operator overloading
+    - Add list of symbols to tokeniser to be recognised as binary operators
+    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
+    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
+- list >>> 1 to rotate right, same for left (?)
 - Remove need for : in function definitions
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Add single line functions
@@ -31,17 +41,6 @@
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
-- Add more operator overloads (confirm)
-    - string * int
-    - char * int
-- Add XOR and bitwise operators
-    - Add xor as a boolean operator
-    - Also add ^, &, | (confirm)
-- Add custom operator overloading
-    - Add list of symbols to tokeniser to be recognised as binary operators
-    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
-    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- list >>> 1 to rotate right, same for left (?)
 - set/get (?)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}

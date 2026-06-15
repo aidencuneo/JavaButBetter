@@ -18,57 +18,83 @@
 
 public static class Code
 
-int five => 5
+AccessMod access = AccessMod.PUBLIC
+string name = ""
+string typeArgs = ""
+string implementsType = ""
+string extendsType = ""
+string code = ""
 
-something1()
-    println "something"
+Code(string name):
+    this.name = name
 
-string retwhat => "what"
-something: something1()
+string toString():
+    return "" if code.isBlank()
 
-main:
-    println five()
-    println [5, 3, 8, 0] >>> 1
-    println [5, 3, 8, 0] >>> 2
-    println [5, 3, 8, 0] >>> 3
-    println [5, 3, 8, 0] >>> 4
-    println [5, 3, 8, 0] >>> 5
-    println [5, 3, 8, 0] >>> 6
-    println [5, 3, 8, 0] >>> 7
-    println [5, 3, 8, 0] >>> 8
+    let accessModStr = MethodAccess.accessModToString(access)
+    accessModStr += accessModStr ? " " : ""
 
-    println [5, 3, 8, 0] <<< 1
-    println [5, 3, 8, 0] <<< 2
-    println [5, 3, 8, 0] <<< 3
-    println [5, 3, 8, 0] <<< 4
-    println [5, 3, 8, 0] <<< 5
-    println [5, 3, 8, 0] <<< 6
-    println [5, 3, 8, 0] <<< 7
-    println [5, 3, 8, 0] <<< 8
+    let extendsStr = " extends " + extendsType if extendsType else ""
+    let implementsStr = " implements " + implementsType if implementsType else ""
+    let typeArgStr = "<" + typeArgs + ">" if typeArgs else ""
 
-    a = 16
-    b = 5.7
+    let out = accessModStr + "class " + name + typeArgStr + extendsStr + implementsStr + " {\n"
+    out += "    " + code.trim()
+    out += "\n}\n"
 
-    println [1, 2, 3] | [2, 3, 4]
-    println [1, 2, 3] & [2, 3, 4]
-    println [1, 2, 3] ^ [2, 3, 4]
-    // println ~[1, 2, 3]
-    println 142 | 15
-    println 142 ^ 15
-    println ~142, ' ', ~15
+    return out
 
-    ccc = "hi"
-    println "Hello, world! I'm {a} + {b}. {ccc}!"
-    println "aiden" << "blishen" << "cuneo"
-    // lst = [5, 4, 3]
-    lst = [5, 4, 3] >> 1
-    println lst
-    lst << 6 << 4 << 0
-    println lst
-    lst = lst + [2, 3]
-    println lst
-    lst >> 1
-    println lst
-    1 << lst
-    println lst
-    println max(lst), ' ', min(lst), ' ', sum(lst)
+// int five => 5
+
+// something1()
+//     println "something"
+
+// string retwhat => "what"
+// something: something1()
+
+// main:
+//     println five()
+//     println [5, 3, 8, 0] >>> 1
+//     println [5, 3, 8, 0] >>> 2
+//     println [5, 3, 8, 0] >>> 3
+//     println [5, 3, 8, 0] >>> 4
+//     println [5, 3, 8, 0] >>> 5
+//     println [5, 3, 8, 0] >>> 6
+//     println [5, 3, 8, 0] >>> 7
+//     println [5, 3, 8, 0] >>> 8
+
+//     println [5, 3, 8, 0] <<< 1
+//     println [5, 3, 8, 0] <<< 2
+//     println [5, 3, 8, 0] <<< 3
+//     println [5, 3, 8, 0] <<< 4
+//     println [5, 3, 8, 0] <<< 5
+//     println [5, 3, 8, 0] <<< 6
+//     println [5, 3, 8, 0] <<< 7
+//     println [5, 3, 8, 0] <<< 8
+
+//     a = 16
+//     b = 5.7
+
+//     println [1, 2, 3] | [2, 3, 4]
+//     println [1, 2, 3] & [2, 3, 4]
+//     println [1, 2, 3] ^ [2, 3, 4]
+//     // println ~[1, 2, 3]
+//     println 142 | 15
+//     println 142 ^ 15
+//     println ~142, ' ', ~15
+
+//     ccc = "hi"
+//     println "Hello, world! I'm {a} + {b}. {ccc}!"
+//     println "aiden" << "blishen" << "cuneo"
+//     // lst = [5, 4, 3]
+//     lst = [5, 4, 3] >> 1
+//     println lst
+//     lst << 6 << 4 << 0
+//     println lst
+//     lst = lst + [2, 3]
+//     println lst
+//     lst >> 1
+//     println lst
+//     1 << lst
+//     println lst
+//     println max(lst), ' ', min(lst), ' ', sum(lst)

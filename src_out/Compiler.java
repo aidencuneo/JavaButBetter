@@ -231,7 +231,7 @@ public class Compiler {
             }
             out += LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1);
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.SCOPE))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? (!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.SCOPE))), Extensions.operUnarySub(1)))) : (Extensions.operEq(scope, 0)))) {
             if (LangUtil.isTruthy(false)) {
                 
             }
@@ -240,8 +240,8 @@ public class Compiler {
                     out += compileMethodDef(tok);
                 }
                 else {
+                    LangUtil.println(Extensions.operAdd("This is a method: ", tok));
                     out += Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { ");
-                    LangUtil.println(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
                     ++ scope;
                     out = compileStatement(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1), out);
                     -- scope;
@@ -253,7 +253,6 @@ public class Compiler {
             out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { return ("), compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1))), "); }");
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? (Extensions.operEq(endTok, Token.Type.EXPR)) : (Extensions.operEq(scope, 0)))) {
-            LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("scope: ", scope), ", "), tok));
             out += compileMethodDef(tok);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {

@@ -324,7 +324,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
     // Scoped statements - methods only (?)
-    elif (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
+    elif scope == 0 && (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
         // TODO: get/set
         if false
             ...
@@ -338,8 +338,8 @@ string compileStatement(ArrayList[Token] tok, string out):
 
             // Code found after scope token (single line procedure)
             else
+                println "This is a method: " + tok
                 out += compileMethodDef(tok[:f], false) + " { "
-                println tok[f + 1:]
                 ++scope
                 out = compileStatement(tok[f + 1:], out)
                 --scope
@@ -352,7 +352,6 @@ string compileStatement(ArrayList[Token] tok, string out):
 
     // Alternative function definition (no scope token, only works with no indentation)
     elif scope == 0 && endTok == Token.Type.EXPR
-        println "scope: " + scope + ", " + tok
         // override?, access?, typeargs?, throws?, [returntype|void], name, args
         out += compileMethodDef(tok)
 

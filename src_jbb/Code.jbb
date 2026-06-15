@@ -25,7 +25,10 @@ main:
     a = 16
     b = 5.7
 
-    println 142 & 15
+    println [1, 2, 3] | [2, 3, 4]
+    println [1, 2, 3] & [2, 3, 4]
+    println [1, 2, 3] ^ [2, 3, 4]
+    // println ~[1, 2, 3]
     println 142 | 15
     println 142 ^ 15
     println ~142, ' ', ~15

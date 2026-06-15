@@ -8,7 +8,9 @@ public class Code {
     public static void main(String[] args) {
         var a = 16;
         var b = 5.7f;
-        LangUtil.println(Extensions.operAnd(142, 15));
+        LangUtil.println(Extensions.operOr(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
+        LangUtil.println(Extensions.operAnd(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
+        LangUtil.println(Extensions.operXor(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operOr(142, 15));
         LangUtil.println(Extensions.operXor(142, 15));
         LangUtil.println(Extensions.operBitNot(142), ' ', Extensions.operBitNot(15));

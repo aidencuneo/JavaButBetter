@@ -132,6 +132,18 @@ public class Extensions {
     public static boolean operXor(boolean a, boolean b) {
         return !((boolean) Extensions.operEq(a, b));
     }
+    public static <T> List<T> operXor(List<T> a, List<T> b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, b)))) { res.add(x); } }
+        for (var y : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(y, a)))) { res.add(y); } }
+        return res;
+    }
+    public static <T> List<T> operXor(T[] a, T[] b) {
+        var res = new ArrayList<T>();
+        for (var x : LangUtil.asIterable(a)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(x, b)))) { res.add(x); } }
+        for (var y : LangUtil.asIterable(b)) { if (LangUtil.isTruthy(!((boolean) Extensions.operIn(y, a)))) { res.add(y); } }
+        return res;
+    }
     public static int operAnd(int a, int b) {
         return a & b;
     }

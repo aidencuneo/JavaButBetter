@@ -148,28 +148,18 @@ long operXor(long a, long b):
 bool operXor(bool a, bool b):
     ret a != b
 
-// // Symmetric difference
-// [T] List[T] operXor(List[T] a, List[T] b):
-//     result = ArrayList[T]()
-//     for x in a
-//         if !b.contains(x)
-//             result.add(x)
-//     for y in b
-//         if !a.contains(y)
-//             result.add(y)
-//     ret result
+// Symmetric difference
+[T] List[T] operXor(List[T] a, List[T] b):
+    res = ArrayList[T]()
+    res.add(x) if x notin b for x in a
+    res.add(y) if y notin a for y in b
+    ret res
 
-// [T] T[] operXor(T[] a, T[] b):
-//     result = ArrayList[T]()
-//     aList = Arrays.asList(a)
-//     bList = Arrays.asList(b)
-//     for x in a
-//         if !bList.contains(x)
-//             result.add(x)
-//     for y in b
-//         if !aList.contains(y)
-//             result.add(y)
-//     ret (T[]) result.toArray(new Object[0])
+[T] List[T] operXor(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) if x notin b for x in a
+    res.add(y) if y notin a for y in b
+    ret res
 
 // &
 int operAnd(int a, int b):

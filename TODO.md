@@ -3,21 +3,13 @@
     - var.code = var.code + code
     - var.code .= trim() --> var.code = var.code.trim()
     - var.code += code
-- Fix inline if/for statements clashing
-- Add XOR and bitwise operators
-    - Add xor as a boolean operator
-    - Add nor as a boolean operator
-    - Also add ^, &, | (confirm)
-    - Add ~ and overloads for it
-- For ^, &, |, add relevant overloads for lists
-    - | = Union
-    - & = Intersection
-    - ^ = Symmetric difference
+- Add <<< and >>> overloads
+    - list >>> int, list <<< int
+    - list >>> 1 to rotate right, same for left
 - Add custom operator overloading
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
     - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- list >>> 1 to rotate right, same for left (?)
 - Remove need for : in function definitions
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Add single line functions
@@ -53,6 +45,16 @@
 
 
 Done:
+- For ^, &, |, add relevant overloads for lists
+    - | = Union
+    - & = Intersection
+    - ^ = Symmetric difference
+- Add XOR and bitwise operators
+    - Add xor as a boolean operator
+    - Add nor as a boolean operator
+    - Also add ^, &, | (confirm)
+    - Add ~ and overloads for it
+- Fix inline if/for statements clashing
 - Add support for implementing and extending classes
 - Add "throws ..." to methods
 - Add "as" keyword to replace casting

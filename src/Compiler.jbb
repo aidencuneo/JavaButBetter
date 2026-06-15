@@ -332,125 +332,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // Methods
         else
             // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
-
-            // Eat override token
-            if tok && (tok[0].value == "override" || tok[0].value == "!")
-                out += "@Override "
-                tok.remove(0)
-
-            // Eat access tokens
-            methodAccess = getMethodAccess(tok)
-            tok = stripMethodAccess(tok)
-
-            // Default access modifier for methods is public
-            if methodAccess.accessMod == AccessMod.NONE
-                methodAccess.accessMod = AccessMod.PUBLIC
-
-            // Eat type args
-            typeArgs = ""
-            if tok && tok[0].type == Token.Type.SQUARE_EXPR
-                v = tok[0].value[1:-1]
-                typeArgs = compileTypeArgs(Tokeniser.tokLine(v)) + " "
-                tok.remove(0)
-
-            // Eat thrown types
-            thrown = ""
-            if tok && tok[0].type == Token.Type.EXPR
-                v = tok[0].value[1:-1]
-                thrown = compileExpr(Tokeniser.tokLine(v))
-                tok.remove(0)
-            thrown = " throws " + thrown if thrown
-
-            // Eat scope token
-            tok.remove(len(tok) - 1)
-
-            // Eat method args
-            args = "()"
-            if tok && tok[-1].type == Token.Type.EXPR
-                // Compile method arguments
-                v = tok[-1].value[1:-1]
-                args = compileMethodArgs(Tokeniser.tokLine(v), true)
-                tok.remove(len(tok) - 1)
-
-            // Eat method name (can be many different token types)
-            let methodName = ""
-            if tok
-                methodName = tok[-1].value
-                tok.remove(len(tok) - 1)
-
-                // Convert operator names
-                if methodName == "+"
-                    methodName = "operAdd"
-                elif methodName == "-"
-                    methodName = "operSub"
-                elif methodName == "*"
-                    methodName = "operMul"
-                elif methodName == "/"
-                    methodName = "operDiv"
-                elif methodName == "%"
-                    methodName = "operMod"
-                elif methodName == "++" || methodName == "_++"
-                    methodName = "operPostInc"
-                elif methodName == "--" || methodName == "_--"
-                    methodName = "operPostDec"
-                elif methodName == "++_"
-                    methodName = "operPreInc"
-                elif methodName == "--_"
-                    methodName = "operPreDec"
-                elif methodName == "!"
-                    methodName = "operNot"
-                elif methodName == "~"
-                    methodName = "operBitNot"
-                elif methodName == "|"
-                    methodName = "operOr"
-                elif methodName == "^"
-                    methodName = "operXor"
-                elif methodName == "&"
-                    methodName = "operAnd"
-                elif methodName == "=="
-                    methodName = "operEq"
-                elif methodName == "!="
-                    methodName = "operEq"
-                elif methodName == ">"
-                    methodName = "operGt"
-                elif methodName == "<"
-                    methodName = "operLt"
-                elif methodName == ">="
-                    methodName = "operGte"
-                elif methodName == "<="
-                    methodName = "operLte"
-                // elif methodName == "&&"
-                //     methodName = "operAnd"
-                // elif methodName == "||"
-                //     methodName = "operOr"
-            else
-                // Error! Method name not given
-                ...
-
-            // Eat return type args
-            returnTypeArgs = ""
-            if tok && tok[-1].type == Token.Type.SQUARE_EXPR
-                v = tok[-1].value[1:-1]
-                returnTypeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-                tok = tok[:-1]
-
-            // Everything remaining is part of the return type
-            returnType = ""
-            returnType += t.value + " " for t in tok
-            returnType = "void " if !returnType
-            returnType .= trim()
-
-            // If method name is 'main', args must be (String[] args) and method must be static
-            if methodName == "main"
-                args = "(String[] args)"
-                methodAccess.isStatic = true
-
-            // If method name is the same as the class name,
-            // it's a constructor, so don't include the return type
-            if methodName == currentClass
-                out += methodAccess + " " + typeArgs + methodName + args + thrown
-            else
-                out += methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args + thrown
+            out += compileMethodDef(tok)
 
     // Static block
     elif len(tok) == 1 && startTok == Token.Type.STATIC
@@ -1056,6 +938,82 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
 string compileExpr(ArrayList[Token] tok):
     return compileExpr(tok, true)
+
+string compileMethodDef(ArrayList[Token] tok):
+    // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
+    out = ""
+
+    // Eat override token
+    if tok && (tok[0].value == "override" || tok[0].value == "!")
+        out += "@Override "
+        tok.remove(0)
+
+    // Eat access tokens
+    methodAccess = getMethodAccess(tok)
+    tok = stripMethodAccess(tok)
+
+    // Default access modifier for methods is public
+    if methodAccess.accessMod == AccessMod.NONE
+        methodAccess.accessMod = AccessMod.PUBLIC
+
+    // Eat type args
+    typeArgs = ""
+    if tok && tok[0].type == Token.Type.SQUARE_EXPR
+        v = tok[0].value[1:-1]
+        typeArgs = compileTypeArgs(Tokeniser.tokLine(v)) + " "
+        tok.remove(0)
+
+    // Eat thrown types
+    thrown = ""
+    if tok && tok[0].type == Token.Type.EXPR
+        v = tok[0].value[1:-1]
+        thrown = compileExpr(Tokeniser.tokLine(v))
+        tok.remove(0)
+    thrown = " throws " + thrown if thrown
+
+    // Eat scope token
+    tok.remove(len(tok) - 1)
+
+    // Eat method args
+    args = "()"
+    if tok && tok[-1].type == Token.Type.EXPR
+        // Compile method arguments
+        v = tok[-1].value[1:-1]
+        args = compileMethodArgs(Tokeniser.tokLine(v), true)
+        tok.remove(len(tok) - 1)
+
+    // Eat method name (can be many different token types)
+    methodName = ""
+    if tok
+        methodName = Parser.convertOperToID(tok[-1].value)
+        tok.remove(len(tok) - 1)
+    else
+        // Error! Method name not given
+        ret ""
+
+    // Eat return type args
+    returnTypeArgs = ""
+    if tok && tok[-1].type == Token.Type.SQUARE_EXPR
+        v = tok[-1].value[1:-1]
+        returnTypeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+        tok = tok[:-1]
+
+    // Everything remaining is part of the return type
+    returnType = ""
+    returnType += t.value + " " for t in tok
+    returnType = "void " if !returnType
+    returnType .= trim()
+
+    // If method name is 'main', args must be (String[] args) and method must be static
+    if methodName == "main"
+        args = "(String[] args)"
+        methodAccess.isStatic = true
+
+    // If method name is the same as the class name,
+    // it's a constructor, so don't include the return type
+    if methodName == currentClass
+        ret methodAccess + " " + typeArgs + methodName + args + thrown
+    ret methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args + thrown
 
 string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
     out = ""

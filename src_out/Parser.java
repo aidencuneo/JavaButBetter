@@ -82,5 +82,80 @@ public class Parser {
         }
         return newTok;
     }
+    public static String convertOperToID(String oper) {
+        if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
+            return "operAdd";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
+            return "operSub";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "*"))) {
+            return "operMul";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "/"))) {
+            return "operDiv";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "%"))) {
+            return "operMod";
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "++"))) ? (Extensions.operEq(oper, "++")) : (Extensions.operEq(oper, "_++")))) {
+            return "operPostInc";
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "--"))) ? (Extensions.operEq(oper, "--")) : (Extensions.operEq(oper, "_--")))) {
+            return "operPostDec";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "++_"))) {
+            return "operPreInc";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "--_"))) {
+            return "operPreDec";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "!"))) {
+            return "operNot";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "~"))) {
+            return "operBitNot";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "|"))) {
+            return "operOr";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "^"))) {
+            return "operXor";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "&"))) {
+            return "operAnd";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "=="))) {
+            return "operEq";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "!="))) {
+            return "operEq";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {
+            return "operGt";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<"))) {
+            return "operLt";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">="))) {
+            return "operGte";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<="))) {
+            return "operLte";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<<"))) {
+            return "operShl";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>"))) {
+            return "operShr";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<<<"))) {
+            return "operUshl";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>>"))) {
+            return "operUshr";
+        }
+        return oper;
+    }
 }
 

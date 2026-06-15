@@ -236,123 +236,7 @@ public class Compiler {
                 
             }
             else {
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "!")))) : (tok))) {
-                    out += "@Override ";
-                    tok.remove(0);
-                }
-                var methodAccess = getMethodAccess(tok);
-                tok = stripMethodAccess(tok);
-                if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
-                    methodAccess . accessMod = AccessMod.PUBLIC;
-                }
-                var typeArgs = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.SQUARE_EXPR)) : (tok))) {
-                    var v = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
-                    typeArgs = Extensions.operAdd(compileTypeArgs(Tokeniser.tokLine(v)), " ");
-                    tok.remove(0);
-                }
-                var thrown = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (tok))) {
-                    var v = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
-                    thrown = compileExpr(Tokeniser.tokLine(v));
-                    tok.remove(0);
-                }
-                if (LangUtil.isTruthy(thrown)) { thrown = Extensions.operAdd(" throws ", thrown); }
-                tok.remove(Extensions.operSub(Extensions.len(tok), 1));
-                var args = "()";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.EXPR)) : (tok))) {
-                    var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
-                    args = compileMethodArgs(Tokeniser.tokLine(v), true);
-                    tok.remove(Extensions.operSub(Extensions.len(tok), 1));
-                }
-                var methodName = "";
-                if (LangUtil.isTruthy(tok)) {
-                    methodName = Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value;
-                    tok.remove(Extensions.operSub(Extensions.len(tok), 1));
-                    if (LangUtil.isTruthy(Extensions.operEq(methodName, "+"))) {
-                        methodName = "operAdd";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "-"))) {
-                        methodName = "operSub";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "*"))) {
-                        methodName = "operMul";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "/"))) {
-                        methodName = "operDiv";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "%"))) {
-                        methodName = "operMod";
-                    }
-                    else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(methodName, "++"))) ? (Extensions.operEq(methodName, "++")) : (Extensions.operEq(methodName, "_++")))) {
-                        methodName = "operPostInc";
-                    }
-                    else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(methodName, "--"))) ? (Extensions.operEq(methodName, "--")) : (Extensions.operEq(methodName, "_--")))) {
-                        methodName = "operPostDec";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "++_"))) {
-                        methodName = "operPreInc";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "--_"))) {
-                        methodName = "operPreDec";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "!"))) {
-                        methodName = "operNot";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "~"))) {
-                        methodName = "operBitNot";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "|"))) {
-                        methodName = "operOr";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "^"))) {
-                        methodName = "operXor";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "&"))) {
-                        methodName = "operAnd";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "=="))) {
-                        methodName = "operEq";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "!="))) {
-                        methodName = "operEq";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, ">"))) {
-                        methodName = "operGt";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "<"))) {
-                        methodName = "operLt";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, ">="))) {
-                        methodName = "operGte";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(methodName, "<="))) {
-                        methodName = "operLte";
-                    }
-                }
-                else {
-                    
-                }
-                var returnTypeArgs = "";
-                if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.SQUARE_EXPR)) : (tok))) {
-                    var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
-                    returnTypeArgs = compileTypeArgs(Tokeniser.tokLine(v));
-                    tok = LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1);
-                }
-                var returnType = "";
-                for (var t : LangUtil.asIterable(tok)) { returnType += Extensions.operAdd(t.value, " "); }
-                if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void "; }
-                returnType = returnType.trim();
-                if (LangUtil.isTruthy(Extensions.operEq(methodName, "main"))) {
-                    args = "(String[] args)";
-                    methodAccess . isStatic = true;
-                }
-                if (LangUtil.isTruthy(Extensions.operEq(methodName, currentClass))) {
-                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), methodName), args), thrown);
-                }
-                else {
-                    out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), returnType), returnTypeArgs), " "), methodName), args), thrown);
-                }
+                out += compileMethodDef(tok);
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(startTok, Token.Type.STATIC)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
@@ -809,6 +693,64 @@ public class Compiler {
     }
     public static String compileExpr(ArrayList<Token> tok) {
         return compileExpr(tok, true);
+    }
+    public static String compileMethodDef(ArrayList<Token> tok) {
+        var out = "";
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "override")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "!")))) : (tok))) {
+            out += "@Override ";
+            tok.remove(0);
+        }
+        var methodAccess = getMethodAccess(tok);
+        tok = stripMethodAccess(tok);
+        if (LangUtil.isTruthy(Extensions.operEq(methodAccess.accessMod, AccessMod.NONE))) {
+            methodAccess . accessMod = AccessMod.PUBLIC;
+        }
+        var typeArgs = "";
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.SQUARE_EXPR)) : (tok))) {
+            var v = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
+            typeArgs = Extensions.operAdd(compileTypeArgs(Tokeniser.tokLine(v)), " ");
+            tok.remove(0);
+        }
+        var thrown = "";
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (tok))) {
+            var v = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
+            thrown = compileExpr(Tokeniser.tokLine(v));
+            tok.remove(0);
+        }
+        if (LangUtil.isTruthy(thrown)) { thrown = Extensions.operAdd(" throws ", thrown); }
+        tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+        var args = "()";
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.EXPR)) : (tok))) {
+            var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
+            args = compileMethodArgs(Tokeniser.tokLine(v), true);
+            tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+        }
+        var methodName = "";
+        if (LangUtil.isTruthy(tok)) {
+            methodName = Parser.convertOperToID(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value);
+            tok.remove(Extensions.operSub(Extensions.len(tok), 1));
+        }
+        else {
+            return "";
+        }
+        var returnTypeArgs = "";
+        if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.SQUARE_EXPR)) : (tok))) {
+            var v = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
+            returnTypeArgs = compileTypeArgs(Tokeniser.tokLine(v));
+            tok = LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1);
+        }
+        var returnType = "";
+        for (var t : LangUtil.asIterable(tok)) { returnType += Extensions.operAdd(t.value, " "); }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(returnType))) { returnType = "void "; }
+        returnType = returnType.trim();
+        if (LangUtil.isTruthy(Extensions.operEq(methodName, "main"))) {
+            args = "(String[] args)";
+            methodAccess . isStatic = true;
+        }
+        if (LangUtil.isTruthy(Extensions.operEq(methodName, currentClass))) {
+            return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), methodName), args), thrown);
+        }
+        return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(methodAccess, " "), typeArgs), returnType), returnTypeArgs), " "), methodName), args), thrown);
     }
     public static String compileMethodArgs(ArrayList<Token> tok, boolean declareLocals) {
         var out = "";

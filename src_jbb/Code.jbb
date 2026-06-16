@@ -22,11 +22,11 @@ main:
     // ArrayList[Token] exprTok = tok[f + 1:]
 
     s = []
-    s = s + [5]
+    s += [-1]
     s += [5]
     println s
 
-    println [1, 2, 3] | [2, 3, 4]
+    // println /*[1, 2, 3] | [2, 3, 4]*/ "five again"
     println [1, 2, 3] & [2, 3, 4]
     println [1, 2, 3] ^ [2, 3, 4]
     // println ~[1, 2, 3]

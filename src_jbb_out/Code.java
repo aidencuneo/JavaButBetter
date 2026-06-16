@@ -3,12 +3,10 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        ArrayList [Token] exprTok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
         var s = LangUtil.listOf();
-        s = Extensions.operAdd(s, LangUtil.listOf(5));
+        s = Extensions.operAdd(s, (LangUtil.listOf(Extensions.operUnarySub(1))));
         s = Extensions.operAdd(s, (LangUtil.listOf(5)));
         LangUtil.println(s);
-        LangUtil.println(Extensions.operOr(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operAnd(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operXor(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operOr(142, 15));

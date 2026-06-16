@@ -22,8 +22,9 @@ ArrayList[string] splitFile(string file):
     CharType type = charType(file.charAt(0))
     CharType lastType = type
     char lastChar = 0
-    int comment = 0
-    
+    int lineComment = 0
+    bool blockComment = false
+
     // Context
     bool backslash = false
     bool sq = false
@@ -58,14 +59,14 @@ ArrayList[string] splitFile(string file):
                 // Seek until next non-indent character
                 inline(for (++i; i < file.length() && file.charAt(i) == ' ' || file.charAt(i) == '\t'; ++i) {})
                 --i
-        elif comment <= 1
-            if comment > 0 && c != '/'
-                comment = 0
+        elif lineComment <= 1 && !blockComment
+            if lineComment > 0 && c != '/'
+                lineComment = 0
 
             if c != '\r'
                 current += c
 
-        if comment >= 2
+        if lineComment >= 2
             ...
         elif c == '\\' && (sq || dq || bt)
             backslash = !backslash
@@ -83,15 +84,22 @@ ArrayList[string] splitFile(string file):
             ++sb
         elif c == ']' && !(sq || dq || bt || rb > 0 || cb > 0)
             --sb
+        // Block comments
+        elif c == '*' && lastChar == '/' && !(sq || dq || bt)
+            blockComment = true
+            current = current[:-2]
+        elif blockComment && c == '/' && lastChar == '*' && !(sq || dq || bt)
+            blockComment = false
+        // Line comments
         elif c == '/' && !(sq || dq || bt)
-            if ++comment >= 2
+            if ++lineComment >= 2
                 // Remove last two characters, since they will be '//'
-                current = current.substring(0, current.length() - 2)
+                current = current[:-2]
                 // lines.remove(lines.size() - 1)
 
         if c == '\n'
             // Reset some state at end of line
-            comment = 0
+            lineComment = 0
             lastIndent = indent
             indent = 0
 
@@ -105,7 +113,7 @@ ArrayList[string] splitFile(string file):
     return lines
 
 ArrayList[Token] tokLine(string line, bool keepIndent):
-    tok = new ArrayList[Token]()
+    tok = ArrayList[Token]()
     ret tok if !line
 
     // Gather indent for this line
@@ -136,7 +144,6 @@ ArrayList[Token] tokLine(string line, bool keepIndent):
     lastChar = '\0'
     lastLastChar = '\0'
     nextChar = '\0'
-    comment = 0
 
     // Context
     backslash = false
@@ -238,19 +245,9 @@ ArrayList[Token] tokLine(string line, bool keepIndent):
             ++tb
         elif c == '>' && !(sq || dq || bt || sb > 0 || rb > 0)
             --tb if tb
-        elif c == '/' && !(sq || dq || bt)
-            if ++comment >= 2
-                // Remove last token, since it will be a '/'
-                tok.remove(tok.size() - 1)
-                // current = ""
-                // current = current.substring(0, current.length() - 2)
-                break
 
-        if comment <= 1
-            if comment > 0 && c != '/'
-                comment = 0
-
-            current += c
+        // Always add characters because comments are taken out in splitFile
+        current += c
 
         // Reset backslash
         if c != '\\'

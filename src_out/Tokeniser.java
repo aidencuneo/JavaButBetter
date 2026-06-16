@@ -26,7 +26,8 @@ public class Tokeniser {
         CharType type = charType(file.charAt(0));
         CharType lastType = type;
         char lastChar = 0;
-        int comment = 0;
+        int lineComment = 0;
+        boolean blockComment = false;
         boolean backslash = false;
         boolean sq = false;
         boolean dq = false;
@@ -55,15 +56,15 @@ public class Tokeniser {
                     -- i;
                 }
             }
-            else if (LangUtil.isTruthy(Extensions.operLe(comment, 1))) {
-                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(comment, 0))) ? (!((boolean) Extensions.operEq(c, '/'))) : (Extensions.operGt(comment, 0)))) {
-                    comment = 0;
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operLe(lineComment, 1))) ? (!LangUtil.isTruthy(blockComment)) : (Extensions.operLe(lineComment, 1)))) {
+                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(lineComment, 0))) ? (!((boolean) Extensions.operEq(c, '/'))) : (Extensions.operGt(lineComment, 0)))) {
+                    lineComment = 0;
                 }
                 if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, '\r')))) {
                     current += c;
                 }
             }
-            if (LangUtil.isTruthy(Extensions.operGe(comment, 2))) {
+            if (LangUtil.isTruthy(Extensions.operGe(lineComment, 2))) {
                 
             }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\\'))) ? (((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt)))) : (Extensions.operEq(c, '\\')))) {
@@ -90,13 +91,20 @@ public class Tokeniser {
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ']'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(rb, 0))) ? (Extensions.operGt(rb, 0)) : (Extensions.operGt(cb, 0)))))))) : (Extensions.operEq(c, ']')))) {
                 -- sb;
             }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '*'))) ? ((LangUtil.isTruthy(Extensions.operEq(lastChar, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(lastChar, '/'))) : (Extensions.operEq(c, '*')))) {
+                blockComment = true;
+                current = LangUtil.slice(current, null, Extensions.operUnarySub(2), 1);
+            }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(blockComment)) ? ((LangUtil.isTruthy(Extensions.operEq(c, '/'))) ? ((LangUtil.isTruthy(Extensions.operEq(lastChar, '*'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(lastChar, '*'))) : (Extensions.operEq(c, '/'))) : (blockComment))) {
+                blockComment = false;
+            }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(c, '/')))) {
-                if (LangUtil.isTruthy(Extensions.operGe(++ comment, 2))) {
-                    current = current.substring(0, Extensions.operSub(current.length(), 2));
+                if (LangUtil.isTruthy(Extensions.operGe(++ lineComment, 2))) {
+                    current = LangUtil.slice(current, null, Extensions.operUnarySub(2), 1);
                 }
             }
             if (LangUtil.isTruthy(Extensions.operEq(c, '\n'))) {
-                comment = 0;
+                lineComment = 0;
                 lastIndent = indent;
                 indent = 0;
             }
@@ -135,7 +143,6 @@ public class Tokeniser {
         var lastChar = '\0';
         var lastLastChar = '\0';
         var nextChar = '\0';
-        var comment = 0;
         var backslash = false;
         var sq = false;
         var dq = false;
@@ -192,18 +199,7 @@ public class Tokeniser {
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '>'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(sb, 0))) ? (Extensions.operGt(sb, 0)) : (Extensions.operGt(rb, 0)))))))) : (Extensions.operEq(c, '>')))) {
                 if (LangUtil.isTruthy(tb)) { -- tb; }
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(c, '/')))) {
-                if (LangUtil.isTruthy(Extensions.operGe(++ comment, 2))) {
-                    tok.remove(Extensions.operSub(tok.size(), 1));
-                    break;
-                }
-            }
-            if (LangUtil.isTruthy(Extensions.operLe(comment, 1))) {
-                if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(comment, 0))) ? (!((boolean) Extensions.operEq(c, '/'))) : (Extensions.operGt(comment, 0)))) {
-                    comment = 0;
-                }
-                current += c;
-            }
+            current += c;
             if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, '\\')))) {
                 backslash = false;
             }

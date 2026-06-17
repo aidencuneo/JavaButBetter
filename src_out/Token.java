@@ -267,7 +267,7 @@ public class Token {
     }
     public static String joinTokens(ArrayList < Token > tok, String delim) {
         var joined = "";
-        for (var i : LangUtil.asIterable(LangUtil.range(0, Extensions.len(tok), null))) {
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
             joined += Extensions.operGetIndex(tok, i).value;
             if (LangUtil.isTruthy(Extensions.operLt(i, Extensions.operSub(Extensions.len(tok), 1)))) { joined += delim; }
         }

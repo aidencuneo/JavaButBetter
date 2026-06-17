@@ -16,7 +16,10 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
-printmore(x, y): println x + x + x + y + y + y
+static class Extensions
+double ***(double a, int b):
+    a **= a for _ in b
+    ret a
 
 public static class Code
 
@@ -26,9 +29,9 @@ main:
     s = []
     s += [-1]
     s += [5]
-    println s
-    printmore s, s
-    LangUtil.listOf 1, 2, 3
+    println 3 *** 2
+    // printmore s, s
+    // LangUtil.listOf 1, 2, 3
 
     // println /*[1, 2, 3] | [2, 3, 4]*/ "five again"
     println [1, 2, 3] & [2, 3, 4]

@@ -930,7 +930,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
     // Expressions (parentheses)
     elif len(tok) == 1 && tok[0].type == Token.Type.EXPR
-        let expr = tok[0].value
+        expr = tok[0].value
         expr = expr[1:-1]
         out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
 
@@ -952,6 +952,13 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR
         expr = tok[0].value[1:-1]
         out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
+
+    // Search for symbols (custom operators)
+    elif len(tok) >= 3 && (f = findTokenTypeRev(tok, Token.Type.SYMBOL)) >= 1
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
+        funcName = Parser.convertOperToID(tok[f].value)
+        out += "Extensions." + funcName + "(" + lhs + ", " + rhs + ")"
 
     // Fallback - add tokens as they are
     else
@@ -1029,7 +1036,9 @@ string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
     // Eat method name (can be many different token types)
     methodName = ""
     if tok
-        methodName = Parser.convertOperToID(tok[-1].value)
+        methodName = tok[-1].value
+        if tok[-1].type != Token.Type.ID
+            methodName = Parser.convertOperToID(methodName)
         tok.remove(len(tok) - 1)
     else
         // Error! Method name not given

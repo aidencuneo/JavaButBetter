@@ -155,7 +155,11 @@ public class Parser {
         else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>>"))) {
             return "operUshr";
         }
-        return oper;
+        var name = "oper";
+        for (var i : LangUtil.asIterable(Extensions.len(oper))) {
+            name += ((int) oper.charAt(i));
+        }
+        return name;
     }
 }
 

@@ -3,11 +3,6 @@
     - Use in variables, methods, method args, etc.
     - Takes a list of tokens and compiles it as a type
     - Could contain type args
-- Add custom operator overloading
-    - Add list of symbols to tokeniser to be recognised as binary operators
-    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
-    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
-- Make functions callable with a space like in ruby (?)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -25,6 +20,7 @@
     - 5 >= x >= 0
     - Use lookahead? Search for same token and capture entire expression
 - Add "not in" and "is not"
+- Make functions callable with a space like in ruby (?)
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR]) (?)
 - Add standard library somehow? (?)
 - Separate statement and expression null checks
@@ -41,6 +37,10 @@
 
 
 Done:
+- Add custom operator overloading
+    - Add list of symbols to tokeniser to be recognised as binary operators
+    - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode
+    - Use charcode(s) of operator for custom operators ($ => oper36, @ => oper64)
 - Add /* */
 - Fix:
     - lst += x

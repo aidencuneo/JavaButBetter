@@ -1,4 +1,4 @@
-inline(public enum Type)
+enum Type
     BLANK,
     INDENT,
     ID,
@@ -64,7 +64,7 @@ Token:
     this.value = ""
 
 static Token fromString(string v, Token.Type lastToken):
-    return new Token(Type.BLANK, v) if !v
+    return Token(Type.BLANK, v) if !v
 
     Type t = Type.BLANK
     char f = v.charAt(0)
@@ -196,7 +196,7 @@ static Token fromString(string v, Token.Type lastToken):
         t = Type.ALIAS
     elif v == "regex"
         t = Type.REGEX
-    elif isAlpha(v)
+    elif isAlpha(v) // TODO: Make more robust
         t = Type.ID
     elif isNum(v)
         if v.contains(".") && !(v.endsWith("f") || v.endsWith("d"))
@@ -218,7 +218,7 @@ static bool isNum(string s):
 
 static string joinTokens(ArrayList<Token> tok, string delim):
     joined = ""
-    for i in [..len(tok)]
+    for i in len(tok)
         joined += tok[i].value
         joined += delim if i < len(tok) - 1
     return joined

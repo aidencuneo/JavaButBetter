@@ -102,6 +102,8 @@ ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] name
     return newTok
 
 string convertOperToID(string oper):
+    // oper is guaranteed to NOT be an ID token
+
     // Convert operator names
     if oper == "+"
         ret "operAdd"
@@ -151,11 +153,12 @@ string convertOperToID(string oper):
         ret "operUshl"
     elif oper == ">>>"
         ret "operUshr"
-    // elif oper == "&&"
-    //     ret "operAnd"
-    // elif oper == "||"
-    //     ret "operOr"
-    ret oper
+
+    // Custom operators
+    name = "oper"
+    for i in len(oper)
+        name += oper.charAt(i) as int
+    ret name
 
 // static ArrayList[Token] parseAccessMods(ArrayList[Token] tok):
 //     let accessMod = AccessMod.DEFAULT

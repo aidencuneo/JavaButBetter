@@ -2,6 +2,11 @@
     - Use in variables, methods, method args, etc.
     - Takes a list of tokens and compiles it as a type
     - Could contain type args
+- Ensure compileType and compileCommaExpr are being used in ALL the correct places
+- Ensure any expressions which shouldn't have tokens at the end check for not having tokens at the end
+    - list[index] should check for [index] being the last token
+    - a.b.c() is another case
+    - Check for other cases
 - List comprehensions
     - Round and square brackets should both work
     - [expr for variable in iterable if cond]

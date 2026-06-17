@@ -417,7 +417,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // print, println
         if tok[0].value == "print" || tok[0].value == "println"
             out += "LangUtil." + tok[0].value + "("
-            out += compileExpr(tok[1:])
+            out += compileCommaExpr(tok[1:])
             out += ");"
 
     // Enum declarations
@@ -497,22 +497,40 @@ string compileStatement(ArrayList[Token] tok, string out):
 
     return out
 
+string compileCommaExpr(ArrayList[Token] tok):
+    out = ""
+    buffer = ArrayList[Token]()
+
+    for t in tok
+        if t.type == Token.Type.COMMA
+            out += compileExpr(buffer) + ", "
+            buffer.clear()
+        else
+            buffer << t
+
+    out += compileExpr(buffer)
+    out = out[:-2] while out.endsWith(", ")
+    return out
+
+string compileCommaExpr(string expr):
+    return compileCommaExpr(Tokeniser.tokLine(expr))
+
 string compileExpr(ArrayList[Token] tok, bool nested):
-    string out = ""
-    int f = -1
-    int f2 = -1
+    out = ""
+    f = -1
+    f2 = -1
 
     // Empty expression
     return out if !tok
 
-    // Comma (temporary?)
-    if (f = findTokenType(tok, Token.Type.COMMA)) != -1
-        out += compileExpr(tok[:f])
-        out += ", "
-        out += compileExpr(tok[f + 1:])
+    // // Comma (temporary?)
+    // if (f = findTokenType(tok, Token.Type.COMMA)) != -1
+    //     out += compileExpr(tok[:f])
+    //     out += ", "
+    //     out += compileExpr(tok[f + 1:])
 
     // Inline expressions
-    elif tok[0].type == Token.Type.INLINE
+    if tok[0].type == Token.Type.INLINE
         if len(tok) < 2
             // Error!
             return ""
@@ -822,7 +840,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
             // Eat and compile args as expression
             args = tok[-1].value[1:-1]
-            compArgs = compileExpr(Tokeniser.tokLine(args))
+            compArgs = compileCommaExpr(args)
             tok = tok[:-1]
 
             // Eat type args
@@ -921,6 +939,14 @@ string compileExpr(ArrayList[Token] tok, bool nested):
                 out += "Extensions.operGetIndex(" + iterable + ", " + compileExpr(tok) + ")"
                 // println "Index: " + iterable + "[" + compileExpr(tok) + "]"
 
+    // Naked function calls
+    elif len(tok) > 1 && tok[0].type == Token.Type.ID
+        // func arg1, arg2, argn
+
+        funcName = tok[0].value
+        args = compileCommaExpr(tok[1:])
+        out += funcName + "(" + args + ")"
+
     // Expressions (parentheses)
     elif len(tok) == 1 && tok[0].type == Token.Type.EXPR
         expr = tok[0].value
@@ -939,7 +965,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
         // List
         else
-            out += "LangUtil.listOf(" + StringParser.trimComma(compileExpr(tok)) + ")"
+            out += "LangUtil.listOf(" + compileCommaExpr(tok) + ")"
 
     // Brace expressions (curly brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR

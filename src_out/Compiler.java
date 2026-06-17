@@ -296,7 +296,7 @@ public class Compiler {
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ID))) ? (((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "println")))) : (Extensions.operEq(startTok, Token.Type.ID))))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print"))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "print")) : (Extensions.operEq(Extensions.operGetIndex(tok, 0).value, "println")))) {
                 out += Extensions.operAdd(Extensions.operAdd("LangUtil.", Extensions.operGetIndex(tok, 0).value), "(");
-                out += compileExpr(LangUtil.slice(tok, 1, null, 1));
+                out += compileCommaExpr(LangUtil.slice(tok, 1, null, 1));
                 out += ");";
             }
         }
@@ -349,17 +349,31 @@ public class Compiler {
         }
         return out;
     }
-    public static String compileExpr(ArrayList<Token> tok, boolean nested) {
-        String out = "";
-        int f = Extensions.operUnarySub(1);
-        int f2 = Extensions.operUnarySub(1);
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return out; }
-        if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.COMMA))), Extensions.operUnarySub(1))))) {
-            out += compileExpr(LangUtil.slice(tok, null, f, 1));
-            out += ", ";
-            out += compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+    public static String compileCommaExpr(ArrayList<Token> tok) {
+        var out = "";
+        var buffer = new ArrayList<Token>();
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) {
+                out += Extensions.operAdd(compileExpr(buffer), ", ");
+                buffer.clear();
+            }
+            else {
+                Extensions.operShl(buffer, t);
+            }
         }
-        else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.INLINE))) {
+        out += compileExpr(buffer);
+        while (LangUtil.isTruthy(out.endsWith(", "))) { out = LangUtil.slice(out, null, Extensions.operUnarySub(2), 1); }
+        return out;
+    }
+    public static String compileCommaExpr(String expr) {
+        return compileCommaExpr(Tokeniser.tokLine(expr));
+    }
+    public static String compileExpr(ArrayList<Token> tok, boolean nested) {
+        var out = "";
+        var f = Extensions.operUnarySub(1);
+        var f2 = Extensions.operUnarySub(1);
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return out; }
+        if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.INLINE))) {
             if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(tok), 2))) {
                 return "";
             }
@@ -621,7 +635,7 @@ public class Compiler {
                     return "";
                 }
                 var args = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value, 1, Extensions.operUnarySub(1), 1);
-                var compArgs = compileExpr(Tokeniser.tokLine(args));
+                var compArgs = compileCommaExpr(args);
                 tok = LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1);
                 var typeArgs = "";
                 if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.SQUARE_EXPR))) {
@@ -684,6 +698,11 @@ public class Compiler {
                 }
             }
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.ID)) : (Extensions.operGt(Extensions.len(tok), 1)))) {
+            var funcName = Extensions.operGetIndex(tok, 0).value;
+            var args = compileCommaExpr(LangUtil.slice(tok, 1, null, 1));
+            out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(funcName, "("), args), ")");
+        }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             var expr = Extensions.operGetIndex(tok, 0).value;
             expr = LangUtil.slice(expr, 1, Extensions.operUnarySub(1), 1);
@@ -696,7 +715,7 @@ public class Compiler {
                 out += compileRange(tok);
             }
             else {
-                out += Extensions.operAdd(Extensions.operAdd("LangUtil.listOf(", StringParser.trimComma(compileExpr(tok))), ")");
+                out += Extensions.operAdd(Extensions.operAdd("LangUtil.listOf(", compileCommaExpr(tok)), ")");
             }
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {

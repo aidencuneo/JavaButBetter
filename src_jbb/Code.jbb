@@ -25,12 +25,13 @@ public static class Code
 
 // ArrayList[Token] exprTok = tok[f + 1:]
 
+printmore(s, s): println "WHAT", s + 1, s, s, s, s, s, "END"
+
 main:
-    ArrayList[Token] exprTok = tok[f + 1:]
-    exprTok[0] = 5
-    a.b = c
-    Type a.b = c
-    Type c = d
+    printmore ([1, 2, 3] & [2, 3, 4]), "56???"
+    printmore 1, 2, 3, 4, 5, 6
+
+    5 + add 5, 4 + 6
 
     println [1, 2, 3] & [2, 3, 4]
     println [1, 2, 3] ^ [2, 3, 4]

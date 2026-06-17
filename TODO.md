@@ -1,4 +1,3 @@
-- Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Add compileType
     - Use in variables, methods, method args, etc.
     - Takes a list of tokens and compiles it as a type
@@ -38,6 +37,7 @@
 
 
 Done:
+- Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Fix java lambdas (->)
     - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Add/fix compound operators

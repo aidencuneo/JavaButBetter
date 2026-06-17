@@ -23,25 +23,17 @@ double ***(double a, int b):
 
 public static class Code
 
+// ArrayList[Token] exprTok = tok[f + 1:]
+
 main:
-    // ArrayList[Token] exprTok = tok[f + 1:]
-    someFunction((a, b) -> a + b)
-    TYPELESS(thing, a -> a)
+    ArrayList[Token] exprTok = tok[f + 1:]
+    exprTok[0] = 5
+    a.b = c
+    Type a.b = c
+    Type c = d
 
-    s = []
-    s += [-1]
-    s += [5]
-    println 3 *** 2
-    // printmore s, s
-    // LangUtil.listOf 1, 2, 3
-
-    // println /*[1, 2, 3] | [2, 3, 4]*/ "five again"
     println [1, 2, 3] & [2, 3, 4]
     println [1, 2, 3] ^ [2, 3, 4]
-    // println ~[1, 2, 3]
-    println 142 | 15
-    println 142 ^ 15
-    println ~142, ' ', ~15
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"
@@ -50,11 +42,5 @@ main:
     lst = [5, 4, 3] >> 1
     println lst
     lst << 6 << 4 << 0
-    println lst
-    lst = lst + [2, 3]
-    println lst
-    lst >> 1
-    println lst
-    1 << lst
     println lst
     println max(lst), ' ', min(lst), ' ', sum(lst)

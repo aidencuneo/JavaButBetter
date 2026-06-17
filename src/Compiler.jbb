@@ -337,16 +337,8 @@ string compileStatement(ArrayList[Token] tok, string out):
             // Error! Field name not given
             ...
 
-        // Eat type args
-        typeArgs = ""
-        if tok && tok[-1].type == Token.Type.SQUARE_EXPR
-            v = tok[-1].value[1:-1]
-            typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-            tok = tok[:-1]
-
-        // Everything remaining is part of the type
-        varType = ""
-        varType += t.value + " " for t in tok
+        // Eat type
+        varType = compileType(tok)
 
         if !varType
             // Error! Field missing type
@@ -356,7 +348,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // println "Declaring " + name
         declareLocal(name)
 
-        out += methodAccess + " " + varType.trim() + typeArgs + " " + name + value + ";"
+        out += methodAccess + " " + varType + " " + name + value + ";"
 
     // Scoped statements - methods only (?)
     elif scope == 0 && (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
@@ -527,49 +519,45 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
+    // Dot assignments
+    elif (
+        (f = findTokenType(tok, Token.Type.ASSIGN)) >= 3 &&
+        (f2 = findTokenType(tok, Token.Type.DOT)) != -1 &&
+        f2 < f
+    )
+        // [n1.n2.nn], =, [value]
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
+        out += lhs + " = " + rhs
+
     // Assignments (no dots)
-    elif (f = findTokenType(tok, Token.Type.ASSIGN)) != -1
+    elif (f = findTokenType(tok, Token.Type.ASSIGN)) >= 1
         // [type]?, name, =, [value]
 
-        let vartype = ""
-        let varname = ""
+        name = tok[f - 1].value
+        value = compileExpr(tok[f + 1:])
+        vartype = compileType(tok[:f - 1])
 
-        // // name.attr.attr2... = value
-        // if (f2 = findTokenType(tok[:f], Token.Type.DOT)) != -1
-        //     for j in [..f]
-        //         varname += tok[j].value + " "
-        //     varname .= trim()
-
-        // type name = value
-        if f == 2
-            vartype = tok[0].value
-            varname = tok[1].value
-
-        // name = value
-        elif f == 1
-            varname = tok[0].value
-
-        // ... = value
-        else
-            // inline(for (int j = 0; j < f; ++j))
-            varname += tok[j].value + " " for j in [..f]
-            varname .= trim()
+        // name[index] = value
+        if tok[f - 1].type == Token.Type.SQUARE_EXPR
+            name = ""
+            name += t.value + " " for t in tok[:f]
+            name = name.trim()
+            vartype = ""
 
         vartype = "var" if vartype == "let"
 
         out += "(" if nested
 
         // Declare if this name is not already in scope, this is not nested, and the var name is valid
-        if !localInScope(varname) && !nested && !varname.contains(" ") // TODO: use regex and parser.jbb and stringparser.jbb to check if this is an identifier
+        if !localInScope(name) && !nested && !name.contains(" ") // TODO: use regex and parser.jbb and stringparser.jbb to check if this is an identifier
             vartype = "var" if !vartype // Automatic var insertion
-            declareLocal(varname)
+            declareLocal(name)
 
         if vartype
-            out += vartype + " " + varname + " = "
+            out += vartype + " " + name + " = " + value
         else
-            out += varname + " = "
-
-        out += compileExpr(tok[f + 1:])
+            out += name + " = " + value
 
         out += ")" if nested
 
@@ -993,6 +981,18 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
 string compileExpr(ArrayList[Token] tok):
     return compileExpr(tok, true)
+
+string compileType(ArrayList[Token] tok):
+    typeArgs = ""
+    if tok && tok[-1].type == Token.Type.SQUARE_EXPR
+        v = tok[-1].value[1:-1]
+        typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+        tok = tok[:-1]
+
+    // Everything remaining is part of the type
+    varType = ""
+    varType += t.value + " " for t in tok
+    return varType.trim() + typeArgs
 
 string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
     // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope

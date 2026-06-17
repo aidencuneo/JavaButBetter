@@ -3,6 +3,10 @@
     - Use in variables, methods, method args, etc.
     - Takes a list of tokens and compiles it as a type
     - Could contain type args
+- List comprehensions
+    - Round and square brackets should both work
+    - [expr for variable in iterable if cond]
+    - Use map?
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length

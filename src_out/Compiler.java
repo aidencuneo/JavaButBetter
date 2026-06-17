@@ -361,7 +361,12 @@ public class Compiler {
         int f = Extensions.operUnarySub(1);
         int f2 = Extensions.operUnarySub(1);
         if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { return out; }
-        if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.COMMA))), Extensions.operUnarySub(1))))) {
+        if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.ID)) : (Extensions.operGt(Extensions.len(tok), 1)))) {
+            var name = Extensions.operGetIndex(tok, 0).value;
+            var args = compileExpr(LangUtil.slice(tok, 1, null, 1));
+            LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(name, "("), args), ")"));
+        }
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.COMMA))), Extensions.operUnarySub(1))))) {
             out += compileExpr(LangUtil.slice(tok, null, f, 1));
             out += ", ";
             out += compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -598,6 +603,11 @@ public class Compiler {
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.DECREMENT)) : (Extensions.operGt(Extensions.len(tok), 1)))) {
             var name = compileExpr(LangUtil.slice(tok, null, Extensions.operUnarySub(1), 1));
             out += Extensions.operAdd(name, "--");
+        }
+        else if (LangUtil.isTruthy(Extensions.operGe(((f = findToken(tok, "extends"))), 1))) {
+            var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+            var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+            out += Extensions.operAdd(Extensions.operAdd(lhs, " extends "), rhs);
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.NULL_CHECK))), Extensions.operUnarySub(1)))) : (Extensions.operGt(Extensions.len(tok), 1)))) {
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));

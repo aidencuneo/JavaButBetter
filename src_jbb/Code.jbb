@@ -16,6 +16,8 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
+printmore(x, y): println x + x + x + y + y + y
+
 public static class Code
 
 main:
@@ -25,6 +27,8 @@ main:
     s += [-1]
     s += [5]
     println s
+    printmore s, s
+    LangUtil.listOf 1, 2, 3
 
     // println /*[1, 2, 3] | [2, 3, 4]*/ "five again"
     println [1, 2, 3] & [2, 3, 4]

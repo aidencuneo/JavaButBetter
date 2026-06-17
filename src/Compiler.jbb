@@ -789,6 +789,12 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         name = compileExpr(tok[:-1])
         out += name + "--"
 
+    // Extends (T1 extends T2) - Possibly not needed?
+    elif (f = findToken(tok, "extends")) >= 1
+        lhs = compileExpr(tok[:f])
+        rhs = compileExpr(tok[f + 1:])
+        out += lhs + " extends " + rhs
+
     // // Dotted function calls
     // elif (f = findTokenTypeRev(tok, Token.Type.EXPR)) > 0 && (f2 = findTokenRev(tok, ".")) != -1
     //     let lhs = compileExpr(tok[:f2])

@@ -2,11 +2,14 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    public void printmore(Object x, Object y) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(x, x), x), y), y), y)); }
+    
     public static void main(String[] args) {
         var s = LangUtil.listOf();
         s = Extensions.operAdd(s, (LangUtil.listOf(Extensions.operUnarySub(1))));
         s = Extensions.operAdd(s, (LangUtil.listOf(5)));
         LangUtil.println(s);
+        , s;
         LangUtil.println(Extensions.operAnd(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operXor(LangUtil.listOf(1, 2, 3), LangUtil.listOf(2, 3, 4)));
         LangUtil.println(Extensions.operOr(142, 15));

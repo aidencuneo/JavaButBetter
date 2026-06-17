@@ -23,7 +23,6 @@
     - 5 > x > 0
     - 5 >= x >= 0
     - Use lookahead? Search for same token and capture entire expression
-- Add "not in" and "is not"
 - Make functions callable with a space like in ruby (?)
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR]) (?)
 - Add standard library somehow? (?)
@@ -41,6 +40,9 @@
 
 
 Done:
+- Add/fix compound operators
+    - Removed excess ones like "outside", "notin", "isnot"
+    - Added "not in", "!in"
 - Add custom operator overloading
     - Add list of symbols to tokeniser to be recognised as binary operators
     - Auto convert any binary operators unspecified in the if chain to operxx where xx is the charcode

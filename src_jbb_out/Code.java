@@ -3,7 +3,10 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        var s = LangUtil.listOf();
+        var s = "4";
+        LangUtil.println(s == "4");
+        LangUtil.println(s != "4");
+        s = LangUtil.listOf();
         s = Extensions.operAdd(s, (LangUtil.listOf(Extensions.operUnarySub(1))));
         s = Extensions.operAdd(s, (LangUtil.listOf(5)));
         LangUtil.println(Extensions.oper424242(3, 2));

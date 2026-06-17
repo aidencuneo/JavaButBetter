@@ -490,20 +490,24 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(lhs, " != "), rhs);
             }
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("<", ">", "<=", ">=", "as", "is", "isnt", "isnot", "in", "inside", "notin", "outside")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("<", ">", "<=", ">=", "as", "is", "isnt", "in")))), Extensions.operUnarySub(1))))) {
             var oper = Extensions.operGetIndex(tok, f).value;
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "in"))) ? ((LangUtil.isTruthy(Extensions.operGe(Extensions.operSub(f, 1), 0))) ? (Extensions.operIn(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).value, LangUtil.listOf("not", "!"))) : (Extensions.operGe(Extensions.operSub(f, 1), 0))) : (Extensions.operEq(oper, "in")))) {
+                oper = "not in";
+                tok.remove(f--);
+            }
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             if (LangUtil.isTruthy(Extensions.operEq(oper, "is"))) {
                 oper = "==";
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "isnt"))) ? (Extensions.operEq(oper, "isnt")) : (Extensions.operEq(oper, "isnot")))) {
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "isnt"))) {
                 oper = "!=";
             }
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "in"))) ? (Extensions.operEq(oper, "in")) : (Extensions.operEq(oper, "inside")))) {
+            if (LangUtil.isTruthy(Extensions.operEq(oper, "in"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operIn(", lhs), ", "), rhs), ")");
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "notin"))) ? (Extensions.operEq(oper, "notin")) : (Extensions.operEq(oper, "outside")))) {
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "not in"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("!((boolean) Extensions.operIn(", lhs), ", "), rhs), "))");
             }
             else if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {

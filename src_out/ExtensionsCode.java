@@ -129,13 +129,13 @@ bool operOr(bool a, bool b):
 // Union
 [T] List[T] operOr(List[T] a, List[T] b):
     res = ArrayList[T](a)
-    res.add(x) if x notin res for x in b
+    res.add(x) if x not in res for x in b
     ret res
 
 [T] List[T] operOr(T[] a, T[] b):
     res = ArrayList[T]()
     res.add(x) for x in a
-    res.add(x) if x notin res for x in b
+    res.add(x) if x not in res for x in b
     ret res
 
 // ^
@@ -151,14 +151,14 @@ bool operXor(bool a, bool b):
 // Symmetric difference
 [T] List[T] operXor(List[T] a, List[T] b):
     res = ArrayList[T]()
-    res.add(x) if x notin b for x in a
-    res.add(y) if y notin a for y in b
+    res.add(x) if x not in b for x in a
+    res.add(y) if y not in a for y in b
     ret res
 
 [T] List[T] operXor(T[] a, T[] b):
     res = ArrayList[T]()
-    res.add(x) if x notin b for x in a
-    res.add(y) if y notin a for y in b
+    res.add(x) if x not in b for x in a
+    res.add(y) if y not in a for y in b
     ret res
 
 // &

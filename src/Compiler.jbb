@@ -688,19 +688,25 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyTokenRev(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "isnot", "in", "inside", "notin", "outside"])) != -1
+    elif (f = findAnyTokenRev(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "in"])) != -1
         oper = tok[f].value
+
+        // "not in", "!in"
+        if oper == "in" && f - 1 >= 0 && tok[f - 1].value in ["not", "!"]
+            oper = "not in"
+            tok.remove(f--)
+
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
 
         if oper == "is"
             oper = "=="
-        elif oper == "isnt" || oper == "isnot"
+        elif oper == "isnt"
             oper = "!="
 
-        if oper == "in" || oper == "inside"
+        if oper == "in"
             out += "Extensions.operIn(" + lhs + ", " + rhs + ")"
-        elif oper == "notin" || oper == "outside"
+        elif oper == "not in"
             out += "!((boolean) Extensions.operIn(" + lhs + ", " + rhs + "))"
         elif oper == ">"
             out += "Extensions.operGt(" + lhs + ", " + rhs + ")"

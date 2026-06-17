@@ -594,19 +594,18 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
     // Arrow function (Java lambda)
     elif (f = findTokenType(tok, Token.Type.ARROW)) != -1
-        // args, ->, [body]
+        // arg|(args), ->, [body]
 
         // Eat and compile args
-        if tok[0].type != Token.Type.EXPR
-            // Error! (?)
-            return ""
+        compArgs = ""
+        if tok[0].type == Token.Type.EXPR
+            args = tok[0].value[1:-1]
+            compArgs = compileMethodArgs(Tokeniser.tokLine(args), true, null)
+        else
+            compArgs = tok[0].value
 
-        args = tok[0].value[1:-1]
-        compArgs = compileMethodArgs(Tokeniser.tokLine(args))
-        tok.remove(0)
-
-        // Compile body (from 1 onwards to remove the arrow)
-        out += compArgs + " -> " + compileExpr(tok[1:])
+        // Compile body
+        out += compArgs + " -> " + compileExpr(tok[f + 1:])
 
     // Ternary conditional operator
     elif (f = findToken(tok, "?")) != -1 && (f2 = findToken(tok, ":")) != -1
@@ -1077,9 +1076,9 @@ string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
 string compileMethodDef(ArrayList[Token] tok):
     ret compileMethodDef(tok, true)
 
-string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
+string compileMethodArgs(ArrayList[Token] tok, bool declareLocals, string defaultType):
     out = ""
-    buffer = new ArrayList[Token]()
+    buffer = ArrayList[Token]()
     tok.add(Token.fromString(",")) // Comma to end last argument
 
     ++scope // Increase scope for method arguments
@@ -1090,7 +1089,8 @@ string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
             // Buffer should be [name]
             if len(buffer) == 1
                 declareLocal(buffer[0].value) if declareLocals
-                out += "Object " + buffer[0].value + ", "
+                out += defaultType + " " if defaultType
+                out += buffer[0].value + ", "
 
             // Buffer should be [type..., typeArgs?, name]
             elif len(buffer) > 1
@@ -1123,8 +1123,11 @@ string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
 
     return "(" + StringParser.trimComma(out) + ")"
 
+string compileMethodArgs(ArrayList[Token] tok, bool declareLocals):
+    return compileMethodArgs(tok, declareLocals, "Object")
+
 string compileMethodArgs(ArrayList[Token] tok):
-    return compileMethodArgs(tok, false)
+    return compileMethodArgs(tok, false, "Object")
 
 string compileTypeArgs(ArrayList[Token] tok):
     // If tok is empty, interpret this as "[]", which is an array definition

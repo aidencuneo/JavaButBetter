@@ -13,8 +13,6 @@
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
-- Fix java lambdas (->)
-    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
@@ -40,6 +38,8 @@
 
 
 Done:
+- Fix java lambdas (->)
+    - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)
 - Add/fix compound operators
     - Removed excess ones like "outside", "notin", "isnot"
     - Added "not in", "!in"

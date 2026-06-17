@@ -25,6 +25,8 @@ public static class Code
 
 main:
     // ArrayList[Token] exprTok = tok[f + 1:]
+    someFunction((a, b) -> a + b)
+    TYPELESS(thing, a -> a)
 
     s = []
     s += [-1]

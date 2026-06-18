@@ -42,11 +42,11 @@ public class Extensions {
         return a == b;
     }
     public static boolean operEq(String a, String b) {
-        if (a == null) return b == null;
+        if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);
     }
     public static boolean operEq(Object a, Object b) {
-        if (a == null) return b == null;
+        if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);
     }
     public static boolean operIn(char c, String s) {
@@ -59,13 +59,37 @@ public class Extensions {
         return lst.contains(o);
     }
     public static boolean operIn(Object o, Object[] lst) {
-        return Arrays.stream(lst).anyMatch(x -> x.equals(o));
+        return Arrays.stream(lst).anyMatch(x -> Extensions.operEq(x, o));
     }
     public static boolean operIn(Object o, Set s) {
         return s.contains(o);
     }
     public static boolean operIn(Object o, Map m) {
         return m.containsKey(o);
+    }
+    public static boolean operIn(int n, LangUtil . IntRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
+    }
+    public static boolean operIn(int n, LangUtil . LongRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
+    }
+    public static boolean operIn(int n, LangUtil . DoubleRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
     }
     public static boolean operGt(int a, int b) {
         return a > b;

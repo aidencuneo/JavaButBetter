@@ -3,10 +3,6 @@
     - Takes a list of tokens and compiles it as a type
     - Could contain type args
 - Ensure compileType and compileCommaExpr are being used in ALL the correct places
-- Ensure any expressions which shouldn't have tokens at the end check for not having tokens at the end
-    - list[index] should check for [index] being the last token
-    - a.b.c() is another case
-    - Check for other cases
 - List comprehensions
     - Round and square brackets should both work
     - [expr for variable in iterable if cond]
@@ -25,7 +21,7 @@
     - 5 > x > 0
     - 5 >= x >= 0
     - Use lookahead? Search for same token and capture entire expression
-- Make functions callable with a space like in ruby (?)
+- Improve naked function calling
 - ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR]) (?)
 - Add standard library somehow? (?)
 - Separate statement and expression null checks
@@ -42,6 +38,12 @@
 
 
 Done:
+- Add overload for element in range
+    - num in [x..y..z]
+- Ensure any expressions which shouldn't have tokens at the end check for not having tokens at the end
+    - list[index] should check for [index] being the last token
+    - a.b.c() is another case
+- Make functions callable with a space like in ruby
 - Fix: ArrayList[Token] exprTok = tok[f + 1:]
 - Fix java lambdas (->)
     - Fix ones where arguments have no types ((a, b) -> a + b), or there is only one argument (x -> x)

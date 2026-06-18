@@ -38,43 +38,69 @@ inline(public static <T> T operGetIndex(T[] v, int i))
 
 // ==
 bool operEq(int a, int b):
-    inline(return a == b;)
+    ret a is b
 
 bool operEq(long a, long b):
-    inline(return a == b;)
+    ret a is b
 
 bool operEq(double a, double b):
-    inline(return a == b;)
+    ret a is b
 
 bool operEq(bool a, bool b):
-    inline(return a == b;)
+    ret a is b
 
 bool operEq(string a, string b):
-    inline(if (a == null) return b == null;)
-    return a.equals(b)
+    ret b is null if a is null
+    // inline(if (a == null) return b == null;)
+    ret a.equals(b)
 
 bool operEq(object a, object b):
-    inline(if (a == null) return b == null;)
-    return a.equals(b)
+    ret b is null if a is null
+    // inline(if (a == null) return b == null;)
+    ret a.equals(b)
 
 // in
 bool operIn(char c, string s):
-    return s.indexOf(c) != -1
+    ret s.indexOf(c) != -1
 
 bool operIn(string part, string s):
-    return s.indexOf(part) != -1
+    ret s.indexOf(part) != -1
 
 bool operIn(object o, List lst):
-    return lst.contains(o)
+    ret lst.contains(o)
 
-inline(public static boolean operIn(Object o, Object[] lst))
-    inline(return Arrays.stream(lst).anyMatch(x -> x.equals(o));)
+bool operIn(o, object[] lst):
+    ret Arrays.stream(lst).anyMatch(x -> x == o)
 
 bool operIn(object o, Set s):
-    return s.contains(o)
+    ret s.contains(o)
 
 bool operIn(object o, Map m):
-    return m.containsKey(o)
+    ret m.containsKey(o)
+
+bool operIn(int n, LangUtil.IntRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
+
+bool operIn(int n, LangUtil.LongRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
+
+bool operIn(int n, LangUtil.DoubleRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
 
 // >
 bool operGt(int a, int b):

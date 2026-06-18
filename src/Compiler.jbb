@@ -828,9 +828,12 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ")"
 
     // Last occurrence of function call, dot, or slice/index
-    elif len(tok) > 1 && (f = findAnyTokenTypeRev(
-        tok, [Token.Type.EXPR, Token.Type.DOT, Token.Type.SQUARE_EXPR]
-    )) > 0
+    elif len(tok) > 1 && (
+        tok[f = len(tok) - 1].type in [Token.Type.EXPR, Token.Type.SQUARE_EXPR] &&
+        tok[f - 1].type != Token.Type.COMMA
+    ) || (
+        (f = findTokenTypeRev(tok, Token.Type.DOT)) > 0 && f < len(tok) - 1
+    )
         // Function calls
         if tok[f].type == Token.Type.EXPR
             if f != len(tok) - 1
@@ -1188,9 +1191,9 @@ string compileTypeArgs(ArrayList[Token] tok):
 
 string compileRange(ArrayList[Token] tok):
     // [start]?, .., [end]?, (.., [step])?
-    let startTokens = new ArrayList[Token]()
-    let endTokens = new ArrayList[Token]()
-    let stepTokens = new ArrayList[Token]()
+    startTokens = ArrayList[Token]()
+    endTokens = ArrayList[Token]()
+    stepTokens = ArrayList[Token]()
 
     // Eat start
     while tok && tok[0].type != Token.Type.RANGE
@@ -1212,9 +1215,9 @@ string compileRange(ArrayList[Token] tok):
         tok.remove(0)
 
     // Compile tokens
-    let start = compileExpr(startTokens)
-    let end = compileExpr(endTokens)
-    let step = compileExpr(stepTokens)
+    start = compileExpr(startTokens)
+    end = compileExpr(endTokens)
+    step = compileExpr(stepTokens)
 
     start = "0" if !start
     end = "null" if !end

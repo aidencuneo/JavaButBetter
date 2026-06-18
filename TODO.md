@@ -1,12 +1,10 @@
-- Add compileType
-    - Use in variables, methods, method args, etc.
-    - Takes a list of tokens and compiles it as a type
-    - Could contain type args
-- Ensure compileType and compileCommaExpr are being used in ALL the correct places
+- Add "for iterable" to iterate using _
+    - Converts "for iterable" into "for _ in iterable"
+    - Useful for "for n" to repeat n times
 - List comprehensions
     - Round and square brackets should both work
     - [expr for variable in iterable if cond]
-    - Use map?
+    - Use forEach, filter
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -38,6 +36,11 @@
 
 
 Done:
+- Ensure compileType and compileCommaExpr are being used in all the correct places
+- Add compileType
+    - Use in variables, methods, method args, etc.
+    - Takes a list of tokens and compiles it as a type
+    - Could contain type args
 - Add overload for element in range
     - num in [x..y..z]
 - Ensure any expressions which shouldn't have tokens at the end check for not having tokens at the end

@@ -113,15 +113,13 @@ string compileStatement(ArrayList[Token] tok, string out):
     // Package
     if startTok == Token.Type.PACKAGE
         packagePath = ""
-        for j in [1..len(tok)]
-            packagePath += tok[j].value
+        packagePath += t.value for t in tok[1:]
         // startTemplate = packageStr + ";\n" + startTemplate
 
     // Imports
     elif startTok == Token.Type.IMPORT
-        let importStr = "import "
-        for j in [1..len(tok)]
-            importStr += tok[j].value
+        importStr = "import "
+        importStr += t.value for t in tok[1:]
         startTemplate += importStr + ";\n"
 
     // Options
@@ -134,14 +132,14 @@ string compileStatement(ArrayList[Token] tok, string out):
             // Error!
             return ""
 
-        let optionName = tok[1].value
-        let optionValue = tok[2].value
+        optionName = tok[1].value
+        optionValue = tok[2].value
         Options.setOption(optionName, optionValue)
 
     // Aliases
     elif startTok == Token.Type.ALIAS && (f = findTokenType(tok, Token.Type.ASSIGN)) >= 2
         name = tok[1].value
-        args = new ArrayList[string]()
+        args = ArrayList[string]()
 
         if f > 2
             args = Tokeniser.extractArgsFromExpr(tok[2].value)
@@ -284,7 +282,7 @@ string compileStatement(ArrayList[Token] tok, string out):
     // Try
     elif startTok == Token.Type.TRY
         out += "try "
-        string resources = compileExpr(tok[1:], false)
+        resources = compileExpr(tok[1:], false)
         out += "(" + resources + ") " if resources
 
     // Catch
@@ -292,7 +290,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         out += "catch ("
 
         // Add all of the following tokens
-        let s = ""
+        s = ""
         s += t.value + " " for t in tok[1:]
         s .= trim()
 
@@ -463,16 +461,8 @@ string compileStatement(ArrayList[Token] tok, string out):
             // Error! Field name not given
             ...
 
-        // Eat type args
-        typeArgs = ""
-        if tok && tok[-1].type == Token.Type.SQUARE_EXPR
-            v = tok[-1].value[1:-1]
-            typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-            tok = tok[:-1]
-
-        // Everything remaining is part of the type
-        varType = ""
-        varType += t.value + " " for t in tok
+        // Eat type
+        varType = compileType(tok)
 
         if !varType
             // Error! Field missing type
@@ -482,7 +472,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         // println "Declaring " + name
         declareLocal(name)
 
-        out += methodAccess + " " + varType.trim() + typeArgs + " " + name + ";"
+        out += methodAccess + " " + varType + " " + name + ";"
 
     // Expressions
     else
@@ -554,26 +544,26 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
         name = tok[f - 1].value
         value = compileExpr(tok[f + 1:])
-        vartype = compileType(tok[:f - 1])
+        varType = compileType(tok[:f - 1])
 
         // name[index] = value
         if tok[f - 1].type == Token.Type.SQUARE_EXPR
             name = ""
             name += t.value + " " for t in tok[:f]
             name = name.trim()
-            vartype = ""
+            varType = ""
 
-        vartype = "var" if vartype == "let"
+        varType = "var" if varType == "let"
 
         out += "(" if nested
 
         // Declare if this name is not already in scope, this is not nested, and the var name is valid
         if !localInScope(name) && !nested && !name.contains(" ") // TODO: use regex and parser.jbb and stringparser.jbb to check if this is an identifier
-            vartype = "var" if !vartype // Automatic var insertion
+            varType = "var" if !varType // Automatic var insertion
             declareLocal(name)
 
-        if vartype
-            out += vartype + " " + name + " = " + value
+        if varType
+            out += varType + " " + name + " = " + value
         else
             out += name + " = " + value
 
@@ -849,8 +839,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             // Eat type args
             typeArgs = ""
             if tok[-1].type == Token.Type.SQUARE_EXPR
-                v = tok[-1].value[1:-1]
-                typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+                typeArgs = compileTypeArgs(tok[-1].value)
                 tok = tok[:-1]
 
             // Eat "new"
@@ -902,9 +891,9 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             if findToken(tok, ":") != -1
                 // start?, :?, end?, :?, step?
 
-                startTokens = new ArrayList[Token]()
-                endTokens = new ArrayList[Token]()
-                stepTokens = new ArrayList[Token]()
+                startTokens = ArrayList[Token]()
+                endTokens = ArrayList[Token]()
+                stepTokens = ArrayList[Token]()
 
                 // Eat start
                 while tok && tok[0].value != ":"
@@ -954,7 +943,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     elif len(tok) == 1 && tok[0].type == Token.Type.EXPR
         expr = tok[0].value
         expr = expr[1:-1]
-        out += "(" + compileExpr(Tokeniser.tokLine(expr)) + ")"
+        out += "(" + compileCommaExpr(Tokeniser.tokLine(expr)) + ")"
 
     // List expressions (square brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.SQUARE_EXPR
@@ -973,7 +962,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     // Brace expressions (curly brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR
         expr = tok[0].value[1:-1]
-        out += "{" + compileExpr(Tokeniser.tokLine(expr)) + "}"
+        out += "{" + compileCommaExpr(Tokeniser.tokLine(expr)) + "}"
 
     // Search for symbols (custom operators)
     elif len(tok) >= 3 && (f = findTokenTypeRev(tok, Token.Type.SYMBOL)) >= 1
@@ -992,7 +981,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             if t.type == Token.Type.EXPR
                 raw = t.value[1:-1]
                 tokens = Tokeniser.tokLine(raw)
-                out += "(" + compileExpr(tokens) + ")"
+                out += "(" + compileCommaExpr(tokens) + ")"
 
             // // Convert identifiers to get method calls
             // elif t.type == Token.Type.ID:
@@ -1000,11 +989,6 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
             else
                 out += t.value + " "
-
-    // if findTokenType(tok, Token.Type.STRING) != -1
-    //     System.out.println("String: " + Util.d(tok))
-
-    // System.out.println("Just did expr: " + Util.d(tok))
 
     return out.trim()
 
@@ -1014,8 +998,7 @@ string compileExpr(ArrayList[Token] tok):
 string compileType(ArrayList[Token] tok):
     typeArgs = ""
     if tok && tok[-1].type == Token.Type.SQUARE_EXPR
-        v = tok[-1].value[1:-1]
-        typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+        typeArgs = compileTypeArgs(tok[-1].value)
         tok = tok[:-1]
 
     // Everything remaining is part of the type
@@ -1043,8 +1026,7 @@ string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
     // Eat type args
     typeArgs = ""
     if tok && tok[0].type == Token.Type.SQUARE_EXPR
-        v = tok[0].value[1:-1]
-        typeArgs = compileTypeArgs(Tokeniser.tokLine(v)) + " "
+        typeArgs = compileTypeArgs(tok[0].value) + " "
         tok.remove(0)
 
     // Eat thrown types
@@ -1078,18 +1060,9 @@ string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
         // Error! Method name not given
         ret ""
 
-    // Eat return type args
-    returnTypeArgs = ""
-    if tok && tok[-1].type == Token.Type.SQUARE_EXPR
-        v = tok[-1].value[1:-1]
-        returnTypeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-        tok = tok[:-1]
-
-    // Everything remaining is part of the return type
-    returnType = ""
-    returnType += t.value + " " for t in tok
-    returnType = "void " if !returnType
-    returnType .= trim()
+    // Eat return type
+    returnType = compileType(tok)
+    returnType = "void" if !returnType
 
     // If method name is 'main', args must be (String[] args) and method must be static
     if methodName == "main"
@@ -1100,7 +1073,7 @@ string compileMethodDef(ArrayList[Token] tok, bool declareLocals):
     // it's a constructor, so don't include the return type
     if methodName == currentClass
         ret methodAccess + " " + typeArgs + methodName + args + thrown
-    ret methodAccess + " " + typeArgs + returnType + returnTypeArgs + " " + methodName + args + thrown
+    ret methodAccess + " " + typeArgs + returnType + " " + methodName + args + thrown
 
 string compileMethodDef(ArrayList[Token] tok):
     ret compileMethodDef(tok, true)
@@ -1123,26 +1096,14 @@ string compileMethodArgs(ArrayList[Token] tok, bool declareLocals, string defaul
 
             // Buffer should be [type..., typeArgs?, name]
             elif len(buffer) > 1
-                // Eat name
+                // Eat name and type
                 name = buffer[-1].value
-                buffer = buffer[:-1]
-
-                // Eat type args
-                typeArgs = ""
-                if buffer[-1].type == Token.Type.SQUARE_EXPR
-                    v = buffer[-1].value[1:-1]
-                    typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
-                    buffer = buffer[:-1]
-
-                // Remaining tokens make up type (TODO: create compileType and use it instead)
-                type = ""
-                type += b.value + " " for b in buffer
-                type .= trim()
+                argType = compileType(buffer[:-1])
 
                 // Declare arg as a local
                 declareLocal(name) if declareLocals
 
-                out += type + typeArgs + " " + name + ", "
+                out += argType + " " + name + ", "
 
             buffer.clear()
         else
@@ -1177,8 +1138,7 @@ string compileTypeArgs(ArrayList[Token] tok):
             // Eat type args
             typeArgs = ""
             if len(buffer) > 1 && buffer[-1].type == Token.Type.SQUARE_EXPR
-                v = buffer[-1].value[1:-1]
-                typeArgs = compileTypeArgs(Tokeniser.tokLine(v))
+                typeArgs = compileTypeArgs(buffer[-1].value)
                 buffer = buffer[:-1]
 
             // Compile remaining tokens as an expression
@@ -1188,6 +1148,11 @@ string compileTypeArgs(ArrayList[Token] tok):
             buffer.add(t)
 
     ret "<" + StringParser.trimComma(out) + ">"
+
+string compileTypeArgs(string expr):
+    if expr.startsWith("[") && expr.endsWith("]")
+        expr = expr[1:-1]
+    ret compileTypeArgs(Tokeniser.tokLine(expr))
 
 string compileRange(ArrayList[Token] tok):
     // [start]?, .., [end]?, (.., [step])?

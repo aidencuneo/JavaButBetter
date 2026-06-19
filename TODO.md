@@ -2,7 +2,7 @@
     - Converts "for iterable" into "for _ in iterable"
     - Useful for "for n" to repeat n times
 - List comprehensions
-    - Round and square brackets should both work
+    - Square brackets only (or round brackets for iterable?)
     - [expr for variable in iterable if cond]
     - Use forEach, filter
 - Mutable for loops
@@ -18,15 +18,17 @@
     - 0 <= x <= 5
     - 5 > x > 0
     - 5 >= x >= 0
-    - Use lookahead? Search for same token and capture entire expression
+    - Use lookahead? Search for same token and capture entire expressions
 - Improve naked function calling
-- ((Token.Type.%, ) cfor [EXPR, DOT, SQUARE_EXPR]) (?)
+    - Make it work with dots (make dot expression checking stricter?)
 - Add standard library somehow? (?)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
     - Aliases can be defined anywhere and used anywhere else
 - set/get (?)
+    - Add $var for _get_var() and $var = x for _set_var(x)
+    - Also $a.b = x => a._set_b(x)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
 - F-strings and `` strings (TEMPLATE_STRING token) (?)

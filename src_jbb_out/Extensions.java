@@ -288,12 +288,6 @@ public class Extensions {
     public static long operShl(long a, long b) {
         return a << b;
     }
-    public static String operShl(String a, Object b) {
-        return Extensions.operAdd(a, b);
-    }
-    public static String operShl(Object a, String b) {
-        return Extensions.operAdd(a, b);
-    }
     public static String operShl(String a, String b) {
         return Extensions.operAdd(a, b);
     }
@@ -318,12 +312,6 @@ public class Extensions {
     }
     public static long operShr(long a, long b) {
         return a >> b;
-    }
-    public static String operShr(String a, Object b) {
-        return Extensions.operAdd(b, a);
-    }
-    public static String operShr(Object a, String b) {
-        return Extensions.operAdd(b, a);
     }
     public static String operShr(String a, String b) {
         return Extensions.operAdd(b, a);

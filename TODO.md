@@ -9,11 +9,14 @@
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
-- Add 0 < x < 5 and variants
-    - 0 <= x <= 5
-    - 5 > x > 0
-    - 5 >= x >= 0
-    - Use lookahead? Search for same token and capture entire expressions
+- Add unless (!if)
+- Make var[index] = value have a proper overload
+- Add dictionaries (implemented as hashmaps)
+    - Examples:
+    - {a: 5}
+    - {"a": 5}
+    - d = {23498: ["a", "b", "c"]}
+    - d[123] = ["h" for 6]
 - Improve naked function calling
     - Make it work with dots (make dot expression checking stricter?)
 - Add standard library somehow? (?)
@@ -31,6 +34,11 @@
 
 
 Done:
+- Add comparison chaining (0 < x < 5 and variants)
+    - 0 <= x <= 5
+    - 5 > x > 0
+    - 5 >= x >= 0
+    - Support any number of combinations with any number of operators
 - List comprehensions
     - Square brackets only
     - [expr for variable in iterable if cond]

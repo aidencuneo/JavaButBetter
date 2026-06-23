@@ -497,7 +497,7 @@ public class Compiler {
                 out += Extensions.operAdd(Extensions.operAdd(lhs, " != "), rhs);
             }
         }
-        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyTokenRev(tok, LangUtil.listOf("<", ">", "<=", ">=", "as", "is", "isnt", "in")))), Extensions.operUnarySub(1))))) {
+        else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findAnyToken(tok, LangUtil.listOf("<", ">", "<=", ">=", "as", "is", "isnt", "in")))), Extensions.operUnarySub(1))))) {
             var oper = Extensions.operGetIndex(tok, f).value;
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "in"))) ? ((LangUtil.isTruthy(Extensions.operGe(Extensions.operSub(f, 1), 0))) ? (Extensions.operIn(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).value, LangUtil.listOf("not", "!"))) : (Extensions.operGe(Extensions.operSub(f, 1), 0))) : (Extensions.operEq(oper, "in")))) {
                 oper = "not in";
@@ -511,23 +511,40 @@ public class Compiler {
             else if (LangUtil.isTruthy(Extensions.operEq(oper, "isnt"))) {
                 oper = "!=";
             }
-            if (LangUtil.isTruthy(Extensions.operEq(oper, "in"))) {
+            if (LangUtil.isTruthy(Extensions.operIn(oper, LangUtil.listOf(">", ">=", "<", "<=")))) {
+                var stack = new ArrayList<String>();
+                while (LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) {
+                    f = findAnyToken(tok, LangUtil.listOf(">", ">=", "<", "<="));
+                    f2 = findAnyToken(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1), LangUtil.listOf(">", ">=", "<", "<="));
+                    f2 = LangUtil.isTruthy(Extensions.operEq(f2, Extensions.operUnarySub(1))) ? (Extensions.len(tok)) : (Extensions.operAdd(Extensions.operAdd(f2, f), 1));
+                    if (LangUtil.isTruthy(Extensions.operEq(f, Extensions.operUnarySub(1)))) { break; }
+                    lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
+                    oper = Extensions.operGetIndex(tok, f).value;
+                    rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), f2, 1));
+                    tok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
+                    var operName = "";
+                    if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {
+                        operName = "Gt";
+                    }
+                    else if (LangUtil.isTruthy(Extensions.operEq(oper, ">="))) {
+                        operName = "Ge";
+                    }
+                    else if (LangUtil.isTruthy(Extensions.operEq(oper, "<"))) {
+                        operName = "Lt";
+                    }
+                    else if (LangUtil.isTruthy(Extensions.operEq(oper, "<="))) {
+                        operName = "Le";
+                    }
+                    stack = Extensions.operAdd(stack, LangUtil.listOf(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.oper", operName), "("), lhs), ", "), rhs), ")")));
+                }
+                for (var elem : LangUtil.asIterable(stack)) { out += Extensions.operAdd(elem, " && "); }
+                if (LangUtil.isTruthy(out.endsWith(" && "))) { out = LangUtil.slice(out, null, Extensions.operUnarySub(4), 1); }
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(oper, "in"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operIn(", lhs), ", "), rhs), ")");
             }
             else if (LangUtil.isTruthy(Extensions.operEq(oper, "not in"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("!((boolean) Extensions.operIn(", lhs), ", "), rhs), "))");
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operGt(", lhs), ", "), rhs), ")");
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, ">="))) {
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operGe(", lhs), ", "), rhs), ")");
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, "<"))) {
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operLt(", lhs), ", "), rhs), ")");
-            }
-            else if (LangUtil.isTruthy(Extensions.operEq(oper, "<="))) {
-                out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operLe(", lhs), ", "), rhs), ")");
             }
             else if (LangUtil.isTruthy(Extensions.operEq(oper, "as"))) {
                 out += Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("((", rhs), ") "), lhs), ")");

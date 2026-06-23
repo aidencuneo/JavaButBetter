@@ -330,12 +330,6 @@ int operShl(int a, int b):
 long operShl(long a, long b):
     inline(return a << b;)
 
-string operShl(string a, b):
-    ret a + b
-
-string operShl(a, string b):
-    ret a + b
-
 string operShl(string a, string b):
     ret a + b
 
@@ -361,12 +355,6 @@ int operShr(int a, int b):
 
 long operShr(long a, long b):
     inline(return a >> b;)
-
-string operShr(string a, b):
-    ret b + a
-
-string operShr(a, string b):
-    ret b + a
 
 string operShr(string a, string b):
     ret b + a

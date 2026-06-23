@@ -694,7 +694,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyTokenRev(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "in"])) != -1
+    elif (f = findAnyToken(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "in"])) != -1
         oper = tok[f].value
 
         // "not in", "!in"
@@ -710,18 +710,61 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         elif oper == "isnt"
             oper = "!="
 
-        if oper == "in"
+        // Handle comparison chaining
+        if oper in [">", ">=", "<", "<="]
+            stack = ArrayList[string]()
+
+            while len(tok) > 1
+                // Find operators
+                f = findAnyToken(tok, [">", ">=", "<", "<="])
+                f2 = findAnyToken(tok[f + 1:], [">", ">=", "<", "<="])
+                f2 = len(tok) if f2 == -1 else f2 + f + 1
+
+                // No operators left?
+                break if f == -1
+
+                // Parse leftmost expression
+                lhs = compileExpr(tok[:f])
+                oper = tok[f].value
+                rhs = compileExpr(tok[f + 1:f2])
+                tok = tok[f + 1:]
+
+                operName = ""
+                if oper == ">"
+                    operName = "Gt"
+                elif oper == ">="
+                    operName = "Ge"
+                elif oper == "<"
+                    operName = "Lt"
+                elif oper == "<="
+                    operName = "Le"
+
+                // operName = {
+                //     ">": "Gt",
+                //     ">=": "Ge",
+                //     "<": "Lt",
+                //     "<=": "Le",
+                // }[oper]
+
+                stack = stack + ["Extensions.oper" + operName + "(" + lhs + ", " + rhs + ")"]
+                // stack << "Extensions.oper" + operName + "(" + lhs + ", " + rhs + ")"
+
+            // Join stack with "&&"
+            out += elem + " && " for elem in stack
+            out = out[:-4] if out.endsWith(" && ")
+
+        elif oper == "in"
             out += "Extensions.operIn(" + lhs + ", " + rhs + ")"
         elif oper == "not in"
             out += "!((boolean) Extensions.operIn(" + lhs + ", " + rhs + "))"
-        elif oper == ">"
-            out += "Extensions.operGt(" + lhs + ", " + rhs + ")"
-        elif oper == ">="
-            out += "Extensions.operGe(" + lhs + ", " + rhs + ")"
-        elif oper == "<"
-            out += "Extensions.operLt(" + lhs + ", " + rhs + ")"
-        elif oper == "<="
-            out += "Extensions.operLe(" + lhs + ", " + rhs + ")"
+        // elif oper == ">"
+        //     out += "Extensions.operGt(" + lhs + ", " + rhs + ")"
+        // elif oper == ">="
+        //     out += "Extensions.operGe(" + lhs + ", " + rhs + ")"
+        // elif oper == "<"
+        //     out += "Extensions.operLt(" + lhs + ", " + rhs + ")"
+        // elif oper == "<="
+        //     out += "Extensions.operLe(" + lhs + ", " + rhs + ")"
         elif oper == "as"
             out += "((" + rhs + ") " + lhs + ")"
         else

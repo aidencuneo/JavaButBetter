@@ -25,26 +25,11 @@ public static class Code
 
 // ArrayList[Token] exprTok = tok[f + 1:]
 
-printmore(s, s2): println "WHAT", s, s, s, s, s, s, "END"
-int add(int a, int b) => a + b
-
 main:
-    println
-    println -1238234 in [Int.MIN_VALUE..]
-    println 138234 in [..]
-    println
-    println 5 in [1..5..]
-    println [1..5]
-    println 10 in [..1000..2]
-    println 11 in [..1000..2]
-    println [..1000..2]
-    printmore ([1, 2, 3] & [2, 3, 4]), "56???"
-    printmore [1, 2], [3, 4, 5, 6]
-
-    5 + add 5, 4 + 6
-
-    println [1, 2, 3] & [2, 3, 4]
-    println [1, 2, 3] ^ [2, 3, 4]
+    for 5
+        println [1, 2, 3] & [2, 3, 4]
+    for _ in 3
+        println [1, 2, 3] ^ [2, 3, 4]
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"

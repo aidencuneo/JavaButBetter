@@ -1,6 +1,3 @@
-- Add "for iterable" to iterate using _
-    - Converts "for iterable" into "for _ in iterable"
-    - Useful for "for n" to repeat n times
 - List comprehensions
     - Square brackets only (or round brackets for iterable?)
     - [expr for variable in iterable if cond]
@@ -38,6 +35,9 @@
 
 
 Done:
+- Add "for iterable" to iterate using _
+    - Converts "for iterable" into "for _ in iterable"
+    - Useful for "for n" to repeat n times
 - Ensure compileType and compileCommaExpr are being used in all the correct places
 - Add compileType
     - Use in variables, methods, method args, etc.

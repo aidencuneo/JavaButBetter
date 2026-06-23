@@ -221,12 +221,19 @@ string compileStatement(ArrayList[Token] tok, string out):
             out += "))"
             out += ")" if startTok == Token.Type.UNTIL
 
-    // For-in loops
-    elif startTok == Token.Type.FOR && (f = findTokenRev(tok, "in")) != -1
-        out += "for ("
-        string varname = tok[1].value
-        out += "var " + varname + " : LangUtil.asIterable("
-        out += compileExpr(tok[f + 1:])
+    // For loops
+    elif startTok == Token.Type.FOR
+        // For-in
+        f_in = findTokenRev(tok, "in")
+        varname = "_"
+
+        if f_in != -1
+            varname = tok[1].value
+        else
+            f_in = 0
+
+        out += "for (var " + varname + " : LangUtil.asIterable("
+        out += compileExpr(tok[f_in + 1:])
         out += ")) "
 
         // Declare local (inside the for loop)
@@ -267,17 +274,21 @@ string compileStatement(ArrayList[Token] tok, string out):
         elif tok[f].type == Token.Type.FOR
             // For-in
             f_in = findTokenRev(tok, "in")
-            if f_in != -1
-                out += "for ("
-                varname = tok[f + 1].value
-                out += "var " + varname + " : LangUtil.asIterable("
-                out += compileExpr(tok[f_in + 1:])
-                out += ")) { "
-                out = compileStatement(tok[:f], out)
-                out += " }"
+            varname = "_"
 
-                // Declare local (inside the for loop)
-                declareLocal(varname, scope + 1)
+            if f_in != -1
+                varname = tok[f + 1].value
+            else
+                f_in = f
+
+            out += "for (var " + varname + " : LangUtil.asIterable("
+            out += compileExpr(tok[f_in + 1:])
+            out += ")) { "
+            out = compileStatement(tok[:f], out)
+            out += " }"
+
+            // Declare local (inside the for loop)
+            declareLocal(varname, scope + 1)
 
     // Try
     elif startTok == Token.Type.TRY

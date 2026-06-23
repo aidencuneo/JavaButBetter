@@ -3,7 +3,6 @@
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
-    - Allow for (let i = 10; i; --i) (?)
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
 - Compile subfolders
 - Make JBB installable as a command
@@ -15,7 +14,6 @@
     - {"a": 5}
     - d = {23498: ["a", "b", "c"]}
     - d[123] = ["h" for 6]
-- Add standard library somehow? (?)
 - Add global aliases to precompilation
     - Aliases can be defined anywhere and used anywhere else
 - set/get (?)

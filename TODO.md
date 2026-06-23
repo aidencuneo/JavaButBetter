@@ -4,11 +4,14 @@
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
-- Separate statement and expression null checks
-    - Null checks currently don't work if the function returns void
+- F-strings and `` strings (TEMPLATE_STRING token) (?)
+- Improve JBB command interface
+    - Add flags
+    - Display nothing when -v or --verbose flags unset
+    - Display title, version, "Compiling filename.jbb..." when verbose flag set
+- Compile subfolders
 - Make JBB installable as a command
     - Add to path
-    - Add CLI args
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:
@@ -26,7 +29,8 @@
     - Also $a.b = x => a._set_b(x)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
-- F-strings and `` strings (TEMPLATE_STRING token) (?)
+- Separate statement and expression null checks
+    - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting
     - Extend from Java syntax highlighting
 

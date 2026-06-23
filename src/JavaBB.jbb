@@ -1,7 +1,28 @@
+alias VERSION = "v0.6.0"
+
 main:
+    // Parse flags
+    verbose = false
+    argv = ArrayList[string]()
+
+    for arg in args
+        if arg == "-v" or arg == "--version"
+            println "JavaButBetter " + VERSION
+            exit()
+        elif arg == "-V" or arg == "--verbose"
+            verbose = true
+        else
+            argv = argv + [arg]
+            // argv << arg
+
+    // argv now contains raw args without accepted flags
+
     // Get input and output directories
-    compDir = args[0] if args else "src"
-    outDir = args[1] if len(args) > 1 else compDir + "_out"
+    compDir = argv[0] if argv else "src"
+    outDir = argv[1] if len(argv) > 1 else compDir + "_out"
+
+    println "--- JavaButBetter " + VERSION + " ---" if verbose
+    println "Compiling directory \"" + compDir + "\" to \"" + outDir + "\"" if verbose
 
     // Create directory if it doesn't exist
     if !File(outDir).exists()
@@ -11,13 +32,13 @@ main:
     // files = new File(compDir).list((File dir, string name) -> name.endsWith(".jbb") || name.endsWith(".java"))
     files = File(compDir).list()
 
-    println "\nCompiling Extensions..."
+    println "\nCompiling Extensions..." if verbose
 
     // Extensions code
     extensionsClassRes = ExtensionsCode.get()
 
     // Precompile all files
-    println "\n\nPrecompiling " + compDir + "..."
+    println "\n\nPrecompiling " + compDir + "..." if verbose
     fileContentMap = HashMap[string, string]()
 
     for i in len(files)
@@ -26,7 +47,7 @@ main:
         className = files[i].split("\\.")[0]
 
         // Read input file
-        try let scanner = Scanner(File(fromPath))
+        try scanner = Scanner(File(fromPath))
             fileContent = scanner.useDelimiter("\\Z").next()
         catch FileNotFoundException e
             ...
@@ -39,7 +60,7 @@ main:
             fileContentMap.put(files[i], fileContent)
 
     // Compile all files
-    println "\n\nCompiling " + compDir + "..."
+    println "\n\nCompiling " + compDir + "..." if verbose
 
     for i in len(files)
         fromPath = compDir + "/" + files[i]
@@ -88,7 +109,7 @@ main:
     catch IOException e
         ...
 
-    println "\n\nCompiling LangUtil..."
+    println "\n\nCompiling LangUtil..." if verbose
 
     // Compile LangUtil
     res = LangUtilCode.get()
@@ -100,4 +121,4 @@ main:
     catch IOException e
         ...
 
-    println "\n\nDone."
+    println "\n\nDone." if verbose

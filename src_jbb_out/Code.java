@@ -3,9 +3,6 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        var d = new ArrayList<String>();
-        var a = LangUtil.nullCheck(d, _t0 -> _t0.size());
-        LangUtil.println(a);
         var age = 10;
         if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
         age = 18;

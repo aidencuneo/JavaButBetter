@@ -5,10 +5,6 @@
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
-- Improve JBB command interface
-    - Add flags
-    - Display nothing when -v or --verbose flags unset
-    - Display title, version, "Compiling filename.jbb..." when verbose flag set
 - Compile subfolders
 - Make JBB installable as a command
     - Add to path
@@ -37,6 +33,10 @@
 
 
 Done:
+- Improve JBB command interface
+    - Add flags
+    - Display nothing when -v or --verbose flags unset
+    - Display title, version, "Compiling filename.jbb..." when verbose flag set
 - Add unless (!if)
 - Add comparison chaining (0 < x < 5 and variants)
     - 0 <= x <= 5

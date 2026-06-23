@@ -3,15 +3,31 @@ import java.util.*;
 
 public class JavaBB {
     public static void main(String[] args) {
-        var compDir = LangUtil.isTruthy(args) ? (Extensions.operGetIndex(args, 0)) : ("src");
-        var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(args), 1)) ? (Extensions.operGetIndex(args, 1)) : (Extensions.operAdd(compDir, "_out"));
+        var verbose = false;
+        var argv = new ArrayList<String>();
+        for (var arg : LangUtil.asIterable(args)) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(arg, "-v"))) ? (Extensions.operEq(arg, "-v")) : (Extensions.operEq(arg, "--version")))) {
+                LangUtil.println(Extensions.operAdd("JavaButBetter ", "v0.6.0"));
+                LangUtil.exit();
+            }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(arg, "-V"))) ? (Extensions.operEq(arg, "-V")) : (Extensions.operEq(arg, "--verbose")))) {
+                verbose = true;
+            }
+            else {
+                argv = Extensions.operAdd(argv, LangUtil.listOf(arg));
+            }
+        }
+        var compDir = LangUtil.isTruthy(argv) ? (Extensions.operGetIndex(argv, 0)) : ("src");
+        var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(argv), 1)) ? (Extensions.operGetIndex(argv, 1)) : (Extensions.operAdd(compDir, "_out"));
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter ", "v0.6.0"), " ---")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Compiling directory \"", compDir), "\" to \""), outDir), "\"")); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdir();
         }
         var files = new File(compDir).list();
-        LangUtil.println("\nCompiling Extensions...");
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling Extensions..."); }
         var extensionsClassRes = ExtensionsCode.get();
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "..."));
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "...")); }
         var fileContentMap = new HashMap<String, String>();
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fileContent = "";
@@ -29,7 +45,7 @@ public class JavaBB {
                 fileContentMap.put(Extensions.operGetIndex(files, i), fileContent);
             }
         }
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "..."));
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "...")); }
         for (var i : LangUtil.asIterable(Extensions.len(files))) {
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), Extensions.operGetIndex(files, i));
             var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(Extensions.operGetIndex(files, i).split("\\."), 0)), ".java");
@@ -66,7 +82,7 @@ public class JavaBB {
         catch (IOException e) {
             
         }
-        LangUtil.println("\n\nCompiling LangUtil...");
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\n\nCompiling LangUtil..."); }
         var res = LangUtilCode.get();
         var langUtilCode = res.getCompiledCode("LangUtil");
         try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/LangUtil.java"))) {
@@ -76,7 +92,7 @@ public class JavaBB {
         catch (IOException e) {
             
         }
-        LangUtil.println("\n\nDone.");
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\n\nDone."); }
     }
 }
 

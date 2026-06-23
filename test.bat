@@ -1,6 +1,6 @@
 @REM This script runs the most recent compiler on the 'src_jbb' directory
 cd src_out
-java JavaBB --verbose ../src_jbb
+java JavaBB --verbose --watch ../src_jbb
 
 @REM Compile and run the resulting code
 cd ../src_jbb_out

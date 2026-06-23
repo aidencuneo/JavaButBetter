@@ -1,16 +1,22 @@
 alias VERSION = "v0.6.0"
 
+import java.nio.file.*
+import java.nio.file.StandardWatchEventKinds;
+
 main:
     // Parse flags
     verbose = false
+    watch = false
     argv = ArrayList[string]()
 
     for arg in args
-        if arg == "-v" or arg == "--version"
+        if arg in ["-v", "--version"]
             println "JavaButBetter " + VERSION
             exit()
-        elif arg == "-V" or arg == "--verbose"
+        elif arg in ["-V", "--verbose"]
             verbose = true
+        elif arg in ["-W", "--watch"]
+            watch = true
         else
             argv = argv + [arg]
             // argv << arg
@@ -122,3 +128,94 @@ main:
         ...
 
     println "\n\nDone." if verbose
+
+    // Start watching for additional file changes if watch flag is set
+    if watch
+        try
+            watcher = FileSystems.getDefault().newWatchService()
+            Path.of(compDir).register(
+                watcher,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_MODIFY,
+                StandardWatchEventKinds.ENTRY_DELETE)
+
+            println "Watching \"" + compDir + "\"\n"
+
+            while true
+                key = watcher.take()
+                for event in key.pollEvents()
+                    kind = "" + event.kind()
+                    context = event.context()
+
+                    println kind + ": " + context
+
+                    // Recompile individual files (and Extensions)
+                    // TODO: Organise this better
+                    if event.kind() in [
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                    ]
+                        filename = "" + (context as Path)
+                        extensionsClassRes = ExtensionsCode.get()
+
+                        fromPath = compDir + "/" + filename
+                        toPath = outDir + "/" + filename.split("\\.")[0] + ".java"
+                        className = filename.split("\\.")[0]
+                        fileContent = ""
+
+                        // Read file
+                        try scanner = Scanner(File(fromPath))
+                            fileContent = scanner.useDelimiter("\\Z").next()
+                        catch FileNotFoundException e
+                            ...
+
+                        if filename.endsWith(".jbb")
+                            lines = Precompiler.precompileFile(className, fileContent)
+
+                            // Join lines back together
+                            fileContent = string.join("\n", lines)
+
+                        // Apply regex rules
+                        fileContent = Precompiler.applyRegexRules(fileContent)
+
+                        // Compile this file (if .jbb)
+                        compiled = ""
+
+                        if filename.endsWith(".jbb")
+                            res = Compiler.compileFile(className, fileContent)
+
+                            // Extract Extensions class if it exists
+                            if "Extensions" in res.classes
+                                // Add code to current Extensions class
+                                newCode = res.classes["Extensions"].code
+                                extensionsClass = extensionsClassRes.classes["Extensions"]
+                                inline(extensionsClass.code = extensionsClass.code + newCode;)
+
+                                // Remove Extensions class from this file's output
+                                res.classes.remove("Extensions")
+
+                            // Get final compiled code
+                            compiled = res.getCompiledCode(className)
+
+                        // Copy regular files over (including .java)
+                        else
+                            compiled = fileContent
+                            toPath = outDir + "/" + filename // Keep full name intact
+
+                        // Write to output file
+                        try let writer = PrintWriter(toPath)
+                            File(toPath).createNewFile()
+                            writer.println(compiled)
+                        catch IOException e
+                            ...
+
+                        // Write Extensions.java
+                        try let writer = PrintWriter(outDir + "/Extensions.java")
+                            File(outDir + "/Extensions.java").createNewFile()
+                            writer.println(extensionsClassRes.getCompiledCode("Extensions"))
+                        catch IOException e
+                            ...
+                break if !key.reset()
+            exit()
+        catch Exception e
+            ...

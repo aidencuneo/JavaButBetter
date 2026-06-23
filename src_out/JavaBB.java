@@ -1,17 +1,23 @@
 import java.io.*;
 import java.util.*;
+import java.nio.file.*;
+import java.nio.file.StandardWatchEventKinds;
 
 public class JavaBB {
     public static void main(String[] args) {
         var verbose = false;
+        var watch = false;
         var argv = new ArrayList<String>();
         for (var arg : LangUtil.asIterable(args)) {
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(arg, "-v"))) ? (Extensions.operEq(arg, "-v")) : (Extensions.operEq(arg, "--version")))) {
+            if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-v", "--version")))) {
                 LangUtil.println(Extensions.operAdd("JavaButBetter ", "v0.6.0"));
                 LangUtil.exit();
             }
-            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(arg, "-V"))) ? (Extensions.operEq(arg, "-V")) : (Extensions.operEq(arg, "--verbose")))) {
+            else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-V", "--verbose")))) {
                 verbose = true;
+            }
+            else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-W", "--watch")))) {
+                watch = true;
             }
             else {
                 argv = Extensions.operAdd(argv, LangUtil.listOf(arg));
@@ -91,6 +97,74 @@ public class JavaBB {
         }
         catch (IOException e) {
             
+        }
+        if (LangUtil.isTruthy(watch)) {
+            try {
+                var watcher = FileSystems.getDefault().newWatchService();
+                Path.of(compDir).register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd("Watching \"", compDir), "\"\n"));
+                while (LangUtil.isTruthy(true)) {
+                    var key = watcher.take();
+                    for (var event : LangUtil.asIterable(key.pollEvents())) {
+                        var kind = Extensions.operAdd("", event.kind());
+                        var context = event.context();
+                        LangUtil.println(Extensions.operAdd(Extensions.operAdd(kind, ": "), context));
+                        if (LangUtil.isTruthy(Extensions.operIn(event.kind(), LangUtil.listOf(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY)))) {
+                            var filename = Extensions.operAdd("", (((Path) context)));
+                            extensionsClassRes = ExtensionsCode.get();
+                            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), filename);
+                            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(filename.split("\\."), 0)), ".java");
+                            var className = Extensions.operGetIndex(filename.split("\\."), 0);
+                            var fileContent = "";
+                            try (var scanner = new Scanner(new File(fromPath))) {
+                                fileContent = scanner.useDelimiter("\\Z").next();
+                            }
+                            catch (FileNotFoundException e) {
+                                
+                            }
+                            if (LangUtil.isTruthy(filename.endsWith(".jbb"))) {
+                                var lines = Precompiler.precompileFile(className, fileContent);
+                                fileContent = String.join("\n", lines);
+                            }
+                            fileContent = Precompiler.applyRegexRules(fileContent);
+                            var compiled = "";
+                            if (LangUtil.isTruthy(filename.endsWith(".jbb"))) {
+                                res = Compiler.compileFile(className, fileContent);
+                                if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
+                                    var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
+                                    var extensionsClass = Extensions.operGetIndex(extensionsClassRes.classes, "Extensions");
+                                    extensionsClass.code = extensionsClass.code + newCode;
+                                    res.classes.remove("Extensions");
+                                }
+                                compiled = res.getCompiledCode(className);
+                            }
+                            else {
+                                compiled = fileContent;
+                                toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), filename);
+                            }
+                            try (var writer = new PrintWriter(toPath)) {
+                                new File(toPath).createNewFile();
+                                writer.println(compiled);
+                            }
+                            catch (IOException e) {
+                                
+                            }
+                            try (var writer = new PrintWriter(Extensions.operAdd(outDir, "/Extensions.java"))) {
+                                new File(Extensions.operAdd(outDir, "/Extensions.java")).createNewFile();
+                                writer.println(extensionsClassRes.getCompiledCode("Extensions"));
+                            }
+                            catch (IOException e) {
+                                
+                            }
+                        }
+                    }
+                    if (LangUtil.isTruthy(!LangUtil.isTruthy(key.reset()))) { break; }
+                }
+                LangUtil.exit();
+            }
+            catch (Exception e) {
+                
+            }
         }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println("\n\nDone."); }
     }

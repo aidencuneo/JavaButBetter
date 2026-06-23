@@ -9,37 +9,37 @@ public class Parser {
             var nextTok = LangUtil.isTruthy(Extensions.operLt(Extensions.operAdd(i, 1), tok.size())) ? (tok.get(Extensions.operAdd(i, 1))) : (new Token());
             if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
                 if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
-                    t . value = "String";
+                    t.value = "String";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "object"))) {
-                    t . value = "Object";
+                    t.value = "Object";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Int"))) {
-                    t . value = "Integer";
+                    t.value = "Integer";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Integer"))) {
-                    t . value = "Int";
+                    t.value = "Int";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Char"))) {
-                    t . value = "Character";
+                    t.value = "Character";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Character"))) {
-                    t . value = "Char";
+                    t.value = "Char";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "bool"))) {
-                    t . value = "boolean";
+                    t.value = "boolean";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "boolean"))) {
-                    t . value = "_boolean";
+                    t.value = "_boolean";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Boolean"))) {
-                    t . value = "Bool";
+                    t.value = "Bool";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Bool"))) {
-                    t . value = "Boolean";
+                    t.value = "Boolean";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "_"))) {
-                    t . value = "__";
+                    t.value = "__";
                 }
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "__"))) {
                     Extensions.operEq(t.value, "_");
@@ -56,7 +56,7 @@ public class Parser {
                         tok.remove(i);
                     }
                     tok.addAll(i, aliasTokens);
-                    i += Extensions.operSub(aliasTokens.size(), 1);
+                    i += aliasTokens.size() - 1;
                 }
             }
             lastWasDot = false;
@@ -81,8 +81,8 @@ public class Parser {
                 var exprStr = t.value.substring(1, Extensions.operSub(t.value.length(), 1));
                 var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
                 var newExpr = "";
-                for (var token : LangUtil.asIterable(replaced)) { newExpr += token.value; }
-                t . value = Extensions.operAdd(Extensions.operAdd("(", newExpr), ")");
+                for (var token : LangUtil.asIterable(replaced)) { newExpr = Extensions.operAdd(newExpr, (token.value)); }
+                t.value = Extensions.operAdd(Extensions.operAdd("(", newExpr), ")");
             }
             newTok.add(t);
         }
@@ -163,7 +163,7 @@ public class Parser {
         }
         var name = "oper";
         for (var i : LangUtil.asIterable(Extensions.len(oper))) {
-            name += ((int) oper.charAt(i));
+            name = Extensions.operAdd(name, (((int) oper.charAt(i))));
         }
         return name;
     }

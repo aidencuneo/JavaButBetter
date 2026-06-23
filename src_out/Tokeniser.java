@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Tokeniser {
     public enum CharType {
-        A, D, S, W,
+        A , D , S , W ,
     }
     public static CharType charType(char c) {
         if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operGe(c, 'a'))) ? (Extensions.operLe(c, 'z')) : (Extensions.operGe(c, 'a'))))) ? (((LangUtil.isTruthy(Extensions.operGe(c, 'a'))) ? (Extensions.operLe(c, 'z')) : (Extensions.operGe(c, 'a')))) : ((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operGe(c, 'A'))) ? (Extensions.operLe(c, 'Z')) : (Extensions.operGe(c, 'A'))))) ? (((LangUtil.isTruthy(Extensions.operGe(c, 'A'))) ? (Extensions.operLe(c, 'Z')) : (Extensions.operGe(c, 'A')))) : (Extensions.operEq(c, '_'))))) {
@@ -45,13 +45,13 @@ public class Tokeniser {
                 ++ indent;
             }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '\t'))) ? (Extensions.operEq(lastType, CharType.W)) : (Extensions.operEq(c, '\t')))) {
-                indent += 4;
+                indent = Extensions.operAdd(indent, (4));
             }
             if (LangUtil.isTruthy((LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(c, '\n'))) ? (Extensions.operEq(c, '\n')) : (Extensions.operEq(c, ';'))))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(rb, 0))) ? (Extensions.operGt(rb, 0)) : ((LangUtil.isTruthy(Extensions.operGt(sb, 0))) ? (Extensions.operGt(sb, 0)) : (Extensions.operGt(cb, 0))))))))) : (((LangUtil.isTruthy(Extensions.operEq(c, '\n'))) ? (Extensions.operEq(c, '\n')) : (Extensions.operEq(c, ';')))))) {
                 lines.add(current);
                 current = "";
                 if (LangUtil.isTruthy(Extensions.operEq(c, ';'))) {
-                    current += " ".repeat(indent);
+                    current = Extensions.operAdd(current, (" ".repeat(indent)));
                     for (++i; i < file.length() && file.charAt(i) == ' ' || file.charAt(i) == '\t'; ++i) {}
                     -- i;
                 }
@@ -61,7 +61,7 @@ public class Tokeniser {
                     lineComment = 0;
                 }
                 if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, '\r')))) {
-                    current += c;
+                    current = Extensions.operAdd(current, (c));
                 }
             }
             if (LangUtil.isTruthy(Extensions.operGe(lineComment, 2))) {
@@ -124,10 +124,10 @@ public class Tokeniser {
         for (; i < line.length(); ++i) {
             var c = Extensions.operGetIndex(line, i);
             if (LangUtil.isTruthy(Extensions.operEq(c, ' '))) {
-                indent += c;
+                indent = Extensions.operAdd(indent, (c));
             }
             else if (LangUtil.isTruthy(Extensions.operEq(c, '\t'))) {
-                indent += "    ";
+                indent = Extensions.operAdd(indent, ("    "));
             }
             else {
                 break;
@@ -199,7 +199,7 @@ public class Tokeniser {
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '>'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(sb, 0))) ? (Extensions.operGt(sb, 0)) : (Extensions.operGt(rb, 0)))))))) : (Extensions.operEq(c, '>')))) {
                 if (LangUtil.isTruthy(tb)) { -- tb; }
             }
-            current += c;
+            current = Extensions.operAdd(current, (c));
             if (LangUtil.isTruthy(!((boolean) Extensions.operEq(c, '\\')))) {
                 backslash = false;
             }

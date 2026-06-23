@@ -42,11 +42,11 @@ public class Extensions {
         return a == b;
     }
     public static boolean operEq(String a, String b) {
-        if (a == null) return b == null;
+        if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);
     }
     public static boolean operEq(Object a, Object b) {
-        if (a == null) return b == null;
+        if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);
     }
     public static boolean operIn(char c, String s) {
@@ -59,13 +59,37 @@ public class Extensions {
         return lst.contains(o);
     }
     public static boolean operIn(Object o, Object[] lst) {
-        return Arrays.stream(lst).anyMatch(x -> x.equals(o));
+        return Arrays.stream(lst).anyMatch(x -> Extensions.operEq(x, o));
     }
     public static boolean operIn(Object o, Set s) {
         return s.contains(o);
     }
     public static boolean operIn(Object o, Map m) {
         return m.containsKey(o);
+    }
+    public static boolean operIn(int n, LangUtil . IntRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
+    }
+    public static boolean operIn(int n, LangUtil . LongRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
+    }
+    public static boolean operIn(int n, LangUtil . DoubleRange range) {
+        var a = range.start;
+        var b = range.stop;
+        var s = range.step;
+        if (LangUtil.isTruthy(Extensions.operGt(s, 0))) { return (LangUtil.isTruthy(Extensions.operGe(n, a))) ? ((LangUtil.isTruthy(Extensions.operLt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operLt(n, b))) : (Extensions.operGe(n, a)); }
+        if (LangUtil.isTruthy(Extensions.operLt(s, 0))) { return (LangUtil.isTruthy(Extensions.operLe(n, a))) ? ((LangUtil.isTruthy(Extensions.operGt(n, b))) ? (Extensions.operEq(Extensions.operMod((Extensions.operSub(n, a)), s), 0)) : (Extensions.operGt(n, b))) : (Extensions.operLe(n, a)); }
+        return Extensions.operEq(n, a);
     }
     public static boolean operGt(int a, int b) {
         return a > b;
@@ -264,12 +288,6 @@ public class Extensions {
     public static long operShl(long a, long b) {
         return a << b;
     }
-    public static String operShl(String a, Object b) {
-        return Extensions.operAdd(a, b);
-    }
-    public static String operShl(Object a, String b) {
-        return Extensions.operAdd(a, b);
-    }
     public static String operShl(String a, String b) {
         return Extensions.operAdd(a, b);
     }
@@ -295,12 +313,6 @@ public class Extensions {
     public static long operShr(long a, long b) {
         return a >> b;
     }
-    public static String operShr(String a, Object b) {
-        return Extensions.operAdd(b, a);
-    }
-    public static String operShr(Object a, String b) {
-        return Extensions.operAdd(b, a);
-    }
     public static String operShr(String a, String b) {
         return Extensions.operAdd(b, a);
     }
@@ -323,7 +335,7 @@ public class Extensions {
     public static <T> T[] operUshl(T[] arr, int amount) {
         var size = Extensions.len(arr);
         var copy = Arrays.copyOf(arr, size);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy [i] = Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size));
         }
@@ -332,7 +344,7 @@ public class Extensions {
     public static <T> List<T> operUshl(List<T> arr, int amount) {
         var size = Extensions.len(arr);
         var copy = new ArrayList<T>(arr);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy.set(i, Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size)));
         }
@@ -347,7 +359,7 @@ public class Extensions {
     public static <T> T[] operUshr(T[] arr, int amount) {
         var size = Extensions.len(arr);
         var copy = Arrays.copyOf(arr, size);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy [i] = Extensions.operGetIndex(arr, Extensions.operSub(i, amount));
         }
@@ -356,7 +368,7 @@ public class Extensions {
     public static <T> List<T> operUshr(List<T> arr, int amount) {
         var size = Extensions.len(arr);
         var copy = new ArrayList<T>(arr);
-        amount %= size;
+        amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
             copy.set(i, Extensions.operGetIndex(arr, Extensions.operSub(i, amount)));
         }

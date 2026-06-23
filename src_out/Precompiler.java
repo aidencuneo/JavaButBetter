@@ -37,7 +37,6 @@ public class Precompiler {
             }
             var pair = LangUtil.slice(Extensions.operGetIndex(tok, f).value, 1, Extensions.operUnarySub(1), 1);
             var pairTok = Tokeniser.tokLine(pair);
-            LangUtil.println(pairTok);
             if (LangUtil.isTruthy(Extensions.operLt(Extensions.len(pairTok), 2))) {
                 return false;
             }

@@ -3,69 +3,69 @@ import java.util.*;
 
 public class Token {
     public enum Type {
-        BLANK,
-        INDENT,
-        ID,
-        SCOPE,
-        SYMBOL,
-        EXPR,
-        SQUARE_EXPR,
-        BRACE_EXPR,
-        OPTION,
-        NULL,
-        TRUE,
-        FALSE,
-        NUM,
-        STRING,
-        CHAR,
-        TEMPLATE_STRING,
-        UNARY_OPER,
-        BIN_OPER,
-        ASSIGN,
-        COMP_ASSIGN,
-        DOT,
-        COMMA,
-        RANGE,
-        LAMBDA,
-        ARROW,
-        NULL_CHECK,
-        INCREMENT,
-        DECREMENT,
-        INLINE,
-        RETURN,
-        BREAK,
-        CONTINUE,
-        PASS,
-        IF,
-        ELIF,
-        ELSE,
-        UNLESS,
-        WHILE,
-        UNTIL,
-        FOR,
-        TRY,
-        CATCH,
-        THROW,
-        DEFAULT,
-        ACCESS_MOD,
-        STATIC,
-        INSTANCE,
-        PACKAGE,
-        IMPORT,
-        CLASS,
-        ENUM,
-        ALIAS,
-        REGEX,
+        BLANK ,
+        INDENT ,
+        ID ,
+        SCOPE ,
+        SYMBOL ,
+        EXPR ,
+        SQUARE_EXPR ,
+        BRACE_EXPR ,
+        OPTION ,
+        NULL ,
+        TRUE ,
+        FALSE ,
+        NUM ,
+        STRING ,
+        CHAR ,
+        TEMPLATE_STRING ,
+        UNARY_OPER ,
+        BIN_OPER ,
+        ASSIGN ,
+        COMP_ASSIGN ,
+        DOT ,
+        COMMA ,
+        RANGE ,
+        LAMBDA ,
+        ARROW ,
+        NULL_CHECK ,
+        INCREMENT ,
+        DECREMENT ,
+        INLINE ,
+        RETURN ,
+        BREAK ,
+        CONTINUE ,
+        PASS ,
+        IF ,
+        ELIF ,
+        ELSE ,
+        UNLESS ,
+        WHILE ,
+        UNTIL ,
+        FOR ,
+        TRY ,
+        CATCH ,
+        THROW ,
+        DEFAULT ,
+        ACCESS_MOD ,
+        STATIC ,
+        INSTANCE ,
+        PACKAGE ,
+        IMPORT ,
+        CLASS ,
+        ENUM ,
+        ALIAS ,
+        REGEX ,
     }
     public Type type;
     public String value;
     public Token(Type type, String value) {
-        this . type = type;
-        this . value = value;
+        this.type = type;
+        this.value = value;
     }
     public Token() {
-        this . type = Type.BLANK;
-        this . value = "";
+        this.type = Type.BLANK;
+        this.value = "";
     }
     public static Token fromString(String v, Token . Type lastToken) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(v))) { return new Token(Type.BLANK, v); }
@@ -251,7 +251,7 @@ public class Token {
         }
         else if (LangUtil.isTruthy(isNum(v))) {
             if (LangUtil.isTruthy((LangUtil.isTruthy(v.contains("."))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(v.endsWith("f"))) ? (v.endsWith("f")) : (v.endsWith("d"))))) : (v.contains(".")))) {
-                v += Options.defaultDecimal;
+                v = Extensions.operAdd(v, (Options.defaultDecimal));
             }
             t = Type.NUM;
         }
@@ -272,8 +272,8 @@ public class Token {
     public static String joinTokens(ArrayList < Token > tok, String delim) {
         var joined = "";
         for (var i : LangUtil.asIterable(Extensions.len(tok))) {
-            joined += Extensions.operGetIndex(tok, i).value;
-            if (LangUtil.isTruthy(Extensions.operLt(i, Extensions.operSub(Extensions.len(tok), 1)))) { joined += delim; }
+            joined = Extensions.operAdd(joined, (Extensions.operGetIndex(tok, i).value));
+            if (LangUtil.isTruthy(Extensions.operLt(i, Extensions.operSub(Extensions.len(tok), 1)))) { joined = Extensions.operAdd(joined, (delim)); }
         }
         return joined;
     }

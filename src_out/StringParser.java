@@ -16,7 +16,7 @@ public class StringParser {
                         i += 4;
                     }
                     catch (NumberFormatException e) {
-                        out += "\\u";
+                        out = Extensions.operAdd(out, ("\\u"));
                     }
                 }
                 else {
@@ -34,7 +34,7 @@ public class StringParser {
                 }
             }
             else {
-                out += c;
+                out = Extensions.operAdd(out, (c));
             }
         }
         return out;

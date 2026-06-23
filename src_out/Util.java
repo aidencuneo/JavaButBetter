@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Util {
     public static int indexConvert(int index, int size) {
-        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index += size; }
+        if (LangUtil.isTruthy(Extensions.operLt(index, 0))) { index = Extensions.operAdd(index, (size)); }
         return index;
     }
     public static T get(ArrayList<T> lst, int index) throws T {
@@ -44,7 +44,7 @@ public class Util {
     public static String d(ArrayList<T> s) throws T {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(s))) { return "[]"; }
         var out = "[";
-        for (var e : LangUtil.asIterable(s)) { out += Extensions.operAdd(e, " "); }
+        for (var e : LangUtil.asIterable(s)) { out = Extensions.operAdd(out, (Extensions.operAdd(e, " "))); }
         return Extensions.operAdd(out.substring(0, Extensions.operSub(out.length(), 1)), "]");
     }
 }

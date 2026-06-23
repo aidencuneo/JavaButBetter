@@ -26,10 +26,9 @@ public static class Code
 // ArrayList[Token] exprTok = tok[f + 1:]
 
 main:
-    for 5
-        println [1, 2, 3] & [2, 3, 4]
-    for _ in 3
-        println [1, 2, 3] ^ [2, 3, 4]
+    println [1, 2, 3] & [2, 3, 4] for 5
+    println [1, 2, 3] ^ [2, 3, 4] for _ in 3
+    println [for 20]
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"

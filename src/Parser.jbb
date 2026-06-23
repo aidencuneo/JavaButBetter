@@ -36,6 +36,12 @@ ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
             elif t.value == "Bool"
                 t.value = "Boolean"
 
+            // Swap under and dunder
+            elif t.value == "_"
+                t.value = "__"
+            elif t.value == "__"
+                t.value == "_"
+
             // Apply to the token
             tok.set(i, t)
 

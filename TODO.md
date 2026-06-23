@@ -1,13 +1,11 @@
-- List comprehensions
-    - Square brackets only (or round brackets for iterable?)
-    - [expr for variable in iterable if cond]
-    - Use forEach, filter
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
     - Allow for (let i = 10; i; --i) (?)
+- Separate statement and expression null checks
+    - Null checks currently don't work if the function returns void
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
@@ -19,8 +17,6 @@
 - Improve naked function calling
     - Make it work with dots (make dot expression checking stricter?)
 - Add standard library somehow? (?)
-- Separate statement and expression null checks
-    - Null checks currently don't work if the function returns void
 - Add global aliases to precompilation
     - Aliases can be defined anywhere and used anywhere else
 - set/get (?)
@@ -35,6 +31,10 @@
 
 
 Done:
+- List comprehensions
+    - Square brackets only
+    - [expr for variable in iterable if cond]
+    - Use filter, map
 - Add "for iterable" to iterate using _
     - Converts "for iterable" into "for _ in iterable"
     - Useful for "for n" to repeat n times

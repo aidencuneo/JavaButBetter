@@ -38,6 +38,12 @@ public class Parser {
                 else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Bool"))) {
                     t . value = "Boolean";
                 }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "_"))) {
+                    t . value = "__";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "__"))) {
+                    Extensions.operEq(t.value, "_");
+                }
                 tok.set(i, t);
                 if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
                     var alias = Compiler.aliases.get(t.value);

@@ -387,7 +387,7 @@ public class Extensions {
         return copy;
     }
 public static double oper424242(double a, int b) {
-        for (var _ : LangUtil.asIterable(b)) { a = Math.pow(a, (a)); }
+        for (var __ : LangUtil.asIterable(b)) { a = Math.pow(a, (a)); }
         return a;
     }
 }

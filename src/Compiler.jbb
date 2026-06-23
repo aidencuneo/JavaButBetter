@@ -225,7 +225,7 @@ string compileStatement(ArrayList[Token] tok, string out):
     elif startTok == Token.Type.FOR
         // For-in
         f_in = findTokenRev(tok, "in")
-        varname = "_"
+        varname = "__"
 
         if f_in != -1
             varname = tok[1].value
@@ -274,7 +274,7 @@ string compileStatement(ArrayList[Token] tok, string out):
         elif tok[f].type == Token.Type.FOR
             // For-in
             f_in = findTokenRev(tok, "in")
-            varname = "_"
+            varname = "__"
 
             if f_in != -1
                 varname = tok[f + 1].value
@@ -962,8 +962,37 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         expr = tok[0].value[1:-1]
         tok = Tokeniser.tokLine(expr)
 
+        // List comprehension (for)
+        if (f = findTokenType(tok, Token.Type.FOR)) != -1
+            // Eat expression and for
+            expr = compileExpr(tok[:f])
+            tok = tok[f + 1:]
+
+            // Eat filter (if)
+            cond = ""
+            if (f = findTokenTypeRev(tok, Token.Type.IF)) != -1
+                cond = compileExpr(tok[f + 1:])
+                tok = tok[:f]
+
+            // Eat "var in"
+            varname = "__"
+            if (f = findTokenRev(tok, "in")) >= 1
+                varname = compileExpr(tok[:f])
+                tok = tok[f + 1:]
+
+            // Remaining tokens become iterable
+            iterable = compileExpr(tok)
+
+            // Default expression is var
+            expr = varname if !expr
+
+            out += "LangUtil.arrstream(LangUtil.asIterable(" + iterable + "))"
+            out += ".filter(" + varname + " -> LangUtil.isTruthy(" + cond + "))" if cond
+            out += ".map(" + varname + " -> (" + expr + "))"
+            out += ".toList()"
+
         // Range
-        if findTokenType(tok, Token.Type.RANGE) != -1
+        elif findTokenType(tok, Token.Type.RANGE) != -1
             out += compileRange(tok)
 
         // List

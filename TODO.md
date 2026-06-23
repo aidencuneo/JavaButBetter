@@ -6,6 +6,7 @@
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
 - Compile subfolders
 - Make JBB installable as a command
+    - Use graalVM?
     - Add to path
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
@@ -21,8 +22,6 @@
     - Also $a.b = x => a._set_b(x)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
-- Bring back and improve naked function calling (?)
-    - Make it work with dots (make dot expression checking stricter?)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting

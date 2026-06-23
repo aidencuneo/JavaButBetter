@@ -203,15 +203,18 @@ string compileStatement(ArrayList[Token] tok, string out):
         defaultStatic = access.isStatic
 
     // Control flow
-    elif (startTok == Token.Type.IF
-        || startTok == Token.Type.ELIF
-        || startTok == Token.Type.ELSE
-        || startTok == Token.Type.WHILE
-        || startTok == Token.Type.UNTIL
-    )
+    elif startTok in [
+        Token.Type.IF,
+        Token.Type.ELIF,
+        Token.Type.ELSE,
+        Token.Type.UNLESS,
+        Token.Type.WHILE,
+        Token.Type.UNTIL,
+    ]
         out += "if (" if startTok == Token.Type.IF
         out += "else if (" if startTok == Token.Type.ELIF
         out += "else " if startTok == Token.Type.ELSE
+        out += "if (!(" if startTok == Token.Type.UNLESS
         out += "while (" if startTok == Token.Type.WHILE
         out += "while (!(" if startTok == Token.Type.UNTIL
 
@@ -219,7 +222,7 @@ string compileStatement(ArrayList[Token] tok, string out):
             out += "LangUtil.isTruthy("
             out += compileExpr(tok[1:])
             out += "))"
-            out += ")" if startTok == Token.Type.UNTIL
+            out += ")" if startTok in [Token.Type.UNTIL, Token.Type.UNLESS]
 
     // For loops
     elif startTok == Token.Type.FOR
@@ -242,13 +245,25 @@ string compileStatement(ArrayList[Token] tok, string out):
     // Statement control flow
     elif (
         (findTokenTypeRev(tok, Token.Type.ELSE) < findTokenTypeRev(tok, Token.Type.IF)) ||
-        (f = findAnyTokenTypeRev(tok, [Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR])) != -1
+        (f = findAnyTokenTypeRev(tok, [
+            Token.Type.UNLESS, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR,
+        ])) != -1
     )
         // Recalculate index
-        f = findAnyTokenTypeRev(tok, [Token.Type.IF, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR])
+        f = findAnyTokenTypeRev(tok, [
+            Token.Type.IF, Token.Type.UNLESS, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR,
+        ])
 
         if tok[f].type == Token.Type.IF
             out += "if (LangUtil.isTruthy("
+            cond = compileExpr(tok[f + 1:])
+            out += cond.isEmpty() ? "true" : cond
+            out += ")) { "
+            out = compileStatement(tok[:f], out)
+            out += " }"
+
+        elif tok[f].type == Token.Type.UNLESS
+            out += "if (!LangUtil.isTruthy("
             cond = compileExpr(tok[f + 1:])
             out += cond.isEmpty() ? "true" : cond
             out += ")) { "

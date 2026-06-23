@@ -136,17 +136,18 @@ public class Compiler {
             cl . typeArgs = typeArgs;
             defaultStatic = access.isStatic;
         }
-        else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) ? (Extensions.operEq(startTok, Token.Type.IF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELIF))) ? (Extensions.operEq(startTok, Token.Type.ELIF)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELSE))) ? (Extensions.operEq(startTok, Token.Type.ELSE)) : ((LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.WHILE))) ? (Extensions.operEq(startTok, Token.Type.WHILE)) : (Extensions.operEq(startTok, Token.Type.UNTIL)))))))) {
+        else if (LangUtil.isTruthy(Extensions.operIn(startTok, LangUtil.listOf(Token.Type.IF, Token.Type.ELIF, Token.Type.ELSE, Token.Type.UNLESS, Token.Type.WHILE, Token.Type.UNTIL)))) {
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.IF))) { out += "if ("; }
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELIF))) { out += "else if ("; }
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.ELSE))) { out += "else "; }
+            if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNLESS))) { out += "if (!("; }
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.WHILE))) { out += "while ("; }
             if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNTIL))) { out += "while (!("; }
             if (LangUtil.isTruthy(!((boolean) Extensions.operEq(startTok, Token.Type.ELSE)))) {
                 out += "LangUtil.isTruthy(";
                 out += compileExpr(LangUtil.slice(tok, 1, null, 1));
                 out += "))";
-                if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.UNTIL))) { out += ")"; }
+                if (LangUtil.isTruthy(Extensions.operIn(startTok, LangUtil.listOf(Token.Type.UNTIL, Token.Type.UNLESS)))) { out += ")"; }
             }
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.FOR))) {
@@ -163,10 +164,18 @@ public class Compiler {
             out += ")) ";
             declareLocal(varname, Extensions.operAdd(scope, 1));
         }
-        else if (LangUtil.isTruthy(((LangUtil.isTruthy((Extensions.operLt(findTokenTypeRev(tok, Token.Type.ELSE), findTokenTypeRev(tok, Token.Type.IF))))) ? ((Extensions.operLt(findTokenTypeRev(tok, Token.Type.ELSE), findTokenTypeRev(tok, Token.Type.IF)))) : (!((boolean) Extensions.operEq(((f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR)))), Extensions.operUnarySub(1))))))) {
-            f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.IF, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR));
+        else if (LangUtil.isTruthy(((LangUtil.isTruthy((Extensions.operLt(findTokenTypeRev(tok, Token.Type.ELSE), findTokenTypeRev(tok, Token.Type.IF))))) ? ((Extensions.operLt(findTokenTypeRev(tok, Token.Type.ELSE), findTokenTypeRev(tok, Token.Type.IF)))) : (!((boolean) Extensions.operEq(((f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.UNLESS, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR)))), Extensions.operUnarySub(1))))))) {
+            f = findAnyTokenTypeRev(tok, LangUtil.listOf(Token.Type.IF, Token.Type.UNLESS, Token.Type.WHILE, Token.Type.UNTIL, Token.Type.FOR));
             if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.IF))) {
                 out += "if (LangUtil.isTruthy(";
+                var cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+                out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
+                out += ")) { ";
+                out = compileStatement(LangUtil.slice(tok, null, f, 1), out);
+                out += " }";
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, f).type, Token.Type.UNLESS))) {
+                out += "if (!LangUtil.isTruthy(";
                 var cond = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
                 out += LangUtil.isTruthy(cond.isEmpty()) ? ("true") : (cond);
                 out += ")) { ";

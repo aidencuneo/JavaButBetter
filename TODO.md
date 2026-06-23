@@ -9,7 +9,6 @@
 - Make JBB installable as a command
     - Add to path
     - Add CLI args
-- Add unless (!if)
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:
@@ -34,6 +33,7 @@
 
 
 Done:
+- Add unless (!if)
 - Add comparison chaining (0 < x < 5 and variants)
     - 0 <= x <= 5
     - 5 > x > 0

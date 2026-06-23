@@ -3,12 +3,12 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        var x = 7;
-        var z = 5;
-        LangUtil.println(Extensions.operLt(5, Extensions.operSub(x, 1)) && Extensions.operLt(Extensions.operSub(x, 1), 8) && Extensions.operLe(8, Extensions.operAdd(Extensions.operMul(2, z), 1)) && Extensions.operLe(Extensions.operAdd(Extensions.operMul(2, z), 1), 11));
-        z = 4;
-        x = 6;
-        LangUtil.println(Extensions.operLt(5, Extensions.operSub(x, 1)) && Extensions.operLt(Extensions.operSub(x, 1), 8) && Extensions.operLe(8, Extensions.operAdd(Extensions.operMul(2, z), 1)) && Extensions.operLe(Extensions.operAdd(Extensions.operMul(2, z), 1), 11));
+        var age = 10;
+        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
+        age = 18;
+        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
+        age = 17;
+        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
         var ccc = "hi";
         LangUtil.println("Hello, world! I'm {a} + {b}. {ccc}!");
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));

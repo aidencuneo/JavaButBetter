@@ -39,6 +39,7 @@ public class Token {
         IF,
         ELIF,
         ELSE,
+        UNLESS,
         WHILE,
         UNTIL,
         FOR,
@@ -193,6 +194,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "else"))) {
             t = Type.ELSE;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, "unless"))) {
+            t = Type.UNLESS;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "while"))) {
             t = Type.WHILE;

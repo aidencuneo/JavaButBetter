@@ -6,9 +6,6 @@
     - for i to length
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
 - Compile subfolders
-- Make JBB installable as a command
-    - Use graalVM?
-    - Add to path
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:

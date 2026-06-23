@@ -1,8 +1,5 @@
 @REM This script recompiles the compiler into src_out
-cd compiler
-java JavaBB ../src
-cd ..
+java -jar jbb.jar src
 
 @REM Compile src_out
-cd src_out
-javac JavaBB.java
+cd src_out && javac JavaBB.java

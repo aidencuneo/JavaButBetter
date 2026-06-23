@@ -15,8 +15,6 @@
     - {"a": 5}
     - d = {23498: ["a", "b", "c"]}
     - d[123] = ["h" for 6]
-- Improve naked function calling
-    - Make it work with dots (make dot expression checking stricter?)
 - Add standard library somehow? (?)
 - Add global aliases to precompilation
     - Aliases can be defined anywhere and used anywhere else
@@ -25,6 +23,8 @@
     - Also $a.b = x => a._set_b(x)
     - get name: => public (type of name) _get_name() {}
     - set name: => public void _set_name((type of name) value) {}
+- Bring back and improve naked function calling (?)
+    - Make it work with dots (make dot expression checking stricter?)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting

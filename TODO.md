@@ -1,3 +1,4 @@
+- Organise file watching mode and refactor JavaBB.jbb extensively
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length

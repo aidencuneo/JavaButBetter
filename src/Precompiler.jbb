@@ -22,7 +22,7 @@ static
     //     "pre'",
     // ))
 
-ArrayList[string] precompileFile(string className, string code):
+string precompileFile(string className, string code):
     lines = Tokeniser.splitFile(code)
 
     for i in len(lines)
@@ -33,7 +33,7 @@ ArrayList[string] precompileFile(string className, string code):
         keep = precompileStatement(tok)
         lines.set(i, "") if !keep
 
-    return lines
+    return string.join("\n", lines)
 
 bool precompileStatement(ArrayList[Token] tok):
     return false if !tok

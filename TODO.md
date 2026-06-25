@@ -1,5 +1,5 @@
-- Organise file watching mode and refactor JavaBB.jbb extensively
-- Fit try statement scope
+- Fix try statement scope
+- Compile subfolders and all files within them
 - Add string wildcard comparison ("something" == "*thing")
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
@@ -7,7 +7,6 @@
     - for i to 0..length..1
     - for i to length
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
-- Compile subfolders
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:
@@ -30,6 +29,7 @@
 
 
 Done:
+- Add file watching mode and refactor JavaBB.jbb
 - Improve JBB command interface
     - Add flags
     - Display nothing when -v or --verbose flags unset

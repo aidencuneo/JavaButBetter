@@ -47,6 +47,7 @@ string roundstr(double v):
     return string.format("%f", v)
 
 // listOf
+@SafeVarargs
 [T] List[T] listOf(T ... args):
     return ArrayList[.](Arrays.asList(args))
 

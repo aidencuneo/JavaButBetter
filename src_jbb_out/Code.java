@@ -2,13 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    public static ArrayList<Token> exprTok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
     public static void main(String[] args) {
-        var age = 10;
-        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
-        age = 18;
-        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
-        age = 17;
-        if (!LangUtil.isTruthy(Extensions.operLt(age, 18))) { LangUtil.println(Extensions.operAdd("yeah", age)); }
         var ccc = "hi";
         LangUtil.println("Hello, world! I'm {a} + {b}. {ccc}!");
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));

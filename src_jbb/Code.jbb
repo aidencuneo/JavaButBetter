@@ -23,16 +23,9 @@ double ***(double a, int b):
 
 public static class Code
 
-// ArrayList[Token] exprTok = tok[f + 1:]
+ArrayList[Token] exprTok = tok[f + 1:]
 
 main:
-    age = 10
-    println "yeah" + age unless age < 18
-    age = 18
-    println "yeah" + age unless age < 18
-    age = 17
-    println "yeah" + age unless age < 18
-
     // println [1, 2, 3] & [2, 3, 4] for 5
     // println [1, 2, 3] ^ [2, 3, 4] for _ in 3
     // println [x for x in 20 if x]

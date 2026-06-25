@@ -18,7 +18,7 @@ class JavaBB {
         try (var scanner = new Scanner(new File(path))) {
             return scanner.useDelimiter("\\Z").next();
         }
-        catch (FileNotFoundException e) {
+        catch (FileNotFoundException | NoSuchElementException e) {
             return "";
         }
     }
@@ -52,7 +52,7 @@ class JavaBB {
         var extensionsRes = ExtensionsCode.get();
         if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling LangUtil..."); }
         var langUtilRes = LangUtilCode.get();
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nPrecompiling ", compDir), "...")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\nPrecompiling ", compDir), "...")); }
         var codeMap = new HashMap<String, String>();
         var files = new File(compDir).list();
         for (var name : LangUtil.asIterable(files)) {
@@ -60,16 +60,18 @@ class JavaBB {
             var className = Extensions.operGetIndex(name.split("\\."), 0);
             var code = readFile(path);
             if (LangUtil.isTruthy(name.endsWith(".jbb"))) {
-                codeMap.put(path, Precompiler.precompileFile(className, code));
+                code = Precompiler.precompileFile(className, code);
             }
+            codeMap.put(path, code);
         }
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\n\nCompiling ", compDir), "...")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\nCompiling ", compDir), "...")); }
         for (var name : LangUtil.asIterable(files)) {
             var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), name);
             var toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), name);
             var className = Extensions.operGetIndex(name.split("\\."), 0);
-            var code = Precompiler.applyRegexRules(Extensions.operGetIndex(codeMap, fromPath));
+            var code = Extensions.operGetIndex(codeMap, fromPath);
             if (LangUtil.isTruthy(name.endsWith(".jbb"))) {
+                code = Precompiler.applyRegexRules(code);
                 var res = Compiler.compileFile(className, code);
                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
                     var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
@@ -84,12 +86,15 @@ class JavaBB {
         }
         writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
         writeTo(Extensions.operAdd(outDir, "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\n\nDone."); }
-        if (LangUtil.isTruthy(watch)) {
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(watch))) {
+            if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nDone."); }
+            return;
+        }
+        while (LangUtil.isTruthy(true)) {
             try {
                 var watcher = FileSystems.getDefault().newWatchService();
                 Path.of(compDir).register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd("Watching \"", compDir), "\"\n"));
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd("\nWatching \"", compDir), "\"\n"));
                 while (LangUtil.isTruthy(true)) {
                     var key = watcher.take();
                     for (var event : LangUtil.asIterable(key.pollEvents())) {
@@ -97,45 +102,31 @@ class JavaBB {
                         var context = event.context();
                         LangUtil.println(Extensions.operAdd(Extensions.operAdd(kind, ": "), context));
                         if (LangUtil.isTruthy(Extensions.operIn(event.kind(), LangUtil.listOf(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY)))) {
-                            var filename = Extensions.operAdd("", (((Path) context)));
-                            var extensionsClassRes = ExtensionsCode.get();
-                            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), filename);
-                            var toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), Extensions.operGetIndex(filename.split("\\."), 0)), ".java");
-                            var className = Extensions.operGetIndex(filename.split("\\."), 0);
-                            var fileContent = "";
-                            try (var scanner = new Scanner(new File(fromPath))) {
-                                fileContent = scanner.useDelimiter("\\Z").next();
-                            }
-                            catch (FileNotFoundException e) {
-                                
-                            }
-                            if (LangUtil.isTruthy(filename.endsWith(".jbb"))) {
-                                var lines = Precompiler.precompileFile(className, fileContent);
-                                fileContent = String.join("\n", lines);
-                            }
-                            fileContent = Precompiler.applyRegexRules(fileContent);
-                            var compiled = "";
-                            if (LangUtil.isTruthy(filename.endsWith(".jbb"))) {
-                                var res = Compiler.compileFile(className, fileContent);
+                            var name = Extensions.operAdd("", (((Path) context)));
+                            extensionsRes = ExtensionsCode.get();
+                            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), name);
+                            var toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), name);
+                            var className = Extensions.operGetIndex(name.split("\\."), 0);
+                            var code = readFile(fromPath);
+                            if (LangUtil.isTruthy(name.endsWith(".jbb"))) {
+                                code = Precompiler.precompileFile(className, code);
+                                code = Precompiler.applyRegexRules(code);
+                                var res = Compiler.compileFile(className, code);
                                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
                                     var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
-                                    var extensionsClass = Extensions.operGetIndex(extensionsClassRes.classes, "Extensions");
-                                    extensionsClass.code = extensionsClass.code + newCode;
+                                    var extensionsClass = Extensions.operGetIndex(extensionsRes.classes, "Extensions");
+                                    extensionsClass.code = Extensions.operAdd(extensionsClass.code, (newCode));
                                     res.classes.remove("Extensions");
                                 }
-                                compiled = res.getCompiledCode(className);
+                                code = res.getCompiledCode(className);
+                                toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), className), ".java");
                             }
-                            else {
-                                compiled = fileContent;
-                                toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), filename);
-                            }
-                            writeTo(toPath, compiled);
-                            writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsClassRes.getCompiledCode("Extensions"));
+                            writeTo(toPath, code);
+                            writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
                         }
                     }
                     if (LangUtil.isTruthy(!LangUtil.isTruthy(key.reset()))) { break; }
                 }
-                LangUtil.exit();
             }
             catch (Exception e) {
                 

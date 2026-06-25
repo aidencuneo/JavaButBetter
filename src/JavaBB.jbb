@@ -16,7 +16,7 @@ bool writeTo(string path, string text):
 string readFile(string path):
     try scanner = Scanner(File(path))
         ret scanner.useDelimiter("\\Z").next()
-    catch FileNotFoundException e
+    catch FileNotFoundException | NoSuchElementException e
         ret ""
 
 main:
@@ -57,7 +57,7 @@ main:
     langUtilRes = LangUtilCode.get()
 
     // Precompile all files
-    println "\n\nPrecompiling " + compDir + "..." if verbose
+    println "\nPrecompiling " + compDir + "..." if verbose
     codeMap = HashMap[string, string]()
 
     files = File(compDir).list()
@@ -69,21 +69,23 @@ main:
         code = readFile(path)
 
         if name.endsWith(".jbb")
-            codeMap.put(path, Precompiler.precompileFile(className, code))
+            code = Precompiler.precompileFile(className, code)
+
+        codeMap.put(path, code)
 
     // Compile all files
-    println "\n\nCompiling " + compDir + "..." if verbose
+    println "\nCompiling " + compDir + "..." if verbose
 
     for name in files
         fromPath = compDir + "/" + name
         toPath = outDir + "/" + name // Copy filename by default
         className = name.split("\\.")[0]
-
-        // Apply regex rules to precompiled code
-        code = Precompiler.applyRegexRules(codeMap[fromPath])
+        code = codeMap[fromPath]
 
         // Compile this file (if .jbb)
         if name.endsWith(".jbb")
+            // Apply regex rules and compile
+            code = Precompiler.applyRegexRules(code)
             res = Compiler.compileFile(className, code)
 
             // Extract Extensions class if it exists
@@ -107,10 +109,12 @@ main:
     writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
     writeTo(outDir + "/LangUtil.java", langUtilRes.getCompiledCode("LangUtil"))
 
-    println "\n\nDone." if verbose
+    if !watch
+        println "\nDone." if verbose
+        ret
 
     // Start watching for additional file changes if watch flag is set
-    if watch
+    while true
         try
             watcher = FileSystems.getDefault().newWatchService()
             Path.of(compDir).register(
@@ -119,7 +123,7 @@ main:
                 StandardWatchEventKinds.ENTRY_MODIFY,
                 StandardWatchEventKinds.ENTRY_DELETE)
 
-            println "Watching \"" + compDir + "\"\n"
+            println "\nWatching \"" + compDir + "\"\n"
 
             while true
                 key = watcher.take()
@@ -135,59 +139,39 @@ main:
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY,
                     ]
-                        filename = "" + (context as Path)
-                        extensionsClassRes = ExtensionsCode.get()
+                        name = "" + (context as Path)
+                        extensionsRes = ExtensionsCode.get()
 
-                        fromPath = compDir + "/" + filename
-                        toPath = outDir + "/" + filename.split("\\.")[0] + ".java"
-                        className = filename.split("\\.")[0]
-                        fileContent = ""
+                        fromPath = compDir + "/" + name
+                        toPath = outDir + "/" + name // Copy filename by default
+                        className = name.split("\\.")[0]
 
                         // Read file
-                        try scanner = Scanner(File(fromPath))
-                            fileContent = scanner.useDelimiter("\\Z").next()
-                        catch FileNotFoundException e
-                            ...
-
-                        if filename.endsWith(".jbb")
-                            lines = Precompiler.precompileFile(className, fileContent)
-
-                            // Join lines back together
-                            fileContent = string.join("\n", lines)
-
-                        // Apply regex rules
-                        fileContent = Precompiler.applyRegexRules(fileContent)
+                        code = readFile(fromPath)
 
                         // Compile this file (if .jbb)
-                        compiled = ""
-
-                        if filename.endsWith(".jbb")
-                            res = Compiler.compileFile(className, fileContent)
+                        if name.endsWith(".jbb")
+                            code = Precompiler.precompileFile(className, code)
+                            code = Precompiler.applyRegexRules(code)
+                            res = Compiler.compileFile(className, code)
 
                             // Extract Extensions class if it exists
                             if "Extensions" in res.classes
                                 // Add code to current Extensions class
                                 newCode = res.classes["Extensions"].code
-                                extensionsClass = extensionsClassRes.classes["Extensions"]
-                                inline(extensionsClass.code = extensionsClass.code + newCode;)
+                                extensionsClass = extensionsRes.classes["Extensions"]
+                                extensionsClass.code += newCode
 
                                 // Remove Extensions class from this file's output
                                 res.classes.remove("Extensions")
 
                             // Get final compiled code
-                            compiled = res.getCompiledCode(className)
+                            code = res.getCompiledCode(className)
+                            toPath = outDir + "/" + className + ".java"
 
-                        // Copy regular files over (including .java)
-                        else
-                            compiled = fileContent
-                            toPath = outDir + "/" + filename // Keep full name intact
-
-                        // Write to output file
-                        writeTo(toPath, compiled)
-
-                        // Write Extensions.java
-                        writeTo(outDir + "/Extensions.java", extensionsClassRes.getCompiledCode("Extensions"))
+                        // Write output files
+                        writeTo(toPath, code)
+                        writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
                 break if !key.reset()
-            exit()
         catch Exception e
             ...

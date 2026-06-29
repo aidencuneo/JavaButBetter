@@ -16,8 +16,6 @@
 //     "$1\" + ($2) + \"$3"
 // )
 
-regex jbb ("  " " ")
-
 static class Extensions
 double ***(double a, int b):
     a **= a for b
@@ -25,127 +23,8 @@ double ***(double a, int b):
 
 public static class Code
 
-alias VERSION = "v0.6.1"
-
-import java.nio.file.*
-import java.nio.file.StandardWatchEventKinds
-
-static class JavaBB
-
-bool writeTo(string path, string text):
-    var = 10
-    try writer = PrintWriter(path)
-        File(path).createNewFile()
-        writer.println(text)
-        ret true
-
-string readFile(string path):
-    try scanner = Scanner(File(path))
-        ret scanner.useDelimiter("\\Z").next()
-    catch FileNotFoundException | NoSuchElementException e
-        ret ""
-
 main:
-    // Parse flags
-    verbose = false
-    watch = false
-    argv = ArrayList[string]()
-
-    for arg in args
-        if arg in ["-v", "--version"]
-            println "JavaButBetter " + VERSION
-            exit()
-        elif arg in ["-V", "--verbose"]
-            verbose = true
-        elif arg in ["-W", "--watch"]
-            watch = true
-        else
-            argv = argv + [arg]
-            // argv << arg
-
-    // argv now contains raw args without accepted flags
-
-    // Get input and output directories
-    compDir = argv[0] if argv else "src"
-    outDir = argv[1] if len(argv) > 1 else compDir + "_out"
-
-    println "--- JavaButBetter " + VERSION + " ---" if verbose
-    println "Compiling directory \"" + compDir + "\" to \"" + outDir + "\"" if verbose
-
-    // Create directory if it doesn't exist
-    if !File(outDir).exists()
-        File(outDir).mkdir()
-
-    // Builtins
-    println "\nCompiling Extensions..." if verbose
-    extensionsRes = ExtensionsCode.get()
-    println "\nCompiling LangUtil..." if verbose
-    langUtilRes = LangUtilCode.get()
-
-    // Precompile all files
-    println "\nPrecompiling " + compDir + "..." if verbose
-    codeMap = HashMap[string, string]()
-
-    files = File(compDir).list()
-    for name in files
-        path = compDir + "/" + name
-        className = name.split("\\.")[0]
-
-        // Read input file
-        code = readFile(path)
-
-        if name.endsWith(".jbb")
-            code = Precompiler.precompileFile(className, code)
-
-        codeMap.put(path, code)
-
-    // Compile all files
-    println "\nCompiling " + compDir + "..." if verbose
-
-    for name in files
-        fromPath = compDir + "/" + name
-        toPath = outDir + "/" + name // Copy filename by default
-        className = name.split("\\.")[0]
-        code = codeMap[fromPath]
-
-        // Compile this file (if .jbb)
-        if name.endsWith(".jbb")
-            // Apply regex rules and compile
-            code = Precompiler.applyRegexRules(code)
-            res = Compiler.compileFile(className, code)
-
-            // Extract Extensions class if it exists
-            if "Extensions" in res.classes
-                // Add code to current Extensions class
-                newCode = res.classes["Extensions"].code
-                extensionsClass = extensionsRes.classes["Extensions"]
-                extensionsClass.code += newCode
-
-                // Remove Extensions class from this file's output
-                res.classes.remove("Extensions")
-
-            // Get final compiled code
-            code = res.getCompiledCode(className)
-            toPath = outDir + "/" + className + ".java"
-
-        // Write to output file
-        writeTo(toPath, code)
-
-    // Write builtins
-    writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
-    writeTo(outDir + "/LangUtil.java", langUtilRes.getCompiledCode("LangUtil"))
-
-    if !watch
-        println "\nDone." if verbose
-        ret
-
-main2:
-    // println [1, 2, 3] & [2, 3, 4] for 5
-    // println [1, 2, 3] ^ [2, 3, 4] for _ in 3
-    // println [x for x in 20 if x]
-    // 5 < x - 1 < 8 <= 2 * z + 1 <= 11
-    // lt(5, x - 1), lt(x - 1, 8), lte(8, 2 * z + 1), lte(2 * z + 1, 11)
-    // and(a, b)
+    ages = {"aiden": 21, "ange": 18, "mum": 47, "dad": 50}
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"

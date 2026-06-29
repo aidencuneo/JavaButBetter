@@ -533,6 +533,32 @@ string compileCommaExpr(ArrayList[Token] tok):
 string compileCommaExpr(string expr):
     return compileCommaExpr(Tokeniser.tokLine(expr))
 
+string compileDictExpr(ArrayList[Token] tok):
+    out = ""
+    buffer = ArrayList[Token]()
+
+    for i in len(tok)
+        t = tok[i]
+        if t.type == Token.Type.COMMA || i == len(tok) - 1
+            // Compile buffer
+            f_colon = findToken(buffer, ":")
+            next if f_colon == -1
+
+            lhs = compileExpr(buffer[:f_colon])
+            rhs = compileExpr(buffer[f_colon + 1:])
+
+            out += "Map.entry(" + lhs + ", " + rhs + "), "
+            buffer.clear()
+        else
+            buffer << t
+
+    out += compileExpr(buffer)
+    out = out[:-2] while out.endsWith(", ")
+    return "Map.ofEntries(" + out + ")"
+
+string compileDictExpr(string expr):
+    return compileDictExpr(Tokeniser.tokLine(expr))
+
 string compileExpr(ArrayList[Token] tok, bool nested):
     out = ""
     f = -1
@@ -1062,7 +1088,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     // Brace expressions (curly brackets)
     elif len(tok) == 1 && tok[0].type == Token.Type.BRACE_EXPR
         expr = tok[0].value[1:-1]
-        out += "{" + compileCommaExpr(Tokeniser.tokLine(expr)) + "}"
+        out += "(new HashMap<>(" + compileDictExpr(expr) + "))"
 
     // Search for symbols (custom operators)
     elif len(tok) >= 3 && (f = findTokenTypeRev(tok, Token.Type.SYMBOL)) >= 1

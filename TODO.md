@@ -1,5 +1,3 @@
-- Compile subfolders and all files within them
-- Add string wildcard comparison ("something" == "*thing") (?)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -15,9 +13,7 @@
     - d[123] = ["h" for 6]
 - set/get (?)
     - Add $var for _get_var() and $var = x for _set_var(x)
-    - Also $a.b = x => a._set_b(x)
-    - get name: => public (type of name) _get_name() {}
-    - set name: => public void _set_name((type of name) value) {}
+    - Also a.b = x => a._set_b(x)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting
@@ -26,6 +22,7 @@
 
 
 Done:
+- Compile subfolders and all files within them
 - Add different regex stages (jbb, java)
 - Fix try statement scope
 - Add file watching mode and refactor JavaBB.jbb

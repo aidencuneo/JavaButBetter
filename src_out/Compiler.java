@@ -377,6 +377,30 @@ public class Compiler {
     public static String compileCommaExpr(String expr) {
         return compileCommaExpr(Tokeniser.tokLine(expr));
     }
+    public static String compileDictExpr(ArrayList<Token> tok) {
+        var out = "";
+        var buffer = new ArrayList<Token>();
+        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
+            var t = Extensions.operGetIndex(tok, i);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) ? (Extensions.operEq(t.type, Token.Type.COMMA)) : (Extensions.operEq(i, Extensions.operSub(Extensions.len(tok), 1))))) {
+                var f_colon = findToken(buffer, ":");
+                if (LangUtil.isTruthy(Extensions.operEq(f_colon, Extensions.operUnarySub(1)))) { continue; }
+                var lhs = compileExpr(LangUtil.slice(buffer, null, f_colon, 1));
+                var rhs = compileExpr(LangUtil.slice(buffer, Extensions.operAdd(f_colon, 1), null, 1));
+                out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Map.entry(", lhs), ", "), rhs), "), ")));
+                buffer.clear();
+            }
+            else {
+                Extensions.operShl(buffer, t);
+            }
+        }
+        out = Extensions.operAdd(out, (compileExpr(buffer)));
+        while (LangUtil.isTruthy(out.endsWith(", "))) { out = LangUtil.slice(out, null, Extensions.operUnarySub(2), 1); }
+        return Extensions.operAdd(Extensions.operAdd("Map.ofEntries(", out), ")");
+    }
+    public static String compileDictExpr(String expr) {
+        return compileDictExpr(Tokeniser.tokLine(expr));
+    }
     public static String compileExpr(ArrayList<Token> tok, boolean nested) {
         var out = "";
         var f = Extensions.operUnarySub(1);
@@ -760,7 +784,7 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(Extensions.len(tok), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.BRACE_EXPR)) : (Extensions.operEq(Extensions.len(tok), 1)))) {
             var expr = LangUtil.slice(Extensions.operGetIndex(tok, 0).value, 1, Extensions.operUnarySub(1), 1);
-            out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd("{", compileCommaExpr(Tokeniser.tokLine(expr))), "}")));
+            out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd("(new HashMap<>(", compileDictExpr(expr)), "))")));
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(Extensions.len(tok), 3))) ? (Extensions.operGe(((f = findTokenTypeRev(tok, Token.Type.SYMBOL))), 1)) : (Extensions.operGe(Extensions.len(tok), 3)))) {
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));

@@ -58,12 +58,10 @@ bool operEq(bool a, bool b):
 
 bool operEq(string a, string b):
     ret b is null if a is null
-    // inline(if (a == null) return b == null;)
     ret a.equals(b)
 
 bool operEq(object a, object b):
     ret b is null if a is null
-    // inline(if (a == null) return b == null;)
     ret a.equals(b)
 
 // in

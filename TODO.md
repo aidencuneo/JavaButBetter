@@ -1,6 +1,5 @@
-- Fix try statement scope
 - Compile subfolders and all files within them
-- Add string wildcard comparison ("something" == "*thing")
+- Add string wildcard comparison ("something" == "*thing") (?)
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -14,8 +13,6 @@
     - {"a": 5}
     - d = {23498: ["a", "b", "c"]}
     - d[123] = ["h" for 6]
-- Add global aliases to precompilation
-    - Aliases can be defined anywhere and used anywhere else
 - set/get (?)
     - Add $var for _get_var() and $var = x for _set_var(x)
     - Also $a.b = x => a._set_b(x)
@@ -29,6 +26,8 @@
 
 
 Done:
+- Add different regex stages (jbb, java)
+- Fix try statement scope
 - Add file watching mode and refactor JavaBB.jbb
 - Improve JBB command interface
     - Add flags

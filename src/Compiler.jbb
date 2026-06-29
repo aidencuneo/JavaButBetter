@@ -308,7 +308,9 @@ string compileStatement(ArrayList[Token] tok, string out):
     // Try
     elif startTok == Token.Type.TRY
         out += "try "
+        ++scope // Define variables INSIDE the try statement
         resources = compileExpr(tok[1:], false)
+        --scope
         out += "(" + resources + ") " if resources
 
     // Catch

@@ -47,17 +47,21 @@ public class Precompiler {
         }
         return true;
     }
-    public static String applyRegexRules(String code, int attempts) {
+    public static String applyRegexRules(String code, String stage, int attempts) {
         for (var rule : LangUtil.asIterable(regexRules)) {
-            for (var i : LangUtil.asIterable(LangUtil.range(0, attempts, null))) {
+            if (LangUtil.isTruthy(!((boolean) Extensions.operEq(rule.stage, stage)))) { continue; }
+            for (var i : LangUtil.asIterable(attempts)) {
                 if (LangUtil.isTruthy(!LangUtil.isTruthy(rule.find(code)))) { break; }
                 code = rule.apply(code);
             }
         }
         return code;
     }
+    public static String applyRegexRules(String code, String stage) {
+        return applyRegexRules(code, stage, 10000);
+    }
     public static String applyRegexRules(String code) {
-        return applyRegexRules(code, 10000);
+        return applyRegexRules(code, "jbb", 10000);
     }
 }
 

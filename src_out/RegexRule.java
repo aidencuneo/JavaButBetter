@@ -5,7 +5,7 @@ import java.util.regex.*;
 public class RegexRule {
     public String find = "";
     public String replace = "";
-    public String stage = "pre";
+    public String stage = "jbb";
     public Pattern pattern = null;
     public RegexRule(String find, String replace, String stage) {
         this.find = find;
@@ -17,7 +17,12 @@ public class RegexRule {
         return pattern.matcher(s).find();
     }
     public String apply(String s) {
-        return pattern.matcher(s).replaceAll(replace);
+        try {
+            return pattern.matcher(s).replaceAll(replace);
+        }
+        catch (Exception e) {
+            return s;
+        }
     }
 }
 

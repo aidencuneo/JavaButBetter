@@ -217,7 +217,9 @@ public class Compiler {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.TRY))) {
             out = Extensions.operAdd(out, ("try "));
+            ++ scope;
             var resources = compileExpr(LangUtil.slice(tok, 1, null, 1), false);
+            -- scope;
             if (LangUtil.isTruthy(resources)) { out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd("(", resources), ") "))); }
         }
         else if (LangUtil.isTruthy(Extensions.operEq(startTok, Token.Type.CATCH))) {

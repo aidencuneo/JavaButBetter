@@ -2,7 +2,7 @@ use java.util.regex.*;
 
 string find = ""
 string replace = ""
-string stage = "pre"
+string stage = "jbb" // "jbb", "java"
 Pattern pattern = null
 
 RegexRule(string find, string replace, string stage):
@@ -15,4 +15,7 @@ bool find(string s):
     return pattern.matcher(s).find()
 
 string apply(string s):
-    return pattern.matcher(s).replaceAll(replace)
+    try
+        ret pattern.matcher(s).replaceAll(replace)
+    catch Exception e
+        ret s

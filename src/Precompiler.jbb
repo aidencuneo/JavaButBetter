@@ -79,12 +79,16 @@ bool precompileStatement(ArrayList[Token] tok):
     // Leave line unchanged (keep)
     return true
 
-string applyRegexRules(string code, int attempts):
+string applyRegexRules(string code, string stage, int attempts):
     for rule in regexRules
-        for i in [..attempts]
+        next if rule.stage != stage
+        for i in attempts
             break if !rule.find(code)
             code = rule.apply(code)
     return code
 
+string applyRegexRules(string code, string stage):
+    return applyRegexRules(code, stage, 10000)
+
 string applyRegexRules(string code):
-    return applyRegexRules(code, 10000)
+    return applyRegexRules(code, "jbb", 10000)

@@ -5,7 +5,15 @@ import java.nio.file.StandardWatchEventKinds
 
 static class JavaBB
 
+HashMap[string, string] codeMap = HashMap[.]()
+CompResult extensionsRes = null
+CompResult langUtilRes = null
+
 bool writeTo(string path, string text):
+    // Ensure directory exists
+    if !File(path).getParentFile().exists()
+        File(path).getParentFile().mkdirs()
+
     try writer = PrintWriter(path)
         File(path).createNewFile()
         writer.println(text)
@@ -19,7 +27,58 @@ string readFile(string path):
     catch FileNotFoundException | NoSuchElementException e
         ret ""
 
+readAllToMap(string folder):
+    for name in File(folder).list()
+        path = folder + "/" + name
+
+        if File(path).isDirectory()
+            readAllToMap(path)
+        else
+            codeMap.put(path, readFile(path))
+
+precompileAll:
+    for path in codeMap
+        className = path.split("\\.")[0]
+        codeMap.put(path, Precompiler.precompileFile(className, codeMap[path]))
+
+compileAndWriteAll(string compDir, string outDir):
+    for path in codeMap
+        name = File(path).getName()
+        barePath = path[len(compDir):]
+        barePathName = barePath.split("\\.")[0]
+        toPath = outDir + "/" + barePath // Copy filename by default
+        className = name.split("\\.")[0]
+        code = codeMap[path]
+
+        // Compile this file (if .jbb)
+        if name.endsWith(".jbb")
+            // Apply JBB regex rules and compile
+            code = Precompiler.applyRegexRules(code, "jbb")
+            res = Compiler.compileFile(className, code)
+
+            // Extract Extensions class if it exists
+            if "Extensions" in res.classes
+                // Add code to current Extensions class
+                newCode = res.classes["Extensions"].code
+                extensionsClass = extensionsRes.classes["Extensions"]
+                extensionsClass.code += newCode
+
+                // Remove Extensions class from this file's output
+                res.classes.remove("Extensions")
+
+            // Get final compiled code and apply Java regex rules
+            code = res.getCompiledCode(className)
+            code = Precompiler.applyRegexRules(code, "java")
+            toPath = outDir + "/" + barePathName + ".java"
+
+        // Write to output file
+        writeTo(toPath, code)
+
 main:
+    // read all code into the map as strings
+    // precompile (get regex rules)
+    // apply "jbb" regex rules, compile, apply "java" regex rules, write code
+
     // Parse flags
     verbose = false
     watch = false
@@ -48,7 +107,7 @@ main:
 
     // Create directory if it doesn't exist
     if !File(outDir).exists()
-        File(outDir).mkdir()
+        File(outDir).mkdirs()
 
     // Builtins
     println "\nCompiling Extensions..." if verbose
@@ -56,54 +115,17 @@ main:
     println "\nCompiling LangUtil..." if verbose
     langUtilRes = LangUtilCode.get()
 
-    // Precompile all files
-    println "\nPrecompiling " + compDir + "..." if verbose
-    codeMap = HashMap[string, string]()
+    // Read all files and subfolders in compDir
+    println "\nReading all files in " + compDir + "..." if verbose
+    readAllToMap(compDir)
 
-    files = File(compDir).list()
-    for name in files
-        path = compDir + "/" + name
-        className = name.split("\\.")[0]
+    // Precompile
+    println "\nPrecompiling all files..." if verbose
+    precompileAll()
 
-        // Read input file
-        code = readFile(path)
-
-        if name.endsWith(".jbb")
-            code = Precompiler.precompileFile(className, code)
-
-        codeMap.put(path, code)
-
-    // Compile all files
-    println "\nCompiling " + compDir + "..." if verbose
-
-    for name in files
-        fromPath = compDir + "/" + name
-        toPath = outDir + "/" + name // Copy filename by default
-        className = name.split("\\.")[0]
-        code = codeMap[fromPath]
-
-        // Compile this file (if .jbb)
-        if name.endsWith(".jbb")
-            // Apply regex rules and compile
-            code = Precompiler.applyRegexRules(code)
-            res = Compiler.compileFile(className, code)
-
-            // Extract Extensions class if it exists
-            if "Extensions" in res.classes
-                // Add code to current Extensions class
-                newCode = res.classes["Extensions"].code
-                extensionsClass = extensionsRes.classes["Extensions"]
-                extensionsClass.code += newCode
-
-                // Remove Extensions class from this file's output
-                res.classes.remove("Extensions")
-
-            // Get final compiled code
-            code = res.getCompiledCode(className)
-            toPath = outDir + "/" + className + ".java"
-
-        // Write to output file
-        writeTo(toPath, code)
+    // Compile and apply all regex rules (jbb and java)
+    println "\nCompiling all files..." if verbose
+    compileAndWriteAll(compDir, outDir)
 
     // Write builtins
     writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
@@ -152,7 +174,7 @@ main:
                         // Compile this file (if .jbb)
                         if name.endsWith(".jbb")
                             code = Precompiler.precompileFile(className, code)
-                            code = Precompiler.applyRegexRules(code)
+                            code = Precompiler.applyRegexRules(code, "jbb")
                             res = Compiler.compileFile(className, code)
 
                             // Extract Extensions class if it exists
@@ -167,6 +189,7 @@ main:
 
                             // Get final compiled code
                             code = res.getCompiledCode(className)
+                            code = Precompiler.applyRegexRules(code, "java")
                             toPath = outDir + "/" + className + ".java"
 
                         // Write output files
@@ -174,4 +197,4 @@ main:
                         writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
                 break if !key.reset()
         catch Exception e
-            ...
+            e.printStackTrace()

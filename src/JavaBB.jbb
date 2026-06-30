@@ -1,4 +1,4 @@
-alias VERSION = "v0.7.2"
+alias VERSION = "0.7.2"
 
 import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds
@@ -34,12 +34,12 @@ readAllToMap(string folder):
         if File(path).isDirectory()
             readAllToMap(path)
         else
-            codeMap.put(path, readFile(path))
+            codeMap[path] = readFile(path)
 
 precompileAll:
     for path in codeMap
         className = path.split("\\.")[0]
-        codeMap.put(path, Precompiler.precompileFile(className, codeMap[path]))
+        codeMap[path] = Precompiler.precompileFile(className, codeMap[path])
 
 compileAndWriteAll(string compDir, string outDir):
     for path in codeMap
@@ -59,9 +59,7 @@ compileAndWriteAll(string compDir, string outDir):
             // Extract Extensions class if it exists
             if "Extensions" in res.classes
                 // Add code to current Extensions class
-                newCode = res.classes["Extensions"].code
-                extensionsClass = extensionsRes.classes["Extensions"]
-                extensionsClass.code += newCode
+                extensionsRes.classes["Extensions"].code += res.classes["Extensions"].code
 
                 // Remove Extensions class from this file's output
                 res.classes.remove("Extensions")
@@ -86,7 +84,7 @@ main:
 
     for arg in args
         if arg in ["-v", "--version"]
-            println "JavaButBetter " + VERSION
+            println "JavaButBetter v" + VERSION
             exit()
         elif arg in ["-V", "--verbose"]
             verbose = true
@@ -102,7 +100,7 @@ main:
     compDir = argv[0] if argv else "src"
     outDir = argv[1] if len(argv) > 1 else compDir + "_out"
 
-    println "--- JavaButBetter " + VERSION + " ---" if verbose
+    println "--- JavaButBetter v" + VERSION + " ---" if verbose
     println "Compiling directory \"" + compDir + "\" to \"" + outDir + "\"" if verbose
 
     // Create directory if it doesn't exist
@@ -180,9 +178,7 @@ main:
                             // Extract Extensions class if it exists
                             if "Extensions" in res.classes
                                 // Add code to current Extensions class
-                                newCode = res.classes["Extensions"].code
-                                extensionsClass = extensionsRes.classes["Extensions"]
-                                extensionsClass.code += newCode
+                                extensionsRes.classes["Extensions"].code += res.classes["Extensions"].code
 
                                 // Remove Extensions class from this file's output
                                 res.classes.remove("Extensions")

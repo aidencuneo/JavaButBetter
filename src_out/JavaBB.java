@@ -35,14 +35,14 @@ class JavaBB {
                 readAllToMap(path);
             }
             else {
-                codeMap.put(path, readFile(path));
+                Extensions.operSetIndex(codeMap, path, readFile(path));
             }
         }
     }
     public static void precompileAll() {
         for (var path : LangUtil.asIterable(codeMap)) {
             var className = Extensions.operGetIndex(path.split("\\."), 0);
-            codeMap.put(path, Precompiler.precompileFile(className, Extensions.operGetIndex(codeMap, path)));
+            Extensions.operSetIndex(codeMap, path, Precompiler.precompileFile(className, Extensions.operGetIndex(codeMap, path)));
         }
     }
     public static void compileAndWriteAll(String compDir, String outDir) {
@@ -57,9 +57,7 @@ class JavaBB {
                 code = Precompiler.applyRegexRules(code, "jbb");
                 var res = Compiler.compileFile(className, code);
                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
-                    var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
-                    var extensionsClass = Extensions.operGetIndex(extensionsRes.classes, "Extensions");
-                    extensionsClass.code = Extensions.operAdd(extensionsClass.code, (newCode));
+                    Extensions.operGetIndex(extensionsRes.classes, "Extensions").code = Extensions.operAdd(Extensions.operGetIndex(extensionsRes.classes, "Extensions").code, (Extensions.operGetIndex(res.classes, "Extensions").code));
                     res.classes.remove("Extensions");
                 }
                 code = res.getCompiledCode(className);
@@ -75,7 +73,7 @@ class JavaBB {
         var argv = new ArrayList<String>();
         for (var arg : LangUtil.asIterable(args)) {
             if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-v", "--version")))) {
-                LangUtil.println(Extensions.operAdd("JavaButBetter ", "v0.7.2"));
+                LangUtil.println(Extensions.operAdd("JavaButBetter v", "0.7.2"));
                 LangUtil.exit();
             }
             else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-V", "--verbose")))) {
@@ -90,7 +88,7 @@ class JavaBB {
         }
         var compDir = LangUtil.isTruthy(argv) ? (Extensions.operGetIndex(argv, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(argv), 1)) ? (Extensions.operGetIndex(argv, 1)) : (Extensions.operAdd(compDir, "_out"));
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter ", "v0.7.2"), " ---")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.2"), " ---")); }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Compiling directory \"", compDir), "\" to \""), outDir), "\"")); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdirs();
@@ -134,9 +132,7 @@ class JavaBB {
                                 code = Precompiler.applyRegexRules(code, "jbb");
                                 var res = Compiler.compileFile(className, code);
                                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
-                                    var newCode = Extensions.operGetIndex(res.classes, "Extensions").code;
-                                    var extensionsClass = Extensions.operGetIndex(extensionsRes.classes, "Extensions");
-                                    extensionsClass.code = Extensions.operAdd(extensionsClass.code, (newCode));
+                                    Extensions.operGetIndex(extensionsRes.classes, "Extensions").code = Extensions.operAdd(Extensions.operGetIndex(extensionsRes.classes, "Extensions").code, (Extensions.operGetIndex(res.classes, "Extensions").code));
                                     res.classes.remove("Extensions");
                                 }
                                 code = res.getCompiledCode(className);

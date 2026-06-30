@@ -29,6 +29,7 @@ public class Token {
         LAMBDA ,
         ARROW ,
         NULL_CHECK ,
+        GET_SET ,
         INCREMENT ,
         DECREMENT ,
         INLINE ,
@@ -164,6 +165,9 @@ public class Token {
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "?."))) {
             t = Type.NULL_CHECK;
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(v, "$"))) {
+            t = Type.GET_SET;
         }
         else if (LangUtil.isTruthy(Extensions.operEq(v, "++"))) {
             t = Type.INCREMENT;

@@ -6,7 +6,7 @@
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
 - set/get (?)
     - Add $var for _get_var() and $var = x for _set_var(x)
-    - Also a.b = x => a._set_b(x)
+    - Also a$b = x => a._set_b(x)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting

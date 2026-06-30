@@ -30,6 +30,9 @@ public class Compiler {
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var cl = getOrCreateClass(currentClass);
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
+            if (LangUtil.isTruthy((LangUtil.isTruthy(!((boolean) Extensions.operEq(currentClass, "LangUtil")))) ? (!((boolean) Extensions.operEq(currentClass, "Extensions"))) : (!((boolean) Extensions.operEq(currentClass, "LangUtil"))))) {
+                LangUtil.println(tok);
+            }
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             indent = Extensions.len(Extensions.operGetIndex(tok, 0).value);
             tok.remove(0);

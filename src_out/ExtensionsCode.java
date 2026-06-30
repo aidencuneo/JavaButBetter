@@ -25,8 +25,8 @@ char operGetIndex(string s, int i):
     i = LangUtil.indexConvert(i, s.length())
     ret s.charAt(i)
 
-inline(public static <T> T operGetIndex(T[] v, int i))
-    inline(i = LangUtil.indexConvert(i, v.length);)
+[T] T operGetIndex(T[] v, int i):
+    i = LangUtil.indexConvert(i, v.length)
     inline(return v[i];)
 
 [T] T operGetIndex(List[T] v, int i):
@@ -35,6 +35,20 @@ inline(public static <T> T operGetIndex(T[] v, int i))
 
 [TK, TV] TV operGetIndex(Map[TK, TV] v, TK key):
     ret v.get(key)
+
+// setIndex
+[T] T operSetIndex(T[] v, int i, T value):
+    i = LangUtil.indexConvert(i, v.length)
+    inline(return v[i] = value;)
+
+[T] T operSetIndex(List[T] v, int i, T value):
+    i = LangUtil.indexConvert(i, v.size())
+    v.set(i, value)
+    ret value
+
+[TK, TV] TV operSetIndex(Map[TK, TV] v, TK key, TV value):
+    v.put(key, value)
+    ret value
 
 // ==
 bool operEq(string a, string b):

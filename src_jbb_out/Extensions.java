@@ -29,6 +29,19 @@ public class Extensions {
     public static <TK, TV> TV operGetIndex(Map<TK, TV> v, TK key) {
         return v.get(key);
     }
+    public static <T> T operSetIndex(T[] v, int i, T value) {
+        i = LangUtil.indexConvert(i, v.length);
+        return v[i] = value;
+    }
+    public static <T> T operSetIndex(List<T> v, int i, T value) {
+        i = LangUtil.indexConvert(i, v.size());
+        v.set(i, value);
+        return value;
+    }
+    public static <TK, TV> TV operSetIndex(Map<TK, TV> v, TK key, TV value) {
+        v.put(key, value);
+        return value;
+    }
     public static boolean operEq(String a, String b) {
         if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);
@@ -281,7 +294,7 @@ public class Extensions {
     }
     public static <T> T[] operShl(T[] arr, T elem) {
         var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
-        copy [arr.length] = elem;
+        Extensions.operSetIndex(copy, arr.length, elem);
         return copy;
     }
     public static <T> List<T> operShl(List<T> c, T elem) {
@@ -306,7 +319,7 @@ public class Extensions {
     }
     public static <T> T[] operShr(T elem, T[] arr) {
         var copy = Arrays.copyOf(arr, Extensions.operAdd(arr.length, 1));
-        copy [0] = elem;
+        Extensions.operSetIndex(copy, 0, elem);
         return copy;
     }
     public static <T> List<T> operShr(T elem, List<T> c) {
@@ -325,7 +338,7 @@ public class Extensions {
         var copy = Arrays.copyOf(arr, size);
         amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
-            copy [i] = Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size));
+            Extensions.operSetIndex(copy, i, Extensions.operGetIndex(arr, Extensions.operMod((Extensions.operAdd(i, amount)), size)));
         }
         return copy;
     }
@@ -349,7 +362,7 @@ public class Extensions {
         var copy = Arrays.copyOf(arr, size);
         amount = Extensions.operMod(amount, (size));
         for (var i : LangUtil.asIterable(LangUtil.range(0, size, null))) {
-            copy [i] = Extensions.operGetIndex(arr, Extensions.operSub(i, amount));
+            Extensions.operSetIndex(copy, i, Extensions.operGetIndex(arr, Extensions.operSub(i, amount)));
         }
         return copy;
     }

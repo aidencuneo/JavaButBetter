@@ -581,13 +581,21 @@ string compileExpr(ArrayList[Token] tok, bool nested):
 
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
+    // Index assignments
+    elif (f = findTokenType(tok, Token.Type.ASSIGN)) >= 1 && tok[f - 1].type == Token.Type.SQUARE_EXPR
+        // n1.n2.nn[index] = value
+        indexExpr = tok[f - 1].value[1:-1]
+        index = compileExpr(Tokeniser.tokLine(indexExpr))
+        lhs = compileExpr(tok[:f - 1])
+        rhs = compileExpr(tok[f + 1:])
+        out += "Extensions.operSetIndex(" + lhs + ", " + index + ", " + rhs + ")"
+
     // Dot assignments
     elif (
         (f = findTokenType(tok, Token.Type.ASSIGN)) >= 3 &&
         (f2 = findTokenType(tok, Token.Type.DOT)) != -1 &&
         f2 < f
     )
-        // [n1.n2.nn], =, [value]
         lhs = compileExpr(tok[:f])
         rhs = compileExpr(tok[f + 1:])
         out += lhs + " = " + rhs
@@ -599,14 +607,6 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         name = tok[f - 1].value
         value = compileExpr(tok[f + 1:])
         varType = compileType(tok[:f - 1])
-
-        // name[index] = value
-        if tok[f - 1].type == Token.Type.SQUARE_EXPR
-            name = ""
-            name += t.value + " " for t in tok[:f]
-            name = name.trim()
-            varType = ""
-
         varType = "var" if varType == "let"
 
         out += "(" if nested
@@ -772,25 +772,14 @@ string compileExpr(ArrayList[Token] tok, bool nested):
                 rhs = compileExpr(tok[f + 1:f2])
                 tok = tok[f + 1:]
 
-                operName = ""
-                if oper == ">"
-                    operName = "Gt"
-                elif oper == ">="
-                    operName = "Ge"
-                elif oper == "<"
-                    operName = "Lt"
-                elif oper == "<="
-                    operName = "Le"
+                operName = {
+                    ">": "Gt",
+                    ">=": "Ge",
+                    "<": "Lt",
+                    "<=": "Le",
+                }[oper] or ""
 
-                // operName = {
-                //     ">": "Gt",
-                //     ">=": "Ge",
-                //     "<": "Lt",
-                //     "<=": "Le",
-                // }[oper]
-
-                stack = stack + ["Extensions.oper" + operName + "(" + lhs + ", " + rhs + ")"]
-                // stack << "Extensions.oper" + operName + "(" + lhs + ", " + rhs + ")"
+                stack << "Extensions.oper" + operName + "(" + lhs + ", " + rhs + ")"
 
             // Join stack with "&&"
             out += elem + " && " for elem in stack
@@ -800,14 +789,6 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += "Extensions.operIn(" + lhs + ", " + rhs + ")"
         elif oper == "not in"
             out += "!((boolean) Extensions.operIn(" + lhs + ", " + rhs + "))"
-        // elif oper == ">"
-        //     out += "Extensions.operGt(" + lhs + ", " + rhs + ")"
-        // elif oper == ">="
-        //     out += "Extensions.operGe(" + lhs + ", " + rhs + ")"
-        // elif oper == "<"
-        //     out += "Extensions.operLt(" + lhs + ", " + rhs + ")"
-        // elif oper == "<="
-        //     out += "Extensions.operLe(" + lhs + ", " + rhs + ")"
         elif oper == "as"
             out += "((" + rhs + ") " + lhs + ")"
         else

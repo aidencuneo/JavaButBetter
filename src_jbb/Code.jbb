@@ -30,8 +30,14 @@ main:
     }[5]
 
     dict = {"a": 1, "b": 2, "c": 3}
-    // dict["d"] = 4
     println dict
+    dict["d"] = 4
+    println dict["d"]
+    println dict
+
+    c = [1, 2, 3]
+    c[0] = 5
+    println c
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"

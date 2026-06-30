@@ -1,4 +1,3 @@
-- Make var[index] = value have a proper overload
 - Add any, all, none
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
@@ -17,6 +16,7 @@
 
 
 Done:
+- Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:
     - {a: 5}

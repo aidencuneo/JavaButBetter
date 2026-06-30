@@ -412,6 +412,13 @@ public class Compiler {
             }
             out = Extensions.operAdd(out, (LangUtil.slice(Extensions.operGetIndex(tok, 1).value, 1, Extensions.operUnarySub(1), 1)));
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).type, Token.Type.SQUARE_EXPR)) : (Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 1)))) {
+            var indexExpr = LangUtil.slice(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).value, 1, Extensions.operUnarySub(1), 1);
+            var index = compileExpr(Tokeniser.tokLine(indexExpr));
+            var lhs = compileExpr(LangUtil.slice(tok, null, Extensions.operSub(f, 1), 1));
+            var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
+            out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operSetIndex(", lhs), ", "), index), ", "), rhs), ")")));
+        }
         else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 3))) ? ((LangUtil.isTruthy(!((boolean) Extensions.operEq(((f2 = findTokenType(tok, Token.Type.DOT))), Extensions.operUnarySub(1))))) ? (Extensions.operLt(f2, f)) : (!((boolean) Extensions.operEq(((f2 = findTokenType(tok, Token.Type.DOT))), Extensions.operUnarySub(1))))) : (Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 3))))) {
             var lhs = compileExpr(LangUtil.slice(tok, null, f, 1));
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
@@ -421,12 +428,6 @@ public class Compiler {
             var name = Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).value;
             var value = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             var varType = compileType(LangUtil.slice(tok, null, Extensions.operSub(f, 1), 1));
-            if (LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).type, Token.Type.SQUARE_EXPR))) {
-                name = "";
-                for (var t : LangUtil.asIterable(LangUtil.slice(tok, null, f, 1))) { name = Extensions.operAdd(name, (Extensions.operAdd(t.value, " "))); }
-                name = name.trim();
-                varType = "";
-            }
             if (LangUtil.isTruthy(Extensions.operEq(varType, "let"))) { varType = "var"; }
             if (LangUtil.isTruthy(nested)) { out = Extensions.operAdd(out, ("(")); }
             if (LangUtil.isTruthy((LangUtil.isTruthy(!LangUtil.isTruthy(localInScope(name)))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(nested))) ? (!LangUtil.isTruthy(name.contains(" "))) : (!LangUtil.isTruthy(nested))) : (!LangUtil.isTruthy(localInScope(name))))) {
@@ -557,20 +558,8 @@ public class Compiler {
                     oper = Extensions.operGetIndex(tok, f).value;
                     rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), f2, 1));
                     tok = LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1);
-                    var operName = "";
-                    if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {
-                        operName = "Gt";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(oper, ">="))) {
-                        operName = "Ge";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(oper, "<"))) {
-                        operName = "Lt";
-                    }
-                    else if (LangUtil.isTruthy(Extensions.operEq(oper, "<="))) {
-                        operName = "Le";
-                    }
-                    stack = Extensions.operAdd(stack, LangUtil.listOf(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.oper", operName), "("), lhs), ", "), rhs), ")")));
+                    var operName = (LangUtil.isTruthy(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(">", "Gt"), Map.entry(">=", "Ge"), Map.entry("<", "Lt"), Map.entry("<=", "Le")))), oper))) ? (Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(">", "Gt"), Map.entry(">=", "Ge"), Map.entry("<", "Lt"), Map.entry("<=", "Le")))), oper)) : ("");
+                    Extensions.operShl(stack, Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.oper", operName), "("), lhs), ", "), rhs), ")"));
                 }
                 for (var elem : LangUtil.asIterable(stack)) { out = Extensions.operAdd(out, (Extensions.operAdd(elem, " && "))); }
                 if (LangUtil.isTruthy(out.endsWith(" && "))) { out = LangUtil.slice(out, null, Extensions.operUnarySub(4), 1); }

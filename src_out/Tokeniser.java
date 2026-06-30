@@ -91,6 +91,12 @@ public class Tokeniser {
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, ']'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(rb, 0))) ? (Extensions.operGt(rb, 0)) : (Extensions.operGt(cb, 0)))))))) : (Extensions.operEq(c, ']')))) {
                 -- sb;
             }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '{'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(sb, 0))) ? (Extensions.operGt(sb, 0)) : (Extensions.operGt(rb, 0)))))))) : (Extensions.operEq(c, '{')))) {
+                ++ cb;
+            }
+            else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '}'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : ((LangUtil.isTruthy(bt)) ? (bt) : ((LangUtil.isTruthy(Extensions.operGt(sb, 0))) ? (Extensions.operGt(sb, 0)) : (Extensions.operGt(rb, 0)))))))) : (Extensions.operEq(c, '}')))) {
+                -- cb;
+            }
             else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(c, '*'))) ? ((LangUtil.isTruthy(Extensions.operEq(lastChar, '/'))) ? (!LangUtil.isTruthy(((LangUtil.isTruthy(sq)) ? (sq) : ((LangUtil.isTruthy(dq)) ? (dq) : (bt))))) : (Extensions.operEq(lastChar, '/'))) : (Extensions.operEq(c, '*')))) {
                 blockComment = true;
                 current = LangUtil.slice(current, null, Extensions.operUnarySub(2), 1);

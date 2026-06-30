@@ -536,10 +536,10 @@ string compileCommaExpr(string expr):
 string compileDictExpr(ArrayList[Token] tok):
     out = ""
     buffer = ArrayList[Token]()
+    tok << Token.fromString(",") // Add trailing comma
 
-    for i in len(tok)
-        t = tok[i]
-        if t.type == Token.Type.COMMA || i == len(tok) - 1
+    for t in tok
+        if t.type == Token.Type.COMMA
             // Compile buffer
             f_colon = findToken(buffer, ":")
             next if f_colon == -1

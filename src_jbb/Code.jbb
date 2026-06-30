@@ -24,7 +24,14 @@ double ***(double a, int b):
 public static class Code
 
 main:
-    ages = {"aiden": 21, "ange": 18, "mum": 47, "dad": 50}
+    println {
+        5: {"a": 1, "b": 2, "c": 3},
+        10: {"z": 3, "y": 2, "x": 1},
+    }[5]
+
+    dict = {"a": 1, "b": 2, "c": 3}
+    // dict["d"] = 4
+    println dict
 
     ccc = "hi"
     println "Hello, world! I'm {a} + {b}. {ccc}!"

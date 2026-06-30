@@ -136,7 +136,7 @@ public class LangUtil {
     public static <T> T[] asIterable(T[] v) {
         return v;
     }
-    public static List < Integer > asIterable(int n) {
+    public static List<Integer> asIterable(int n) {
         var lst = new ArrayList<Integer>();
         for (int i = 0; i < n; ++i) {
             lst.add(i);

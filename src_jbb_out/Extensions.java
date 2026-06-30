@@ -29,18 +29,6 @@ public class Extensions {
     public static <TK, TV> TV operGetIndex(Map<TK, TV> v, TK key) {
         return v.get(key);
     }
-    public static boolean operEq(int a, int b) {
-        return a == b;
-    }
-    public static boolean operEq(long a, long b) {
-        return a == b;
-    }
-    public static boolean operEq(double a, double b) {
-        return a == b;
-    }
-    public static boolean operEq(boolean a, boolean b) {
-        return a == b;
-    }
     public static boolean operEq(String a, String b) {
         if (LangUtil.isTruthy(a == null)) { return b == null; }
         return a.equals(b);

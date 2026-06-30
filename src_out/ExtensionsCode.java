@@ -37,26 +37,12 @@ inline(public static <T> T operGetIndex(T[] v, int i))
     ret v.get(key)
 
 // ==
-bool operEq(int a, int b):
-    ret a is b
-
-bool operEq(long a, long b):
-    ret a is b
-
-bool operEq(double a, double b):
-    ret a is b
-
-bool operEq(bool a, bool b):
-    ret a is b
-
 bool operEq(string a, string b):
     ret b is null if a is null
-    // inline(if (a == null) return b == null;)
     ret a.equals(b)
 
-bool operEq(object a, object b):
+bool operEq(a, b):
     ret b is null if a is null
-    // inline(if (a == null) return b == null;)
     ret a.equals(b)
 
 // in

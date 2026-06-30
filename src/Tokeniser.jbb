@@ -84,6 +84,10 @@ ArrayList[string] splitFile(string file):
             ++sb
         elif c == ']' && !(sq || dq || bt || rb > 0 || cb > 0)
             --sb
+        elif c == '{' && !(sq || dq || bt || sb > 0 || rb > 0)
+            ++cb
+        elif c == '}' && !(sq || dq || bt || sb > 0 || rb > 0)
+            --cb
         // Block comments
         elif c == '*' && lastChar == '/' && !(sq || dq || bt)
             blockComment = true

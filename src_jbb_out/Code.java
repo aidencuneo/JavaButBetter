@@ -3,7 +3,9 @@ import java.util.*;
 
 public class Code {
     public static void main(String[] args) {
-        var ages = (new HashMap<>(Map.ofEntries(Map.entry("aiden", 21), Map.entry("ange", 18), Map.entry("mum", 47), "dad" : 50)));
+        LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
+        var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));
+        LangUtil.println(dict);
         var ccc = "hi";
         LangUtil.println("Hello, world! I'm {a} + {b}. {ccc}!");
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));

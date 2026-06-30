@@ -380,9 +380,9 @@ public class Compiler {
     public static String compileDictExpr(ArrayList<Token> tok) {
         var out = "";
         var buffer = new ArrayList<Token>();
-        for (var i : LangUtil.asIterable(Extensions.len(tok))) {
-            var t = Extensions.operGetIndex(tok, i);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) ? (Extensions.operEq(t.type, Token.Type.COMMA)) : (Extensions.operEq(i, Extensions.operSub(Extensions.len(tok), 1))))) {
+        Extensions.operShl(tok, Token.fromString(","));
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.COMMA))) {
                 var f_colon = findToken(buffer, ":");
                 if (LangUtil.isTruthy(Extensions.operEq(f_colon, Extensions.operUnarySub(1)))) { continue; }
                 var lhs = compileExpr(LangUtil.slice(buffer, null, f_colon, 1));

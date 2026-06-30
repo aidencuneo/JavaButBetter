@@ -1,16 +1,11 @@
+- Make var[index] = value have a proper overload
+- Add any, all, none
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
 - F-strings and `` strings (TEMPLATE_STRING token) (?)
-- Make var[index] = value have a proper overload
-- Add dictionaries (implemented as hashmaps)
-    - Examples:
-    - {a: 5}
-    - {"a": 5}
-    - d = {23498: ["a", "b", "c"]}
-    - d[123] = ["h" for 6]
 - set/get (?)
     - Add $var for _get_var() and $var = x for _set_var(x)
     - Also a.b = x => a._set_b(x)
@@ -22,6 +17,12 @@
 
 
 Done:
+- Add dictionaries (implemented as hashmaps)
+    - Examples:
+    - {a: 5}
+    - {"a": 5}
+    - d = {23498: ["a", "b", "c"]}
+    - d[123] = ["h" for 6]
 - Compile subfolders and all files within them
 - Add different regex stages (jbb, java)
 - Fix try statement scope

@@ -166,7 +166,7 @@ bool isTruthy(object v):
 [T] T[] asIterable(T[] v):
     ret v
 
-List<Int> asIterable(int n):
+List[Int] asIterable(int n):
     lst = ArrayList[Int]()
     inline(for (int i = 0; i < n; ++i))
         lst.add(i)

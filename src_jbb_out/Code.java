@@ -8,8 +8,9 @@ public class Code {
         return (var = value);
     }
     public static void main(String[] args) {
-        LangUtil.println(getVar());
-        LangUtil.println(setVar("what"));
+        var lst = LangUtil.listOf(LangUtil.listOf(1, 2, 3), LangUtil.listOf(4, 5, 6), LangUtil.listOf(7, 8, 9));
+        LangUtil.statNullCheck(lst, _t1 -> LangUtil.statNullCheck(_t1.get(0), _t0 -> _t0.clear()));
+        LangUtil.println(lst);
         LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
         var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));
         LangUtil.println(dict);
@@ -24,10 +25,6 @@ public class Code {
         var ccc = Extensions.operAdd(a, b);
         LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Hello, world! I'm {}", a), " + "), b), ". "), ccc), "!"));
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));
-        var lst = Extensions.operShr(LangUtil.listOf(5, 4, 3), 1);
-        LangUtil.println(lst);
-        Extensions.operShl(Extensions.operShl(Extensions.operShl(lst, 6), 4), 0);
-        LangUtil.println(lst);
     }
 }
 

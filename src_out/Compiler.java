@@ -316,6 +316,20 @@ public class Compiler {
                 out = Extensions.operAdd(out, (");"));
             }
         }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGt(Extensions.len(tok), 1))) ? (!((boolean) Extensions.operEq(((f = findTokenType(tok, Token.Type.NULL_CHECK))), Extensions.operUnarySub(1)))) : (Extensions.operGt(Extensions.len(tok), 1)))) {
+            var lhs = compileStatement(LangUtil.slice(tok, null, f, 1), "");
+            var rhs = compileStatement(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1), "");
+            var tempVar = getNextTemp();
+            while (LangUtil.isTruthy(lhs.endsWith(";"))) { lhs = LangUtil.slice(lhs, null, Extensions.operUnarySub(1), 1); }
+            while (LangUtil.isTruthy(rhs.endsWith(";"))) { rhs = LangUtil.slice(rhs, null, Extensions.operUnarySub(1), 1); }
+            if (LangUtil.isTruthy(rhs.startsWith("LangUtil.statNullCheck"))) {
+                rhs = LangUtil.slice(rhs, Extensions.len("LangUtil.statNullCheck("), Extensions.operUnarySub(1), 1);
+                out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("LangUtil.statNullCheck(", lhs), ", "), tempVar), " -> LangUtil.statNullCheck("), tempVar), "."), rhs), "));")));
+            }
+            else {
+                out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("LangUtil.statNullCheck(", lhs), ", "), tempVar), " -> "), tempVar), "."), rhs), ");")));
+            }
+        }
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(findTokenType(tok, Token.Type.ENUM), Extensions.operUnarySub(1))))) {
             var methodAccess = getMethodAccess(tok);
             tok = stripMethodAccess(tok);

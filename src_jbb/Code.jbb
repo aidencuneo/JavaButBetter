@@ -29,8 +29,13 @@ string setVar(string value):
     ret var = value
 
 main:
-    println $var // getVar()
-    println $var = "what" // setVar(x)
+    lst = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+    ]
+    lst?.get(0)?.clear()
+    println lst
 
     println {
         5: {"a": 1, "b": 2, "c": 3},
@@ -53,7 +58,7 @@ main:
     println f"Hello, world! I'm {{}}{a}{} + {b}. {ccc}{}!"
     println "aiden" << "blishen" << f"cuneo"
     // lst = [5, 4, 3]
-    lst = [5, 4, 3] >> 1
-    println lst
-    lst << 6 << 4 << 0
-    println lst
+    // lst = [5, 4, 3] >> 1
+    // println lst
+    // lst << 6 << 4 << 0
+    // println lst

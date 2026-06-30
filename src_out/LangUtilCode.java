@@ -5,7 +5,7 @@ public class LangUtilCode {
     public static CompResult get() {
         return Compiler.compileFile("LangUtil", """
 use java.lang.reflect.*
-use java.util.function.Function
+use java.util.function.*;
 use java.util.stream.*
 
 class Null
@@ -29,8 +29,11 @@ exit:
     System.exit(0)
 
 // nullCheck
-[T, R] R nullCheck(T value, Function<T, R> func):
+[T, R] R nullCheck(T value, Function[T, R] func):
     ret func.apply(value) if value != null else null
+
+[T] statNullCheck(T value, Consumer[T] cons):
+    cons.accept(value) if value != null
 
 // round
 double round(double v, int places):

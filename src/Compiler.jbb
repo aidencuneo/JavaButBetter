@@ -446,6 +446,21 @@ string compileStatement(ArrayList[Token] tok, string out):
             out += compileCommaExpr(tok[1:])
             out += ");"
 
+    // Statement null check operator (?.)
+    elif len(tok) > 1 && (f = findTokenType(tok, Token.Type.NULL_CHECK)) != -1
+        lhs = compileStatement(tok[:f], "")
+        rhs = compileStatement(tok[f + 1:], "")
+        tempVar = getNextTemp()
+
+        lhs = lhs[:-1] while lhs.endsWith(";")
+        rhs = rhs[:-1] while rhs.endsWith(";")
+
+        if rhs.startsWith("LangUtil.statNullCheck") // Join together chained null checks
+            rhs = rhs[len("LangUtil.statNullCheck("):-1]
+            out += "LangUtil.statNullCheck(" + lhs + ", " + tempVar + " -> LangUtil.statNullCheck(" + tempVar + "." + rhs + "));"
+        else
+            out += "LangUtil.statNullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ");"
+
     // Enum declarations
     elif findTokenType(tok, Token.Type.ENUM) != -1
         // access?, enum, name

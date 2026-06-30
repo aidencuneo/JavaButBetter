@@ -3,10 +3,6 @@
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
-- `` strings (TEMPLATE_STRING token) (?)
-- set/get (?)
-    - Add $var for _get_var() and $var = x for _set_var(x)
-    - Also a$b = x => a._set_b(x)
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting
@@ -15,6 +11,9 @@
 
 
 Done:
+- set/get (?)
+    - Add $var for getVar() and $var = x for setVar(x)
+    - Also a$b for a.getB() and $a.b = x for a.setB(x)
 - F-strings
 - Add any, all, none
 - Make var[index] = value have a proper overload

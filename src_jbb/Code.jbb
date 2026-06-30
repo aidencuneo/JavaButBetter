@@ -23,15 +23,14 @@ double ***(double a, int b):
 
 public static class Code
 
-// string var = "something123"
-// string getVar => var
-// string setVar(string value):
-//     ret var = value
+string var = "something123"
+string getVar => var
+string setVar(string value):
+    ret var = value
 
 main:
-    // println $var // getVar()
-    // println $var = x // setVar(x)
-    // println a$b = x // a.setB(x)
+    println $var // getVar()
+    println $var = "what" // setVar(x)
 
     println {
         5: {"a": 1, "b": 2, "c": 3},

@@ -54,5 +54,8 @@ public class StringParser {
         while (LangUtil.isTruthy(str.trim().endsWith(","))) { str = LangUtil.slice(str.trim(), null, Extensions.operUnarySub(1), 1); }
         return str;
     }
+    public static String capitalise(String str) {
+        return Extensions.operAdd(Character.toUpperCase(Extensions.operGetIndex(str, 0)), LangUtil.slice(str, 1, null, 1));
+    }
 }
 

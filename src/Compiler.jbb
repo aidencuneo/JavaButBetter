@@ -584,11 +584,34 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     // Index assignments
     elif (f = findTokenType(tok, Token.Type.ASSIGN)) >= 1 && tok[f - 1].type == Token.Type.SQUARE_EXPR
         // n1.n2.nn[index] = value
+
         indexExpr = tok[f - 1].value[1:-1]
         index = compileExpr(Tokeniser.tokLine(indexExpr))
         lhs = compileExpr(tok[:f - 1])
         rhs = compileExpr(tok[f + 1:])
         out += "Extensions.operSetIndex(" + lhs + ", " + index + ", " + rhs + ")"
+
+    // Set assignments
+    elif (f = findTokenType(tok, Token.Type.ASSIGN)) >= 1 && tok[0].type == Token.Type.GET_SET
+        // $n1.n2.nn.name = value
+
+        // Eat value and equals
+        value = compileExpr(tok[f + 1:])
+        tok = tok[:f]
+
+        // Eat name
+        name = tok[-1].value
+        tok >> 1
+
+        // Eat dot and set symbol
+        tok >> 1 if tok && tok[-1].type == Token.Type.DOT
+        1 << tok if tok && tok[0].type == Token.Type.GET_SET
+
+        // Compile remaining lvalue
+        lhs = compileExpr(tok)
+        lhs += "." if lhs
+
+        out += lhs + "set" + StringParser.capitalise(name) + "(" + value + ")"
 
     // Dot assignments
     elif (
@@ -895,12 +918,12 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         else
             out += "LangUtil.nullCheck(" + lhs + ", " + tempVar + " -> " + tempVar + "." + rhs + ")"
 
-    // Last occurrence of function call, dot, or slice/index
+    // Last occurrence of function call, dot, get/set, or slice/index
     elif len(tok) > 1 && (
         tok[f = len(tok) - 1].type in [Token.Type.EXPR, Token.Type.SQUARE_EXPR] &&
         tok[f - 1].type != Token.Type.COMMA
     ) || (
-        (f = findTokenTypeRev(tok, Token.Type.DOT)) > 0 && f < len(tok) - 1
+        (f = findAnyTokenTypeRev(tok, [Token.Type.DOT, Token.Type.GET_SET])) > 0 && f < len(tok) - 1
     )
         // Function calls
         if tok[f].type == Token.Type.EXPR
@@ -961,6 +984,12 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             rhs = compileExpr(tok[f + 1:])
             out += lhs + "." + rhs
 
+        // Get expression ($)
+        elif tok[f].type == Token.Type.GET_SET
+            lhs = compileExpr(tok[:f])
+            rhs = compileExpr(tok[f + 1:])
+            out += lhs + "." + "get" + StringParser.capitalise(rhs) + "()"
+
         // Index/slice expressions ([tokens], square brackets)
         elif tok[f].type == Token.Type.SQUARE_EXPR
             // Get the iterable expression and replace tok with the tokens from this slice
@@ -1019,6 +1048,11 @@ string compileExpr(ArrayList[Token] tok, bool nested):
     //     funcName = tok[0].value
     //     args = compileCommaExpr(tok[1:])
     //     out += funcName + "(" + args + ")"
+
+    // Get/set
+    elif len(tok) >= 2 && tok[0].type == Token.Type.GET_SET
+        expr = compileExpr(tok[1:])
+        out += "get" + StringParser.capitalise(expr) + "()"
 
     // Expressions (parentheses)
     elif len(tok) == 1 && tok[0].type == Token.Type.EXPR

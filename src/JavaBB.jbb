@@ -1,4 +1,4 @@
-alias VERSION = "v0.7.1"
+alias VERSION = "v0.7.2"
 
 import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds

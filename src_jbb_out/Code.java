@@ -2,7 +2,14 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    public static String var = "something123";
+    public static String getVar() { return (var); }
+    public static String setVar(String value) {
+        return (var = value);
+    }
     public static void main(String[] args) {
+        LangUtil.println(getVar());
+        LangUtil.println(setVar("what"));
         LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
         var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));
         LangUtil.println(dict);

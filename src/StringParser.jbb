@@ -41,20 +41,23 @@ string unescapeString(string str):
         else
             out += c
 
-    return out
+    ret out
 
 string escapeDoubleQuotes(string str):
-    return str.replace("\"", "\\\"")
+    ret str.replace("\"", "\\\"")
 
 bool isPascalCase(string str):
-    return false if !str
-    return false if !Char.isUpperCase(str[0])
+    ret false if !str
+    ret false if !Char.isUpperCase(str[0])
 
     for c in str[1:]
-        return true if !Char.isUpperCase(c)
+        ret true if !Char.isUpperCase(c)
 
-    return false
+    ret false
 
 string trimComma(string str):
     str = str.trim()[:-1] while str.trim().endsWith(",")
-    return str
+    ret str
+
+string capitalise(string str):
+    ret Char.toUpperCase(str[0]) + str[1:]

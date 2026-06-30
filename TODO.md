@@ -1,4 +1,3 @@
-- Add any, all, none
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -16,6 +15,7 @@
 
 
 Done:
+- Add any, all, none
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)
     - Examples:

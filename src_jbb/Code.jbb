@@ -47,4 +47,3 @@ main:
     println lst
     lst << 6 << 4 << 0
     println lst
-    println max(lst), ' ', min(lst), ' ', sum(lst)

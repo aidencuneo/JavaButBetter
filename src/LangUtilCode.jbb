@@ -138,6 +138,45 @@ string sum(Iterable[String] v, string ... ignore):
 string sum(Iterator[String] v, string ... ignore):
     ret arrstream(v).collect(Collectors.joining())
 
+// none
+[T] bool none(T[] v):
+    ret false if _ for v
+    ret true
+
+[T] bool none(Iterable[T] v, int ... ignore):
+    ret false if _ for v
+    ret true
+
+[T] bool none(Iterator[T] v, int ... ignore):
+    ret false if _ for v
+    ret true
+
+// any
+[T] bool any(T[] v):
+    ret true if _ for v
+    ret false
+
+[T] bool any(Iterable[T] v, int ... ignore):
+    ret true if _ for v
+    ret false
+
+[T] bool any(Iterator[T] v, int ... ignore):
+    ret true if _ for v
+    ret false
+
+// all
+[T] bool all(T[] v):
+    ret false if !_ for v
+    ret true
+
+[T] bool all(Iterable[T] v, int ... ignore):
+    ret false if !_ for v
+    ret true
+
+[T] bool all(Iterator[T] v, int ... ignore):
+    ret false if !_ for v
+    ret true
+
 // isTruthy
 bool isTruthy(bool v):
     ret v

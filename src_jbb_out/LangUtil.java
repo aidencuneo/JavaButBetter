@@ -103,6 +103,42 @@ public class LangUtil {
     public static String sum(Iterator<String> v, String ... ignore) {
         return arrstream(v).collect(Collectors.joining());
     }
+    public static <T> boolean none(T[] v) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return false; } }
+        return true;
+    }
+    public static <T> boolean none(Iterable<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return false; } }
+        return true;
+    }
+    public static <T> boolean none(Iterator<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return false; } }
+        return true;
+    }
+    public static <T> boolean any(T[] v) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return true; } }
+        return false;
+    }
+    public static <T> boolean any(Iterable<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return true; } }
+        return false;
+    }
+    public static <T> boolean any(Iterator<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(__)) { return true; } }
+        return false;
+    }
+    public static <T> boolean all(T[] v) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(!LangUtil.isTruthy(__))) { return false; } }
+        return true;
+    }
+    public static <T> boolean all(Iterable<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(!LangUtil.isTruthy(__))) { return false; } }
+        return true;
+    }
+    public static <T> boolean all(Iterator<T> v, int ... ignore) {
+        for (var __ : LangUtil.asIterable(v)) { if (LangUtil.isTruthy(!LangUtil.isTruthy(__))) { return false; } }
+        return true;
+    }
     public static boolean isTruthy(boolean v) {
         return v;
     }

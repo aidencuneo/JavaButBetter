@@ -943,6 +943,9 @@ string compileExpr(ArrayList[Token] tok, bool nested):
                 "sum",
                 "min",
                 "max",
+                "none",
+                "any",
+                "all",
                 "exit",
             ]
                 name = "LangUtil." + name

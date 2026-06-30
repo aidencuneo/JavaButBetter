@@ -20,6 +20,17 @@ public class Code {
         Extensions.operShl(Extensions.operShl(Extensions.operShl(lst, 6), 4), 0);
         LangUtil.println(lst);
         LangUtil.println(LangUtil.max(lst), ' ', LangUtil.min(lst), ' ', LangUtil.sum(lst));
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
+        lst = LangUtil.listOf();
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
+        lst = LangUtil.listOf(1);
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
+        lst = LangUtil.listOf(0);
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
+        lst = LangUtil.listOf(1, 2, 3, 4);
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
+        lst = LangUtil.listOf(0, 1, 0, 1);
+        LangUtil.println(lst, LangUtil.none(lst), LangUtil.any(lst), LangUtil.all(lst));
     }
 }
 

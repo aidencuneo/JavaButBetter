@@ -1074,6 +1074,39 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         expr = tok[0].value[1:-1]
         out += "(new HashMap<>(" + compileDictExpr(expr) + "))"
 
+    // F-strings
+    elif len(tok) == 2 && tok[0].value in ["f", "F"] && tok[1].type == Token.Type.STRING
+        // f"any string"
+
+        quote = tok[1].value[0]
+        s = tok[1].value[1:-1]
+
+        buffer = "" + quote
+        insertBuffer = ""
+        cb = 0 // {}
+
+        for c in s
+            ++cb if c == '{'
+
+            if cb > 0
+                insertBuffer += c
+            else
+                buffer += c
+
+            if c == '}'
+                --cb
+
+                if cb == 0 && len(insertBuffer) >= 2
+                    insertBuffer = insertBuffer[1:-1]
+                    if insertBuffer == "{}"
+                        buffer += "{}"
+                    elif insertBuffer
+                        buffer += quote + " + " + insertBuffer + " + " + quote
+                    insertBuffer = ""
+
+        buffer += quote
+        out += compileExpr(Tokeniser.tokLine(buffer))
+
     // Search for symbols (custom operators)
     elif len(tok) >= 3 && (f = findTokenTypeRev(tok, Token.Type.SYMBOL)) >= 1
         lhs = compileExpr(tok[:f])

@@ -23,10 +23,10 @@ double ***(double a, int b):
 
 public static class Code
 
-string var = "something123"
-string getVar => var
-string setVar(string value):
-    ret var = value
+// string var = "something123"
+// string getVar => var
+// string setVar(string value):
+//     ret var = value
 
 main:
     // println $var // getVar()
@@ -48,9 +48,11 @@ main:
     c[0] = 5
     println c
 
-    ccc = "hi"
-    println "Hello, world! I'm {a} + {b}. {ccc}!"
-    println "aiden" << "blishen" << "cuneo"
+    a = 5
+    b = 7
+    ccc = a + b
+    println f"Hello, world! I'm {{}}{a}{} + {b}. {ccc}{}!"
+    println "aiden" << "blishen" << f"cuneo"
     // lst = [5, 4, 3]
     lst = [5, 4, 3] >> 1
     println lst

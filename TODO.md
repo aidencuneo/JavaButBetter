@@ -3,7 +3,7 @@
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
-- F-strings and `` strings (TEMPLATE_STRING token) (?)
+- `` strings (TEMPLATE_STRING token) (?)
 - set/get (?)
     - Add $var for _get_var() and $var = x for _set_var(x)
     - Also a$b = x => a._set_b(x)
@@ -15,6 +15,7 @@
 
 
 Done:
+- F-strings
 - Add any, all, none
 - Make var[index] = value have a proper overload
 - Add dictionaries (implemented as hashmaps)

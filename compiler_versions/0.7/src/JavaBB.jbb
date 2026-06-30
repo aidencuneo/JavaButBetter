@@ -1,0 +1,200 @@
+alias VERSION = "v0.6.1"
+
+import java.nio.file.*
+import java.nio.file.StandardWatchEventKinds
+
+static class JavaBB
+
+HashMap[string, string] codeMap = HashMap[.]()
+CompResult extensionsRes = null
+CompResult langUtilRes = null
+
+bool writeTo(string path, string text):
+    // Ensure directory exists
+    if !File(path).getParentFile().exists()
+        File(path).getParentFile().mkdirs()
+
+    try writer = PrintWriter(path)
+        File(path).createNewFile()
+        writer.println(text)
+        ret true
+    catch IOException e
+        ret false
+
+string readFile(string path):
+    try scanner = Scanner(File(path))
+        ret scanner.useDelimiter("\\Z").next()
+    catch FileNotFoundException | NoSuchElementException e
+        ret ""
+
+readAllToMap(string folder):
+    for name in File(folder).list()
+        path = folder + "/" + name
+
+        if File(path).isDirectory()
+            readAllToMap(path)
+        else
+            codeMap.put(path, readFile(path))
+
+precompileAll:
+    for path in codeMap
+        className = path.split("\\.")[0]
+        codeMap.put(path, Precompiler.precompileFile(className, codeMap[path]))
+
+compileAndWriteAll(string compDir, string outDir):
+    for path in codeMap
+        name = File(path).getName()
+        barePath = path[len(compDir):]
+        barePathName = barePath.split("\\.")[0]
+        toPath = outDir + "/" + barePath // Copy filename by default
+        className = name.split("\\.")[0]
+        code = codeMap[path]
+
+        // Compile this file (if .jbb)
+        if name.endsWith(".jbb")
+            // Apply JBB regex rules and compile
+            code = Precompiler.applyRegexRules(code, "jbb")
+            res = Compiler.compileFile(className, code)
+
+            // Extract Extensions class if it exists
+            if "Extensions" in res.classes
+                // Add code to current Extensions class
+                newCode = res.classes["Extensions"].code
+                extensionsClass = extensionsRes.classes["Extensions"]
+                extensionsClass.code += newCode
+
+                // Remove Extensions class from this file's output
+                res.classes.remove("Extensions")
+
+            // Get final compiled code and apply Java regex rules
+            code = res.getCompiledCode(className)
+            code = Precompiler.applyRegexRules(code, "java")
+            toPath = outDir + "/" + barePathName + ".java"
+
+        // Write to output file
+        writeTo(toPath, code)
+
+main:
+    // read all code into the map as strings
+    // precompile (get regex rules)
+    // apply "jbb" regex rules, compile, apply "java" regex rules, write code
+
+    // Parse flags
+    verbose = false
+    watch = false
+    argv = ArrayList[string]()
+
+    for arg in args
+        if arg in ["-v", "--version"]
+            println "JavaButBetter " + VERSION
+            exit()
+        elif arg in ["-V", "--verbose"]
+            verbose = true
+        elif arg in ["-W", "--watch"]
+            watch = true
+        else
+            argv = argv + [arg]
+            // argv << arg
+
+    // argv now contains raw args without accepted flags
+
+    // Get input and output directories
+    compDir = argv[0] if argv else "src"
+    outDir = argv[1] if len(argv) > 1 else compDir + "_out"
+
+    println "--- JavaButBetter " + VERSION + " ---" if verbose
+    println "Compiling directory \"" + compDir + "\" to \"" + outDir + "\"" if verbose
+
+    // Create directory if it doesn't exist
+    if !File(outDir).exists()
+        File(outDir).mkdirs()
+
+    // Builtins
+    println "\nCompiling Extensions..." if verbose
+    extensionsRes = ExtensionsCode.get()
+    println "\nCompiling LangUtil..." if verbose
+    langUtilRes = LangUtilCode.get()
+
+    // Read all files and subfolders in compDir
+    println "\nReading all files in " + compDir + "..." if verbose
+    readAllToMap(compDir)
+
+    // Precompile
+    println "\nPrecompiling all files..." if verbose
+    precompileAll()
+
+    // Compile and apply all regex rules (jbb and java)
+    println "\nCompiling all files..." if verbose
+    compileAndWriteAll(compDir, outDir)
+
+    // Write builtins
+    writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
+    writeTo(outDir + "/LangUtil.java", langUtilRes.getCompiledCode("LangUtil"))
+
+    if !watch
+        println "\nDone." if verbose
+        ret
+
+    // Start watching for additional file changes if watch flag is set
+    while true
+        try
+            watcher = FileSystems.getDefault().newWatchService()
+            Path.of(compDir).register(
+                watcher,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_MODIFY,
+                StandardWatchEventKinds.ENTRY_DELETE)
+
+            println "\nWatching \"" + compDir + "\"\n"
+
+            while true
+                key = watcher.take()
+                for event in key.pollEvents()
+                    kind = "" + event.kind()
+                    context = event.context()
+
+                    println kind + ": " + context
+
+                    // Recompile individual files (and Extensions)
+                    // TODO: Organise this better
+                    if event.kind() in [
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                    ]
+                        name = "" + (context as Path)
+                        extensionsRes = ExtensionsCode.get()
+
+                        fromPath = compDir + "/" + name
+                        toPath = outDir + "/" + name // Copy filename by default
+                        className = name.split("\\.")[0]
+
+                        // Read file
+                        code = readFile(fromPath)
+
+                        // Compile this file (if .jbb)
+                        if name.endsWith(".jbb")
+                            code = Precompiler.precompileFile(className, code)
+                            code = Precompiler.applyRegexRules(code, "jbb")
+                            res = Compiler.compileFile(className, code)
+
+                            // Extract Extensions class if it exists
+                            if "Extensions" in res.classes
+                                // Add code to current Extensions class
+                                newCode = res.classes["Extensions"].code
+                                extensionsClass = extensionsRes.classes["Extensions"]
+                                extensionsClass.code += newCode
+
+                                // Remove Extensions class from this file's output
+                                res.classes.remove("Extensions")
+
+                            // Get final compiled code
+                            code = res.getCompiledCode(className)
+                            code = Precompiler.applyRegexRules(code, "java")
+                            toPath = outDir + "/" + className + ".java"
+
+                        // Write output files
+                        writeTo(toPath, code)
+                        writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
+                break if !key.reset()
+        catch Exception e
+            e.printStackTrace()

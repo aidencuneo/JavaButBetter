@@ -1,0 +1,404 @@
+import java.io.*;
+import java.util.*;
+
+public class ExtensionsCode {
+    public static CompResult get() {
+        return Compiler.compileFile("Extensions", """
+use java.util.stream.*
+
+public static class Extensions
+
+// len
+int len(string s):
+    ret s.length()
+
+[T] int len(Iterable[T] v):
+    c = 0
+    ++c for x in v
+    ret c
+
+inline(public static <T> int len(T[] v))
+    ret v.length
+
+// getIndex
+char operGetIndex(string s, int i):
+    i = LangUtil.indexConvert(i, s.length())
+    ret s.charAt(i)
+
+inline(public static <T> T operGetIndex(T[] v, int i))
+    inline(i = LangUtil.indexConvert(i, v.length);)
+    inline(return v[i];)
+
+[T] T operGetIndex(List[T] v, int i):
+    i = LangUtil.indexConvert(i, v.size())
+    ret v.get(i)
+
+[TK, TV] TV operGetIndex(Map[TK, TV] v, TK key):
+    ret v.get(key)
+
+// ==
+bool operEq(string a, string b):
+    ret b is null if a is null
+    ret a.equals(b)
+
+bool operEq(a, b):
+    ret b is null if a is null
+    ret a.equals(b)
+
+// in
+bool operIn(char c, string s):
+    ret s.indexOf(c) != -1
+
+bool operIn(string part, string s):
+    ret s.indexOf(part) != -1
+
+bool operIn(object o, List lst):
+    ret lst.contains(o)
+
+bool operIn(o, object[] lst):
+    ret Arrays.stream(lst).anyMatch(x -> x == o)
+
+bool operIn(object o, Set s):
+    ret s.contains(o)
+
+bool operIn(object o, Map m):
+    ret m.containsKey(o)
+
+bool operIn(int n, LangUtil.IntRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
+
+bool operIn(int n, LangUtil.LongRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
+
+bool operIn(int n, LangUtil.DoubleRange range):
+    a = range.start
+    b = range.stop
+    s = range.step
+    ret n >= a && n < b && (n - a) % s == 0 if s > 0
+    ret n <= a && n > b && (n - a) % s == 0 if s < 0
+    ret n == a
+
+// >
+bool operGt(int a, int b):
+    inline(return a > b;)
+
+bool operGt(long a, long b):
+    inline(return a > b;)
+
+bool operGt(double a, double b):
+    inline(return a > b;)
+
+// <
+bool operLt(int a, int b):
+    inline(return a < b;)
+
+bool operLt(long a, long b):
+    inline(return a < b;)
+
+bool operLt(double a, double b):
+    inline(return a < b;)
+
+// >=
+bool operGe(int a, int b):
+    inline(return a >= b;)
+
+bool operGe(long a, long b):
+    inline(return a >= b;)
+
+bool operGe(double a, double b):
+    inline(return a >= b;)
+
+// <=
+bool operLe(int a, int b):
+    inline(return a <= b;)
+
+bool operLe(long a, long b):
+    inline(return a <= b;)
+
+bool operLe(double a, double b):
+    inline(return a <= b;)
+
+// |
+int operOr(int a, int b):
+    inline(return a | b;)
+
+long operOr(long a, long b):
+    inline(return a | b;)
+
+bool operOr(bool a, bool b):
+    ret a or b
+
+// Union
+[T] List[T] operOr(List[T] a, List[T] b):
+    res = ArrayList[T](a)
+    res.add(x) if x not in res for x in b
+    ret res
+
+[T] List[T] operOr(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) for x in a
+    res.add(x) if x not in res for x in b
+    ret res
+
+// ^
+int operXor(int a, int b):
+    inline(return a ^ b;)
+
+long operXor(long a, long b):
+    inline(return a ^ b;)
+
+bool operXor(bool a, bool b):
+    ret a != b
+
+// Symmetric difference
+[T] List[T] operXor(List[T] a, List[T] b):
+    res = ArrayList[T]()
+    res.add(x) if x not in b for x in a
+    res.add(y) if y not in a for y in b
+    ret res
+
+[T] List[T] operXor(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) if x not in b for x in a
+    res.add(y) if y not in a for y in b
+    ret res
+
+// &
+int operAnd(int a, int b):
+    inline(return a & b;)
+
+long operAnd(long a, long b):
+    inline(return a & b;)
+
+bool operAnd(bool a, bool b):
+    ret a and b
+
+// Intersection
+[T] List[T] operAnd(List[T] a, List[T] b):
+    res = ArrayList[T]()
+    res.add(x) if (x in b) for x in a
+    ret res
+
+[T] List[T] operAnd(T[] a, T[] b):
+    res = ArrayList[T]()
+    res.add(x) if (x in b) for x in a
+    ret res
+
+// ~
+int operBitNot(int a):
+    inline(return ~a;)
+
+long operBitNot(long a):
+    inline(return ~a;)
+
+bool operBitNot(bool a):
+    ret not a
+
+// Unary +
+int operUnaryAdd(int a):
+    return a
+
+long operUnaryAdd(long a):
+    return a
+
+double operUnaryAdd(double a):
+    return a
+
+// Unary -
+int operUnarySub(int a):
+    inline(return -a;)
+
+long operUnarySub(long a):
+    inline(return -a;)
+
+double operUnarySub(double a):
+    inline(return -a;)
+
+// +
+int operAdd(int a, int b):
+    inline(return a + b;)
+
+long operAdd(long a, long b):
+    inline(return a + b;)
+
+double operAdd(double a, double b):
+    inline(return a + b;)
+
+string operAdd(string a, object b):
+    inline(return a + b;)
+
+string operAdd(object a, string b):
+    inline(return a + b;)
+
+string operAdd(string a, string b):
+    inline(return a + b;)
+
+// int operAdd(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+[T] ArrayList[T] +(List[T] a, List[T] b):
+    copy = ArrayList[.](a)
+    copy.addAll(b)
+    ret copy
+
+// -
+int operSub(int a, int b):
+    inline(return a - b;)
+
+long operSub(long a, long b):
+    inline(return a - b;)
+
+double operSub(double a, double b):
+    inline(return a - b;)
+
+// int operSub(bool a, bool b):
+//     inline(return (a ? 1 : 0) + (b ? 1 : 0);)
+
+// *
+int operMul(int a, int b):
+    inline(return a * b;)
+
+long operMul(long a, long b):
+    inline(return a * b;)
+
+double operMul(double a, double b):
+    inline(return a * b;)
+
+string operMul(string a, int b):
+    if b < 0
+        return StringBuilder(a).reverse().toString().repeat(-b)
+    return a.repeat(b)
+
+string operMul(int a, string b):
+    return operMul(b, a)
+
+// /
+int operDiv(int a, int b):
+    inline(return a / b;)
+
+long operDiv(long a, long b):
+    inline(return a / b;)
+
+double operDiv(double a, double b):
+    inline(return a / b;)
+
+// %
+int operMod(int a, int b):
+    inline(return a % b;)
+
+long operMod(long a, long b):
+    inline(return a % b;)
+
+double operMod(double a, double b):
+    inline(return a % b;)
+
+// <<
+int operShl(int a, int b):
+    inline(return a << b;)
+
+long operShl(long a, long b):
+    inline(return a << b;)
+
+string operShl(string a, string b):
+    ret a + b
+
+[T] T[] operShl(T[] arr, T elem):
+    copy = Arrays.copyOf(arr, arr.length + 1)
+    copy[arr.length] = elem
+    ret copy
+
+[T] List[T] operShl(List[T] c, T elem):
+    c.add(elem)
+    ret c
+
+[T] T[] operShl(int count, T[] arr):
+    ret Arrays.copyOfRange(arr, count, arr.length)
+
+[T] List[T] operShl(int count, List[T] arr):
+    arr.subList(0, count).clear()
+    ret arr
+
+// >>
+int operShr(int a, int b):
+    inline(return a >> b;)
+
+long operShr(long a, long b):
+    inline(return a >> b;)
+
+string operShr(string a, string b):
+    ret b + a
+
+[T] T[] operShr(T elem, T[] arr):
+    copy = Arrays.copyOf(arr, arr.length + 1)
+    copy[0] = elem
+    ret copy
+
+[T] List[T] operShr(T elem, List[T] c):
+    c.add(elem)
+    ret c
+
+[T] T[] operShr(T[] arr, int count):
+    ret Arrays.copyOf(arr, arr.length - count)
+
+[T] List[T] operShr(List[T] arr, int count):
+    arr.subList(arr.size() - count, arr.size()).clear()
+    ret arr
+
+// <<<
+[T] T[] operUshl(T[] arr, int amount):
+    // Rotate left by amount
+    size = len(arr)
+    copy = Arrays.copyOf(arr, size)
+    amount %= size
+    for i in [..size]
+        copy[i] = arr[(i + amount) % size]
+    ret copy
+
+[T] List[T] operUshl(List[T] arr, int amount):
+    // Rotate left by amount
+    size = len(arr)
+    copy = ArrayList[T](arr)
+    amount %= size
+    for i in [..size]
+        copy.set(i, arr[(i + amount) % size])
+    ret copy
+
+// >>>
+int operUshr(int a, int b):
+    inline(return a >>> b;)
+
+long operUshr(long a, long b):
+    inline(return a >>> b;)
+
+[T] T[] operUshr(T[] arr, int amount):
+    // Rotate right by amount
+    size = len(arr)
+    copy = Arrays.copyOf(arr, size)
+    amount %= size
+    for i in [..size]
+        copy[i] = arr[i - amount]
+    ret copy
+
+[T] List[T] operUshr(List[T] arr, int amount):
+    // Rotate right by amount
+    size = len(arr)
+    copy = ArrayList[T](arr)
+    amount %= size
+    for i in [..size]
+        copy.set(i, arr[i - amount])
+    ret copy
+
+    """.trim());
+    }
+}
+

@@ -3,14 +3,19 @@
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
-- Separate statement and expression null checks
-    - Null checks currently don't work if the function returns void
 - Make JBB syntax highlighting
     - Extend from Java syntax highlighting
+- Add modules that you can import
+    - import jbb.requests.*
+    - res = JavaBB.class.getClassLoader().getResource("lib/requests.jbb")
+    - path = Paths.get(res.toURI())
+- Add "import x as y" (?)
 
 
 
 Done:
+- Separate statement and expression null checks
+    - Null checks currently don't work if the function returns void
 - set/get (?)
     - Add $var for getVar() and $var = x for setVar(x)
     - Also a$b for a.getB() and $a.b = x for a.setB(x)

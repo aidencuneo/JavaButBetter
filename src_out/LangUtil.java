@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.*;
 
 public class LangUtil {
@@ -18,8 +18,11 @@ public class LangUtil {
     public static void exit() {
         System.exit(0);
     }
-    public static <T, R> R nullCheck(T value, Function < T, R > func) {
+    public static <T, R> R nullCheck(T value, Function<T, R> func) {
         return LangUtil.isTruthy(!((boolean) Extensions.operEq(value, null))) ? (func.apply(value)) : (null);
+    }
+    public static <T> void statNullCheck(T value, Consumer<T> cons) {
+        if (LangUtil.isTruthy(!((boolean) Extensions.operEq(value, null)))) { cons.accept(value); }
     }
     public static double round(double v, int places) {
         return Math.round(v * Math.pow(10, places)) / Math.pow(10, places);

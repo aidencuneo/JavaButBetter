@@ -73,7 +73,7 @@ class JavaBB {
         var argv = new ArrayList<String>();
         for (var arg : LangUtil.asIterable(args)) {
             if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-v", "--version")))) {
-                LangUtil.println(Extensions.operAdd("JavaButBetter v", "0.7.2"));
+                LangUtil.println(Extensions.operAdd("JavaButBetter v", "0.7.3"));
                 LangUtil.exit();
             }
             else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-V", "--verbose")))) {
@@ -88,7 +88,7 @@ class JavaBB {
         }
         var compDir = LangUtil.isTruthy(argv) ? (Extensions.operGetIndex(argv, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(argv), 1)) ? (Extensions.operGetIndex(argv, 1)) : (Extensions.operAdd(compDir, "_out"));
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.2"), " ---")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.3"), " ---")); }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Compiling directory \"", compDir), "\" to \""), outDir), "\"")); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
             new File(outDir).mkdirs();

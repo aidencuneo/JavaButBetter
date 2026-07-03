@@ -1,7 +1,8 @@
-alias VERSION = "0.7.3"
+alias VERSION = "0.7.4"
 
-import java.nio.file.*
-import java.nio.file.StandardWatchEventKinds
+use java.nio.file.*
+use java.nio.file.StandardWatchEventKinds
+use java.net.URISyntaxException
 
 static class JavaBB
 
@@ -72,6 +73,20 @@ compileAndWriteAll(string compDir, string outDir):
         // Write to output file
         writeTo(toPath, code)
 
+writeStdLibModule(string path, string toPath):
+    res = inline(JavaBB.class.getClassLoader().getResource(path))
+
+    try
+        path = "" + Paths.get(res.toURI())
+    catch URISyntaxException e
+        ret
+
+    writeTo(readFile(path), toPath)
+
+writeFullStdLib(string outDir):
+    dir = outDir + "/jbb/requests"
+    writeStdLibModule("lib/requests/Requests.java", f"{dir}/Requests.java")
+
 main:
     // read all code into the map as strings
     // precompile (get regex rules)
@@ -128,6 +143,9 @@ main:
     // Write builtins
     writeTo(outDir + "/Extensions.java", extensionsRes.getCompiledCode("Extensions"))
     writeTo(outDir + "/LangUtil.java", langUtilRes.getCompiledCode("LangUtil"))
+
+    // Write standard library
+    writeFullStdLib(outDir)
 
     if !watch
         println "\nDone." if verbose

@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.nio.file.*;
 import java.nio.file.StandardWatchEventKinds;
+import java.net.URISyntaxException;
 
 class JavaBB {
     public static HashMap<String, String> codeMap = new HashMap<>();
@@ -67,6 +68,20 @@ class JavaBB {
             writeTo(toPath, code);
         }
     }
+    public static void writeStdLibModule(String path, String toPath) {
+        var res = JavaBB.class.getClassLoader().getResource(path);
+        try {
+            path = Extensions.operAdd("", Paths.get(res.toURI()));
+        }
+        catch (URISyntaxException e) {
+            return;
+        }
+        writeTo(readFile(path), toPath);
+    }
+    public static void writeFullStdLib(String outDir) {
+        var dir = Extensions.operAdd(outDir, "/jbb/requests");
+        writeStdLibModule("lib/requests/Requests.java", Extensions.operAdd(Extensions.operAdd("", dir), "/Requests.java"));
+    }
     public static void main(String[] args) {
         var verbose = false;
         var watch = false;
@@ -105,6 +120,7 @@ class JavaBB {
         compileAndWriteAll(compDir, outDir);
         writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
         writeTo(Extensions.operAdd(outDir, "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
+        writeFullStdLib(outDir);
         if (LangUtil.isTruthy(!LangUtil.isTruthy(watch))) {
             if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nDone."); }
             return;

@@ -4,13 +4,13 @@
     - for i to 0..length
     - for i to 0..length..1
     - for i to length
-- Make JBB syntax highlighting
-    - Extend from Java syntax highlighting
 - Add modules that you can import
     - import jbb.requests.*
     - res = JavaBB.class.getClassLoader().getResource("lib/requests.jbb")
     - path = Paths.get(res.toURI())
-- Add "import x as y" (?)
+- Add extension methods to String class
+    - split, join, capitalise (capitalize), title, upper, lower
+    - basically every method in python strings
 
 
 

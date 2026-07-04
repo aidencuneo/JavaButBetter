@@ -1,4 +1,3 @@
-- Change $a.b = x to a$b = x
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length
@@ -15,6 +14,7 @@
 
 
 Done:
+- Change $a.b = x to a$b = x
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void
 - set/get (?)

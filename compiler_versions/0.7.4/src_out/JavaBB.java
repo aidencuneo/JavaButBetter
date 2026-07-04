@@ -120,7 +120,6 @@ class JavaBB {
         compileAndWriteAll(compDir, outDir);
         writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
         writeTo(Extensions.operAdd(outDir, "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
-        writeFullStdLib(outDir);
         if (LangUtil.isTruthy(!LangUtil.isTruthy(watch))) {
             if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nDone."); }
             return;

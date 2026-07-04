@@ -145,7 +145,7 @@ main:
     writeTo(outDir + "/LangUtil.java", langUtilRes.getCompiledCode("LangUtil"))
 
     // Write standard library
-    writeFullStdLib(outDir)
+    // writeFullStdLib(outDir)
 
     if !watch
         println "\nDone." if verbose

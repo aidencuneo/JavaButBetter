@@ -9,7 +9,6 @@ public class Code {
     }
     public static void main(String[] args) {
         LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
-        player.getInventory().setContents(Extensions.operAdd(player.getInventory().getContents(), (player.getInventory().getContents())));
         var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));
         LangUtil.println(dict);
         Extensions.operSetIndex(dict, "d", 4);

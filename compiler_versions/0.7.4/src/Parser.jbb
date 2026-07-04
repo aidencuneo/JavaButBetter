@@ -1,0 +1,230 @@
+public static class Parser
+
+ArrayList[Token] convertIdentifiers(ArrayList[Token] tok):
+    lastWasDot = false
+
+    inline(for (int i = 0; i < tok.size(); ++i))
+        t = tok.get(i)
+        nextTok = i + 1 < tok.size() ? tok.get(i + 1) : new Token()
+
+        // println i + ": " + tok
+
+        if t.type == Token.Type.ID && !lastWasDot
+            // Perform identifier conversion
+
+            // String and Object can be in lowercase
+            if t.value == "string" // string || String => String
+                t.value = "String"
+            elif t.value == "object" // object || Object => Object
+                t.value = "Object"
+
+            // Some primitive type classes are shortened
+            elif t.value == "Int"
+                t.value = "Integer"
+            elif t.value == "Integer"
+                t.value = "Int"
+            elif t.value == "Char"
+                t.value = "Character"
+            elif t.value == "Character"
+                t.value = "Char"
+            elif t.value == "bool"
+                t.value = "boolean"
+            elif t.value == "boolean"
+                t.value = "_boolean"
+            elif t.value == "Boolean"
+                t.value = "Bool"
+            elif t.value == "Bool"
+                t.value = "Boolean"
+
+            // Swap under and dunder
+            elif t.value == "_"
+                t.value = "__"
+            elif t.value == "__"
+                t.value == "_"
+
+            // Apply to the token
+            tok.set(i, t)
+
+            // // Aliases
+            // for k in Compiler.aliases.keySet()
+            //     println k
+            //     println Compiler.aliases.get(k).tokens
+
+            if Compiler.aliases.containsKey(t.value)
+                let alias = Compiler.aliases.get(t.value)
+                aliasTokens = alias.tokens
+                hasArgs = !!alias.args && nextTok.type == Token.Type.EXPR
+
+                // Remove alias name
+                tok.remove(i)
+
+                // If this alias has arguments, check for a bracketed expression
+                if hasArgs
+                    // Perform identifier replacement on alias tokens
+                    argTokens = Tokeniser.extractCommaExpr(nextTok.value)
+                    aliasTokens = replaceIdentifiers(aliasTokens, alias.args, argTokens)
+
+                    // Remove expression
+                    tok.remove(i)
+
+                // Push tokens onto tok
+                tok.addAll(i, aliasTokens)
+
+                // Push i ahead by the tokens added
+                inline(i += aliasTokens.size() - 1;)
+                // --i if hasArgs
+
+        lastWasDot = false
+        if t.type == Token.Type.DOT
+            lastWasDot = true
+
+    return tok
+
+ArrayList[Token] replaceIdentifiers(ArrayList[Token] tok, ArrayList[string] names, ArrayList[ArrayList[Token]] values):
+    lastWasDot = false
+    newTok = ArrayList[Token]()
+
+    for t in tok
+        if t.type == Token.Type.ID && !lastWasDot
+            i = names.indexOf(t.value)
+
+            if i != -1
+                newTok.addAll(values.get(i))
+                next
+
+        // Perform replacements recursively
+        elif t.type == Token.Type.EXPR
+            // Split expression apart and perform replacements
+            exprStr = t.value.substring(1, t.value.length() - 1)
+            replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values)
+
+            // Piece back together and wait for it to be added
+            newExpr = ""
+            newExpr += token.value for token in replaced
+            t.value = "(" + newExpr + ")"
+
+        newTok.add(t)
+
+    return newTok
+
+string convertOperToID(string oper):
+    // oper is guaranteed to NOT be an ID token
+
+    // Convert operator names
+    if oper == "+"
+        ret "operAdd"
+    elif oper == "-"
+        ret "operSub"
+    elif oper == "*"
+        ret "operMul"
+    elif oper == "/"
+        ret "operDiv"
+    elif oper == "%"
+        ret "operMod"
+    elif oper == "++" || oper == "_++"
+        ret "operPostInc"
+    elif oper == "--" || oper == "_--"
+        ret "operPostDec"
+    elif oper == "++_"
+        ret "operPreInc"
+    elif oper == "--_"
+        ret "operPreDec"
+    elif oper == "!"
+        ret "operNot"
+    elif oper == "~"
+        ret "operBitNot"
+    elif oper == "|"
+        ret "operOr"
+    elif oper == "^"
+        ret "operXor"
+    elif oper == "&"
+        ret "operAnd"
+    elif oper == "=="
+        ret "operEq"
+    elif oper == "!="
+        ret "operEq"
+    elif oper == ">"
+        ret "operGt"
+    elif oper == "<"
+        ret "operLt"
+    elif oper == ">="
+        ret "operGte"
+    elif oper == "<="
+        ret "operLte"
+    elif oper == "<<"
+        ret "operShl"
+    elif oper == ">>"
+        ret "operShr"
+    elif oper == "<<<"
+        ret "operUshl"
+    elif oper == ">>>"
+        ret "operUshr"
+
+    // Custom operators
+    name = "oper"
+    for i in len(oper)
+        name += oper.charAt(i) as int
+    ret name
+
+// static ArrayList[Token] parseAccessMods(ArrayList[Token] tok):
+//     let accessMod = AccessMod.DEFAULT
+//     let isStatic = false
+
+//     while tok
+//         let v = tok.get(0).value
+
+//         if v == "+" || v == "public"
+//             accessMod = AccessMod.PUBLIC
+//         elif v == "-" || v == "private"
+//             accessMod = AccessMod.PRIVATE
+//         elif v == "*" || v == "protected"
+//             accessMod = AccessMod.PROTECTED
+//         elif v == "#" || v == "static"
+//             isStatic = true
+//         else
+//             break
+
+//         // Remove token
+//         tok.remove(0)
+
+//     println tok
+
+//     let newTok = new ArrayList[Token]()
+
+//     newTok.add(new Token(Token.Type.ACCESS_MOD, ("" + accessMod).toLowerCase()))
+//     if isStatic
+//         newTok.add(new Token(Token.Type.STATIC, "static"))
+//     else
+//         newTok.add(new Token())
+//     newTok.add(t) for t in tok
+
+//     return newTok
+
+// static ArrayList[Token] parseDeclaration(ArrayList[Token] tok):
+//     // Parse access modifiers
+//     tok = Parser.parseAccessMods(tok)
+
+//     // Declare 'end' to be either the equals sign or the end of the line
+//     let end = Compiler.findTokenType(tok, Token.Type.ASSIGN)
+//     end = tok.size() if end == -1
+
+//     // Find name
+//     let nameIndex = end - 1
+//     while end >= 0
+//         break if tok.get(nameIndex).type == Token.Type.ID
+//         --nameIndex
+
+//     // Get position of the first token after access modifiers
+//     let i = 0
+//     while i < end
+//         let t = tok.get(i).type
+//         break if t != Token.Type.ACCESS_MOD && t != Token.Type.STATIC
+//         ++i
+
+//     // Check for type arguments
+//     if 
+
+//     // Seek past access modifiers, then start taking tokens as the type
+
+//     println tok, end, nameIndex
+//     return null

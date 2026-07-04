@@ -1,0 +1,171 @@
+import java.io.*;
+import java.util.*;
+
+public class Parser {
+    public static ArrayList<Token> convertIdentifiers(ArrayList<Token> tok) {
+        var lastWasDot = false;
+        for (int i = 0; i < tok.size(); ++i) {
+            var t = tok.get(i);
+            var nextTok = LangUtil.isTruthy(Extensions.operLt(Extensions.operAdd(i, 1), tok.size())) ? (tok.get(Extensions.operAdd(i, 1))) : (new Token());
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "string"))) {
+                    t.value = "String";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "object"))) {
+                    t.value = "Object";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Int"))) {
+                    t.value = "Integer";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Integer"))) {
+                    t.value = "Int";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Char"))) {
+                    t.value = "Character";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Character"))) {
+                    t.value = "Char";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "bool"))) {
+                    t.value = "boolean";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "boolean"))) {
+                    t.value = "_boolean";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Boolean"))) {
+                    t.value = "Bool";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "Bool"))) {
+                    t.value = "Boolean";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "_"))) {
+                    t.value = "__";
+                }
+                else if (LangUtil.isTruthy(Extensions.operEq(t.value, "__"))) {
+                    Extensions.operEq(t.value, "_");
+                }
+                tok.set(i, t);
+                if (LangUtil.isTruthy(Compiler.aliases.containsKey(t.value))) {
+                    var alias = Compiler.aliases.get(t.value);
+                    var aliasTokens = alias.tokens;
+                    var hasArgs = (LangUtil.isTruthy(!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)))) ? (Extensions.operEq(nextTok.type, Token.Type.EXPR)) : (!LangUtil.isTruthy(!LangUtil.isTruthy(alias.args)));
+                    tok.remove(i);
+                    if (LangUtil.isTruthy(hasArgs)) {
+                        var argTokens = Tokeniser.extractCommaExpr(nextTok.value);
+                        aliasTokens = replaceIdentifiers(aliasTokens, alias.args, argTokens);
+                        tok.remove(i);
+                    }
+                    tok.addAll(i, aliasTokens);
+                    i += aliasTokens.size() - 1;
+                }
+            }
+            lastWasDot = false;
+            if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.DOT))) {
+                lastWasDot = true;
+            }
+        }
+        return tok;
+    }
+    public static ArrayList<Token> replaceIdentifiers(ArrayList<Token> tok, ArrayList<String> names, ArrayList<ArrayList<Token>> values) {
+        var lastWasDot = false;
+        var newTok = new ArrayList<Token>();
+        for (var t : LangUtil.asIterable(tok)) {
+            if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.ID))) ? (!LangUtil.isTruthy(lastWasDot)) : (Extensions.operEq(t.type, Token.Type.ID)))) {
+                var i = names.indexOf(t.value);
+                if (LangUtil.isTruthy(!((boolean) Extensions.operEq(i, Extensions.operUnarySub(1))))) {
+                    newTok.addAll(values.get(i));
+                    continue;
+                }
+            }
+            else if (LangUtil.isTruthy(Extensions.operEq(t.type, Token.Type.EXPR))) {
+                var exprStr = t.value.substring(1, Extensions.operSub(t.value.length(), 1));
+                var replaced = replaceIdentifiers(Tokeniser.tokLine(exprStr), names, values);
+                var newExpr = "";
+                for (var token : LangUtil.asIterable(replaced)) { newExpr = Extensions.operAdd(newExpr, (token.value)); }
+                t.value = Extensions.operAdd(Extensions.operAdd("(", newExpr), ")");
+            }
+            newTok.add(t);
+        }
+        return newTok;
+    }
+    public static String convertOperToID(String oper) {
+        if (LangUtil.isTruthy(Extensions.operEq(oper, "+"))) {
+            return "operAdd";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "-"))) {
+            return "operSub";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "*"))) {
+            return "operMul";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "/"))) {
+            return "operDiv";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "%"))) {
+            return "operMod";
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "++"))) ? (Extensions.operEq(oper, "++")) : (Extensions.operEq(oper, "_++")))) {
+            return "operPostInc";
+        }
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(oper, "--"))) ? (Extensions.operEq(oper, "--")) : (Extensions.operEq(oper, "_--")))) {
+            return "operPostDec";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "++_"))) {
+            return "operPreInc";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "--_"))) {
+            return "operPreDec";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "!"))) {
+            return "operNot";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "~"))) {
+            return "operBitNot";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "|"))) {
+            return "operOr";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "^"))) {
+            return "operXor";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "&"))) {
+            return "operAnd";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "=="))) {
+            return "operEq";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "!="))) {
+            return "operEq";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">"))) {
+            return "operGt";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<"))) {
+            return "operLt";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">="))) {
+            return "operGte";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<="))) {
+            return "operLte";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<<"))) {
+            return "operShl";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>"))) {
+            return "operShr";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, "<<<"))) {
+            return "operUshl";
+        }
+        else if (LangUtil.isTruthy(Extensions.operEq(oper, ">>>"))) {
+            return "operUshr";
+        }
+        var name = "oper";
+        for (var i : LangUtil.asIterable(Extensions.len(oper))) {
+            name = Extensions.operAdd(name, (((int) oper.charAt(i))));
+        }
+        return name;
+    }
+}
+

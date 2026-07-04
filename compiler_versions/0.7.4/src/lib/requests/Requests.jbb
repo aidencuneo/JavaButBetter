@@ -1,0 +1,7 @@
+public static class Requests
+
+post(string url, string info):
+    println "posting " << url << " with " << info
+
+get(string url):
+    println "getting " << url

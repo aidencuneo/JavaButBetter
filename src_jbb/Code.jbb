@@ -1,21 +1,3 @@
-// // JavaScript template strings
-// regex (
-//     "(`.*?)\$\{(.+)\}(.*?`)"
-//     "$1\" + ($2) + \"$3"
-// )
-
-// // Python f-strings
-// regex (
-//     "f(\".*?)\{([^\{\}]+)\}(.*?\")"
-//     "$1\" + ($2) + \"$3"
-// )
-
-// // Python f-strings for all strings
-// regex (
-//     "(\".*?)\{([^\{\}]+)\}(.*?\")"
-//     "$1\" + ($2) + \"$3"
-// )
-
 static class Extensions
 double ***(double a, int b):
     a **= a for b
@@ -49,8 +31,3 @@ main:
     ccc = a + b
     println f"Hello, world! I'm {{}}{a}{} + {b}. {ccc}{}!"
     println "aiden" << "blishen" << f"cuneo"
-    // lst = [5, 4, 3]
-    // lst = [5, 4, 3] >> 1
-    // println lst
-    // lst << 6 << 4 << 0
-    // println lst

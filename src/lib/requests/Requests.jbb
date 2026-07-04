@@ -1,6 +1,6 @@
 public static class Requests
 
-post(string url, info):
+post(string url, string info):
     println "posting " << url << " with " << info
 
 get(string url):

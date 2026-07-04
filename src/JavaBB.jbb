@@ -6,7 +6,7 @@ use java.net.URISyntaxException
 
 static class JavaBB
 
-HashMap[string, string] codeMap = HashMap[.]()
+HashMap[string, string] codeMap = {}
 CompResult extensionsRes = null
 CompResult langUtilRes = null
 
@@ -81,7 +81,7 @@ writeStdLibModule(string path, string toPath):
     catch URISyntaxException e
         ret
 
-    writeTo(readFile(path), toPath)
+    writeTo(toPath, readFile(path))
 
 writeFullStdLib(string outDir):
     dir = outDir + "/jbb/requests"

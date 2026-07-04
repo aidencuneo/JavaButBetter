@@ -29,14 +29,6 @@ string setVar(string value):
     ret var = value
 
 main:
-    lst = [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9],
-    ]
-    lst?.get(0)?.clear()
-    println lst
-
     println {
         5: {"a": 1, "b": 2, "c": 3},
         10: {"z": 3, "y": 2, "x": 1},

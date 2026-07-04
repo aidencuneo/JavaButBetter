@@ -8,10 +8,8 @@ public class Code {
         return (var = value);
     }
     public static void main(String[] args) {
-        var lst = LangUtil.listOf(LangUtil.listOf(1, 2, 3), LangUtil.listOf(4, 5, 6), LangUtil.listOf(7, 8, 9));
-        LangUtil.statNullCheck(lst, _t1 -> LangUtil.statNullCheck(_t1.get(0), _t0 -> _t0.clear()));
-        LangUtil.println(lst);
         LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
+        player.getInventory().setContents(Extensions.operAdd(player.getInventory().getContents(), (player.getInventory().getContents())));
         var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));
         LangUtil.println(dict);
         Extensions.operSetIndex(dict, "d", 4);

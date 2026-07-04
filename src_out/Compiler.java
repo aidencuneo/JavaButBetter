@@ -433,13 +433,11 @@ public class Compiler {
             var rhs = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Extensions.operSetIndex(", lhs), ", "), index), ", "), rhs), ")")));
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 1))) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.GET_SET)) : (Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 1)))) {
+        else if (LangUtil.isTruthy(((LangUtil.isTruthy(Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 2))) ? ((LangUtil.isTruthy(Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).type, Token.Type.ID))) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operSub(f, 2)).type, Token.Type.GET_SET)) : (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operSub(f, 1)).type, Token.Type.ID))) : (Extensions.operGe(((f = findTokenType(tok, Token.Type.ASSIGN))), 2))))) {
             var value = compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1));
             tok = LangUtil.slice(tok, null, f, 1);
             var name = Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).value;
-            Extensions.operShr(tok, 1);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, Extensions.operUnarySub(1)).type, Token.Type.DOT)) : (tok))) { Extensions.operShr(tok, 1); }
-            if (LangUtil.isTruthy((LangUtil.isTruthy(tok)) ? (Extensions.operEq(Extensions.operGetIndex(tok, 0).type, Token.Type.GET_SET)) : (tok))) { Extensions.operShl(1, tok); }
+            Extensions.operShr(tok, 2);
             var lhs = compileExpr(tok);
             if (LangUtil.isTruthy(lhs)) { lhs = Extensions.operAdd(lhs, (".")); }
             out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(lhs, "set"), StringParser.capitalise(name)), "("), value), ")")));

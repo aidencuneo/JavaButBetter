@@ -1,3 +1,4 @@
+- Change $a.b = x to a$b = x
 - Mutable for loops
     - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
     - for i to 0..length

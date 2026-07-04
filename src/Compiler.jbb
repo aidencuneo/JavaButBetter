@@ -607,20 +607,20 @@ string compileExpr(ArrayList[Token] tok, bool nested):
         out += "Extensions.operSetIndex(" + lhs + ", " + index + ", " + rhs + ")"
 
     // Set assignments
-    elif (f = findTokenType(tok, Token.Type.ASSIGN)) >= 1 && tok[0].type == Token.Type.GET_SET
-        // $n1.n2.nn.name = value
+    elif (
+        (f = findTokenType(tok, Token.Type.ASSIGN)) >= 2 &&
+        tok[f - 1].type == Token.Type.ID &&
+        tok[f - 2].type == Token.Type.GET_SET
+    )
+        // n1.n2.nn$name = value
 
         // Eat value and equals
         value = compileExpr(tok[f + 1:])
         tok = tok[:f]
 
-        // Eat name
+        // Eat name and set symbol
         name = tok[-1].value
-        tok >> 1
-
-        // Eat dot and set symbol
-        tok >> 1 if tok && tok[-1].type == Token.Type.DOT
-        1 << tok if tok && tok[0].type == Token.Type.GET_SET
+        tok >> 2
 
         // Compile remaining lvalue
         lhs = compileExpr(tok)

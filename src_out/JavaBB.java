@@ -60,6 +60,7 @@ class JavaBB {
                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
                     Extensions.operGetIndex(extensionsRes.classes, "Extensions").code = Extensions.operAdd(Extensions.operGetIndex(extensionsRes.classes, "Extensions").code, (Extensions.operGetIndex(res.classes, "Extensions").code));
                     res.classes.remove("Extensions");
+                    extensionsRes.startTemplate = Extensions.operAdd(extensionsRes.startTemplate, (res.startTemplate));
                 }
                 code = res.getCompiledCode(className);
                 code = Precompiler.applyRegexRules(code, "java");
@@ -149,6 +150,7 @@ class JavaBB {
                                 if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
                                     Extensions.operGetIndex(extensionsRes.classes, "Extensions").code = Extensions.operAdd(Extensions.operGetIndex(extensionsRes.classes, "Extensions").code, (Extensions.operGetIndex(res.classes, "Extensions").code));
                                     res.classes.remove("Extensions");
+                                    extensionsRes.startTemplate = Extensions.operAdd(extensionsRes.startTemplate, (res.startTemplate));
                                 }
                                 code = res.getCompiledCode(className);
                                 code = Precompiler.applyRegexRules(code, "java");

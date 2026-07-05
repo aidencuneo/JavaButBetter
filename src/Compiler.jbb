@@ -26,9 +26,9 @@ CompResult compileFile(string className, string code):
     endTemplate = ""
 
     // Reset class data
-    classes = new HashMap[string, Class]()
-    aliases = new HashMap[string, Alias]()
-    locals = new HashMap[string, Int]()
+    classes = {}
+    aliases = {}
+    locals = {}
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -58,12 +58,12 @@ CompResult compileFile(string className, string code):
         while indent > lastIndent
             // Open block
             lastIndent += INDENT_SIZE
-            cl.code = cl.code.trim()
-            cl.code = cl.code + " {\n"
+            cl.code .= trim()
+            cl.code += " {\n"
 
         while indent < lastIndent
             // Close block
-            cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+            cl.code += " ".repeat(lastIndent) + "}\n"
             lastIndent -= INDENT_SIZE
 
         // Indentation defines scope
@@ -71,10 +71,10 @@ CompResult compileFile(string className, string code):
         cleanLocals(scope) if scope < lastScope // Remove any out of scope locals
 
         // Add indentation for every line
-        cl.code = cl.code + " ".repeat(indent + INDENT_SIZE)
+        cl.code += " ".repeat(indent + INDENT_SIZE)
 
         // Add compiled statement
-        let out = compileStatement(tok, cl.code)
+        out = compileStatement(tok, cl.code)
         cl = getOrCreateClass(currentClass)
         cl.code = out + "\n"
 
@@ -85,7 +85,7 @@ CompResult compileFile(string className, string code):
         //     println tok
 
     // After the final line of a class, reset indentation
-    let cl = getOrCreateClass(currentClass)
+    cl = getOrCreateClass(currentClass)
 
     while lastIndent > 0
         // Close block
@@ -93,7 +93,7 @@ CompResult compileFile(string className, string code):
         lastIndent -= INDENT_SIZE
 
     // Return compilation result
-    return new CompResult(classes, startTemplate, endTemplate)
+    return CompResult(classes, startTemplate, endTemplate)
 
 Class getOrCreateClass(string name):
     if !classes.containsKey(name)

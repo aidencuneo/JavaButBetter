@@ -1,6 +1,11 @@
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
+import java.io.*;
+import java.util.*;
+import java.io.*;
+import java.util.*;
+import org.bukkit.inventory.*;
 
 public class Extensions {
     public static int len(String s) {
@@ -379,5 +384,8 @@ public static double oper424242(double a, int b) {
         for (var __ : LangUtil.asIterable(b)) { a = Math.pow(a, (a)); }
         return a;
     }
+        
+    
+    public static ItemStack operGetIndex(Inventory inv, int index) { return (inv.getItem(index)); }
 }
 

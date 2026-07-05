@@ -19,9 +19,9 @@ public class Compiler {
         currentClass = className;
         startTemplate = "import java.io.*;\nimport java.util.*;\n";
         endTemplate = "";
-        classes = new HashMap<String, Class>();
-        aliases = new HashMap<String, Alias>();
-        locals = new HashMap<String, Integer>();
+        classes = (new HashMap<>(Map.ofEntries()));
+        aliases = (new HashMap<>(Map.ofEntries()));
+        locals = (new HashMap<>(Map.ofEntries()));
         nextTempVar = 0;
         defaultStatic = false;
         var lines = Tokeniser.splitFile(code);
@@ -37,15 +37,15 @@ public class Compiler {
             while (LangUtil.isTruthy(Extensions.operGt(indent, lastIndent))) {
                 lastIndent = Extensions.operAdd(lastIndent, (4));
                 cl.code = cl.code.trim();
-                cl.code = Extensions.operAdd(cl.code, " {\n");
+                cl.code = Extensions.operAdd(cl.code, (" {\n"));
             }
             while (LangUtil.isTruthy(Extensions.operLt(indent, lastIndent))) {
-                cl.code = Extensions.operAdd(Extensions.operAdd(cl.code, " ".repeat(lastIndent)), "}\n");
+                cl.code = Extensions.operAdd(cl.code, (Extensions.operAdd(" ".repeat(lastIndent), "}\n")));
                 lastIndent = Extensions.operSub(lastIndent, (4));
             }
             scope = Extensions.operDiv(indent, 4);
             if (LangUtil.isTruthy(Extensions.operLt(scope, lastScope))) { cleanLocals(scope); }
-            cl.code = Extensions.operAdd(cl.code, " ".repeat(Extensions.operAdd(indent, 4)));
+            cl.code = Extensions.operAdd(cl.code, (" ".repeat(Extensions.operAdd(indent, 4))));
             var out = compileStatement(tok, cl.code);
             cl = getOrCreateClass(currentClass);
             cl.code = Extensions.operAdd(out, "\n");

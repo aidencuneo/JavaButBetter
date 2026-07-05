@@ -1,12 +1,11 @@
-- Mutable for loops
-    - for i to arr.length => for (var i = 0; i < (arr.length); i += 1)
-    - for i to 0..length
-    - for i to 0..length..1
-    - for i to length
+- Add global aliases
+- Add global regex and regex keys
+- Add global imports (adds imports to every file)
 - Add modules that you can import
     - import jbb.requests.*
     - res = JavaBB.class.getClassLoader().getResource("lib/requests.jbb")
     - path = Paths.get(res.toURI())
+- Make sure Extensions and LangUtil work from other packages
 - Add extension methods to String class
     - split, join, capitalise (capitalize), title, upper, lower
     - basically every method in python strings
@@ -14,6 +13,7 @@
 
 
 Done:
+- Make imports in files with the Extensions class carry over
 - Change $a.b = x to a$b = x
 - Separate statement and expression null checks
     - Null checks currently don't work if the function returns void

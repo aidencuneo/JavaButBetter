@@ -1,8 +1,8 @@
 alias VERSION = "0.7.4"
 
-use java.nio.file.*
-use java.nio.file.StandardWatchEventKinds
-use java.net.URISyntaxException
+import java.nio.file.*
+import java.nio.file.StandardWatchEventKinds
+import java.net.URISyntaxException
 
 static class JavaBB
 
@@ -64,6 +64,9 @@ compileAndWriteAll(string compDir, string outDir):
 
                 // Remove Extensions class from this file's output
                 res.classes.remove("Extensions")
+
+                // Steal imports
+                extensionsRes.startTemplate += res.startTemplate
 
             // Get final compiled code and apply Java regex rules
             code = res.getCompiledCode(className)
@@ -200,6 +203,9 @@ main:
 
                                 // Remove Extensions class from this file's output
                                 res.classes.remove("Extensions")
+
+                                // Steal imports
+                                extensionsRes.startTemplate += res.startTemplate
 
                             // Get final compiled code
                             code = res.getCompiledCode(className)

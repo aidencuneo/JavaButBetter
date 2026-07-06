@@ -1,3 +1,6 @@
+- Create line map for each JBB file
+    - json file at ".jbbmap/File.json" containing something like:
+    - {0: 3, 1: 4, 2: 5, 3: 7, 4: 8}
 - Add global aliases
 - Add global regex and regex keys
 - Add global imports (adds imports to every file)
@@ -9,6 +12,7 @@
 - Add extension methods to String class
     - split, join, capitalise (capitalize), title, upper, lower
     - basically every method in python strings
+- JBB VSCode extension
 
 
 

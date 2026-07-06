@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Code {
+    public static int i = 0;
     public static String var = "something123";
     public static String getVar() { return (var); }
     public static String setVar(String value) {

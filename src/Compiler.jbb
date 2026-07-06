@@ -9,9 +9,10 @@ string currentClass = ""
 string startTemplate = ""
 string endTemplate = ""
 string packagePath = ""
-HashMap[string, Class] classes = null
-HashMap[string, Alias] aliases = null
-HashMap[string, Int] locals = null // name -> scope
+HashMap[string, Class] classes = {}
+HashMap[string, Alias] aliases = {}
+HashMap[string, Int] locals = {} // name -> scope
+HashMap[Int, Int] lineMap = {}
 
 int nextTempVar = 0
 int indent = 0
@@ -29,6 +30,7 @@ CompResult compileFile(string className, string code):
     classes = {}
     aliases = {}
     locals = {}
+    lineMap = {}
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -44,6 +46,10 @@ CompResult compileFile(string className, string code):
 
         // if currentClass != "LangUtil" && currentClass != "Extensions"
         //     println tok
+
+        // Record which line in JBB matches which line in Java
+        javaLine = cl.code.lines().count() as int
+        lineMap[i] = javaLine
 
         // Nothing in the line?
         next if !tok
@@ -89,11 +95,11 @@ CompResult compileFile(string className, string code):
 
     while lastIndent > 0
         // Close block
-        cl.code = cl.code + " ".repeat(lastIndent) + "}\n"
+        cl.code += " ".repeat(lastIndent) + "}\n"
         lastIndent -= INDENT_SIZE
 
     // Return compilation result
-    return CompResult(classes, startTemplate, endTemplate)
+    return CompResult(classes, startTemplate, endTemplate, lineMap)
 
 Class getOrCreateClass(string name):
     if !classes.containsKey(name)

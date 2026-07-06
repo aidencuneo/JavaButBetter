@@ -1,10 +1,11 @@
-static class Extensions
-double ***(double a, int b):
-    a **= a for b
-    ret a
+// static class Extensions
+// double ***(double a, int b):
+//     a **= a for b
+//     ret a
 
 public static class Code
 
+int i = 0
 string var = "something123"
 string getVar => var
 string setVar(string value):

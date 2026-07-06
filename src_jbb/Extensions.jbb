@@ -1,3 +1,0 @@
-import org.bukkit.inventory.*
-+#class Extensions
-ItemStack operGetIndex(Inventory inv, int index) => inv.getItem(index)

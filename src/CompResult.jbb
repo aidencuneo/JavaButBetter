@@ -1,15 +1,18 @@
 HashMap[string, Class] classes
 string startTemplate
 string endTemplate
+HashMap[Int, Int] lineMap
 
 CompResult(
     HashMap[string, Class] classes,
     string startTemplate,
-    string endTemplate
+    string endTemplate,
+    HashMap[Int, Int] lineMap,
 ):
     this.classes = classes
     this.startTemplate = startTemplate
     this.endTemplate = endTemplate
+    this.lineMap = lineMap
 
 string getCompiledCode(string mainClassName):
     // Construct classes
@@ -32,3 +35,15 @@ string getCompiledCode(string mainClassName):
         packageStr = "package " + Compiler.packagePath + ";\n\n"
 
     return packageStr + startTemplate + "\n" + out + endTemplate
+
+string getLineMapJSON:
+    // Get offset from start template
+    offset = startTemplate.lines().count() + 1
+    out = "{"
+
+    for jbbLine in lineMap
+        javaLine = offset + lineMap[jbbLine]
+        out += f"\"{jbbLine}\": {javaLine}, "
+
+    out = out[:-2] while out.endsWith(", ")
+    return out + "}"

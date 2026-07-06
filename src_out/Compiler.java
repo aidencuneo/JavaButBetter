@@ -7,9 +7,10 @@ public class Compiler {
     public static String startTemplate = "";
     public static String endTemplate = "";
     public static String packagePath = "";
-    public static HashMap<String, Class> classes = null;
-    public static HashMap<String, Alias> aliases = null;
-    public static HashMap<String, Integer> locals = null;
+    public static HashMap<String, Class> classes = (new HashMap<>(Map.ofEntries()));
+    public static HashMap<String, Alias> aliases = (new HashMap<>(Map.ofEntries()));
+    public static HashMap<String, Integer> locals = (new HashMap<>(Map.ofEntries()));
+    public static HashMap<Integer, Integer> lineMap = (new HashMap<>(Map.ofEntries()));
     public static int nextTempVar = 0;
     public static int indent = 0;
     public static int scope = 0;
@@ -22,6 +23,7 @@ public class Compiler {
         classes = (new HashMap<>(Map.ofEntries()));
         aliases = (new HashMap<>(Map.ofEntries()));
         locals = (new HashMap<>(Map.ofEntries()));
+        lineMap = (new HashMap<>(Map.ofEntries()));
         nextTempVar = 0;
         defaultStatic = false;
         var lines = Tokeniser.splitFile(code);
@@ -30,6 +32,8 @@ public class Compiler {
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var cl = getOrCreateClass(currentClass);
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
+            var javaLine = ((int) cl.code.lines().count());
+            Extensions.operSetIndex(lineMap, i, javaLine);
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             indent = Extensions.len(Extensions.operGetIndex(tok, 0).value);
             tok.remove(0);
@@ -54,10 +58,10 @@ public class Compiler {
         }
         var cl = getOrCreateClass(currentClass);
         while (LangUtil.isTruthy(Extensions.operGt(lastIndent, 0))) {
-            cl.code = Extensions.operAdd(Extensions.operAdd(cl.code, " ".repeat(lastIndent)), "}\n");
+            cl.code = Extensions.operAdd(cl.code, (Extensions.operAdd(" ".repeat(lastIndent), "}\n")));
             lastIndent = Extensions.operSub(lastIndent, (4));
         }
-        return new CompResult(classes, startTemplate, endTemplate);
+        return new CompResult(classes, startTemplate, endTemplate, lineMap);
     }
     public static Class getOrCreateClass(String name) {
         if (LangUtil.isTruthy(!LangUtil.isTruthy(classes.containsKey(name)))) {

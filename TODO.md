@@ -1,3 +1,5 @@
+- Allow primitive types inside type arguments
+    - HashMap[string, int] instead of HashMap[String, Int]
 - Create line map for each JBB file
     - json file at ".jbbmap/File.json" containing something like:
     - {0: 3, 1: 4, 2: 5, 3: 7, 4: 8}

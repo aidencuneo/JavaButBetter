@@ -1,4 +1,4 @@
-alias VERSION = "0.7.4"
+alias VERSION = "0.7.5"
 
 import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds
@@ -32,7 +32,7 @@ readAllToMap(string folder):
     for name in File(folder).list()
         path = folder + "/" + name
 
-        if File(path).isDirectory()
+        if File(path).isDirectory() && File(path)$name != ".jbbmap"
             readAllToMap(path)
         else
             codeMap[path] = readFile(path)
@@ -46,7 +46,7 @@ compileAndWriteAll(string compDir, string outDir):
     for path in codeMap
         name = File(path).getName()
         barePath = path[len(compDir):]
-        barePathName = barePath.split("\\.")[0]
+        barePathNoExt = barePath.split("\\.")[0]
         toPath = outDir + "/" + barePath // Copy filename by default
         className = name.split("\\.")[0]
         code = codeMap[path]
@@ -71,7 +71,10 @@ compileAndWriteAll(string compDir, string outDir):
             // Get final compiled code and apply Java regex rules
             code = res.getCompiledCode(className)
             code = Precompiler.applyRegexRules(code, "java")
-            toPath = outDir + "/" + barePathName + ".java"
+            toPath = outDir + "/" + barePathNoExt + ".java"
+
+            // Write line mapping
+            writeTo(f"{compDir}/.jbbmap/{barePathNoExt}.json", res$lineMapJSON)
 
         // Write to output file
         writeTo(toPath, code)
@@ -180,11 +183,14 @@ main:
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY,
                     ]
-                        name = "" + (context as Path)
                         extensionsRes = ExtensionsCode.get()
 
-                        fromPath = compDir + "/" + name
-                        toPath = outDir + "/" + name // Copy filename by default
+                        barePath = "" + (context as Path)
+                        barePathNoExt = barePath.split("\\.")[0]
+                        name = File(barePath).getName()
+
+                        fromPath = compDir + "/" + barePath
+                        toPath = outDir + "/" + barePath // Copy filename by default
                         className = name.split("\\.")[0]
 
                         // Read file
@@ -210,7 +216,10 @@ main:
                             // Get final compiled code
                             code = res.getCompiledCode(className)
                             code = Precompiler.applyRegexRules(code, "java")
-                            toPath = outDir + "/" + className + ".java"
+                            toPath = outDir + "/" + barePathNoExt + ".java"
+
+                            // Write line mapping
+                            writeTo(f"{compDir}/.jbbmap/{barePathNoExt}.json", res$lineMapJSON)
 
                         // Write output files
                         writeTo(toPath, code)

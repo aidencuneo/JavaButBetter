@@ -1,0 +1,4 @@
+regex (
+    "\breally_specific_identifier\b"
+    "REALLY_SPECIFIC_UPPERCASE"
+)

@@ -5,9 +5,8 @@ public class Code {
     public static int i = 0;
     public static String var = "something123";
     public static String getVar() { return (var); }
-    public static String setVar(String value) {
-        return (var = value);
-    }
+    public static String setVar(String value) { return ((var = value)); }
+    public static boolean something(Object x, Object y) { return (x instanceof y); }
     public static void main(String[] args) {
         LangUtil.println(Extensions.operGetIndex((new HashMap<>(Map.ofEntries(Map.entry(5, (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))))), Map.entry(10, (new HashMap<>(Map.ofEntries(Map.entry("z", 3), Map.entry("y", 2), Map.entry("x", 1)))))))), 5));
         var dict = (new HashMap<>(Map.ofEntries(Map.entry("a", 1), Map.entry("b", 2), Map.entry("c", 3))));

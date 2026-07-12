@@ -1,9 +1,9 @@
+- Add global aliases
 - Allow primitive types inside type arguments
     - HashMap[string, int] instead of HashMap[String, Int]
 - Create line map for each JBB file
     - json file at ".jbbmap/File.json" containing something like:
     - {0: 3, 1: 4, 2: 5, 3: 7, 4: 8}
-- Add global aliases
 - Add global regex and regex keys
 - Add global imports (adds imports to every file)
 - Add modules that you can import
@@ -19,6 +19,10 @@
 
 
 Done:
+- Add x instof Type
+- Don't compile files if they have no class code
+- Compile all files in file watcher rather than just one
+- Fix assignment and function definition precedence
 - Make imports in files with the Extensions class carry over
 - Change $a.b = x to a$b = x
 - Separate statement and expression null checks

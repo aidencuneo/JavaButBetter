@@ -342,6 +342,37 @@ string compileStatement(ArrayList[Token] tok, string out):
 
         out += tok[1].value[1:-1] // Strip backticks or brackets away
 
+    // Scoped statements - methods only (?)
+    elif scope == 0 && (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
+        // TODO: get/set
+        if false
+            ...
+
+        // Methods
+        else
+            // Nothing after scope token
+            if f == len(tok) - 1
+                // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
+                out += compileMethodDef(tok)
+
+            // Code found after scope token (single line procedure)
+            else
+                out += compileMethodDef(tok[:f], false) + " { "
+                ++scope
+                out = compileStatement(tok[f + 1:], out)
+                --scope
+                out += " }"
+
+    // Single line functions
+    elif (f = findTokenTypeRev(tok, Token.Type.LAMBDA)) != -1
+        // override?, access?, typeargs?, throws?, [returntype|void], name, args?, lambda, expr
+        out += compileMethodDef(tok[:f], false) + " { return (" + compileExpr(tok[f + 1:]) + "); }"
+
+    // Alternative function definition (no scope token, only works with no indentation)
+    elif scope == 0 && endTok == Token.Type.EXPR
+        // override?, access?, typeargs?, throws?, [returntype|void], name, args
+        out += compileMethodDef(tok)
+
     // Field definitions (assignment after minimum two tokens with no scope or indentation)
     elif findTokenType(tok, Token.Type.ASSIGN) >= 2 && !indent && !scope
         // access?, static?, [type], name, (equals, [expr])?
@@ -381,37 +412,6 @@ string compileStatement(ArrayList[Token] tok, string out):
         declareLocal(name)
 
         out += methodAccess + " " + varType + " " + name + value + ";"
-
-    // Scoped statements - methods only (?)
-    elif scope == 0 && (f = findTokenTypeRev(tok, Token.Type.SCOPE)) != -1
-        // TODO: get/set
-        if false
-            ...
-
-        // Methods
-        else
-            // Nothing after scope token
-            if f == len(tok) - 1
-                // override?, access?, typeargs?, throws?, [returntype|void], name, args?, scope
-                out += compileMethodDef(tok)
-
-            // Code found after scope token (single line procedure)
-            else
-                out += compileMethodDef(tok[:f], false) + " { "
-                ++scope
-                out = compileStatement(tok[f + 1:], out)
-                --scope
-                out += " }"
-
-    // Single line functions
-    elif (f = findTokenTypeRev(tok, Token.Type.LAMBDA)) != -1
-        // override?, access?, typeargs?, throws?, [returntype|void], name, args?, lambda, expr
-        out += compileMethodDef(tok[:f], false) + " { return (" + compileExpr(tok[f + 1:]) + "); }"
-
-    // Alternative function definition (no scope token, only works with no indentation)
-    elif scope == 0 && endTok == Token.Type.EXPR
-        // override?, access?, typeargs?, throws?, [returntype|void], name, args
-        out += compileMethodDef(tok)
 
     // Static block
     elif len(tok) == 1 && startTok == Token.Type.STATIC
@@ -781,7 +781,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += lhs + " != " + rhs
 
     // Relational and type testing operators
-    elif (f = findAnyToken(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "in"])) != -1
+    elif (f = findAnyToken(tok, ["<", ">", "<=", ">=", "as", "is", "isnt", "in", "instof", "instanceof"])) != -1
         oper = tok[f].value
 
         // "not in", "!in"
@@ -835,6 +835,8 @@ string compileExpr(ArrayList[Token] tok, bool nested):
             out += "!((boolean) Extensions.operIn(" + lhs + ", " + rhs + "))"
         elif oper == "as"
             out += "((" + rhs + ") " + lhs + ")"
+        elif oper in ["instof", "instanceof"]
+            out += f"{lhs} instanceof {rhs}"
         else
             out += lhs + " " + oper + " " + rhs
 

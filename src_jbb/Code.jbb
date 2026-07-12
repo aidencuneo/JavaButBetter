@@ -8,8 +8,8 @@ public static class Code
 int i = 0
 string var = "something123"
 string getVar => var
-string setVar(string value):
-    ret var = value
+string setVar(string value) => var = value
+bool something(x, y) => x instof y
 
 main:
     println {

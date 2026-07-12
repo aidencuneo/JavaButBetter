@@ -14,6 +14,10 @@ CompResult(
     this.endTemplate = endTemplate
     this.lineMap = lineMap
 
+bool hasCode:
+    return true if classes[c].code for c in classes
+    return false
+
 string getCompiledCode(string mainClassName):
     // Construct classes
     out = ""

@@ -12,6 +12,10 @@ public class CompResult {
         this.endTemplate = endTemplate;
         this.lineMap = lineMap;
     }
+    public boolean hasCode() {
+        for (var c : LangUtil.asIterable(classes)) { if (LangUtil.isTruthy(Extensions.operGetIndex(classes, c).code)) { return true; } }
+        return false;
+    }
     public String getCompiledCode(String mainClassName) {
         var out = "";
         if (LangUtil.isTruthy(Extensions.operIn(mainClassName, classes))) {

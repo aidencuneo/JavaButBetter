@@ -9,7 +9,7 @@ class JavaBB {
     public static CompResult extensionsRes = null;
     public static CompResult langUtilRes = null;
     public static boolean writeTo(String path, String text) {
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(path).getParentFile().exists()))) {
+        if (LangUtil.isTruthy((LangUtil.isTruthy(new File(path).getParentFile())) ? (!LangUtil.isTruthy(new File(path).getParentFile().exists())) : (new File(path).getParentFile()))) {
             new File(path).getParentFile().mkdirs();
         }
         try (var writer = new PrintWriter(path)) {
@@ -31,9 +31,9 @@ class JavaBB {
     }
     public static void readAllToMap(String folder) {
         for (var name : LangUtil.asIterable(new File(folder).list())) {
-            var path = Extensions.operAdd(Extensions.operAdd(folder, "/"), name);
-            if (LangUtil.isTruthy((LangUtil.isTruthy(new File(path).isDirectory())) ? (!((boolean) Extensions.operEq(new File(path).getName(), ".jbbmap"))) : (new File(path).isDirectory()))) {
-                readAllToMap(path);
+            var path = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", folder), "/"), name), "");
+            if (LangUtil.isTruthy(new File(path).isDirectory())) {
+                if (LangUtil.isTruthy(!((boolean) Extensions.operEq(new File(path).getName(), ".jbbmap")))) { readAllToMap(path); }
             }
             else {
                 Extensions.operSetIndex(codeMap, path, readFile(path));
@@ -51,7 +51,6 @@ class JavaBB {
             var name = new File(path).getName();
             var barePath = LangUtil.slice(path, Extensions.len(compDir), null, 1);
             var barePathNoExt = Extensions.operGetIndex(barePath.split("\\."), 0);
-            var toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), barePath);
             var className = Extensions.operGetIndex(name.split("\\."), 0);
             var code = Extensions.operGetIndex(codeMap, path);
             if (LangUtil.isTruthy(name.endsWith(".jbb"))) {
@@ -64,10 +63,14 @@ class JavaBB {
                 }
                 code = res.getCompiledCode(className);
                 code = Precompiler.applyRegexRules(code, "java");
-                toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), barePathNoExt), ".java");
-                writeTo(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", compDir), "/.jbbmap/"), barePathNoExt), ".json"), res.getLineMapJSON());
+                if (LangUtil.isTruthy(res.hasCode())) {
+                    writeTo(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", compDir), "/.jbbmap/"), barePathNoExt), ".json"), res.getLineMapJSON());
+                    writeTo(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", outDir), "/"), barePathNoExt), ".java"), code);
+                }
             }
-            writeTo(toPath, code);
+            else {
+                writeTo(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", outDir), "/"), barePath), ""), code);
+            }
         }
     }
     public static void writeStdLibModule(String path, String toPath) {
@@ -90,7 +93,7 @@ class JavaBB {
         var argv = new ArrayList<String>();
         for (var arg : LangUtil.asIterable(args)) {
             if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-v", "--version")))) {
-                LangUtil.println(Extensions.operAdd("JavaButBetter v", "0.7.5"));
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd("JavaButBetter v", "0.7.5"), ""));
                 LangUtil.exit();
             }
             else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-V", "--verbose")))) {
@@ -100,19 +103,16 @@ class JavaBB {
                 watch = true;
             }
             else {
-                argv = Extensions.operAdd(argv, LangUtil.listOf(arg));
+                Extensions.operShl(argv, arg);
             }
         }
         var compDir = LangUtil.isTruthy(argv) ? (Extensions.operGetIndex(argv, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(argv), 1)) ? (Extensions.operGetIndex(argv, 1)) : (Extensions.operAdd(compDir, "_out"));
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.5"), " ---")); }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Compiling directory \"", compDir), "\" to \""), outDir), "\"")); }
-        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) {
-            new File(outDir).mkdirs();
-        }
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling Extensions..."); }
+        if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) { new File(outDir).mkdirs(); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling Builtins (Extensions, LangUtil)..."); }
         extensionsRes = ExtensionsCode.get();
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling LangUtil..."); }
         langUtilRes = LangUtilCode.get();
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("\nReading all files in ", compDir), "...")); }
         readAllToMap(compDir);
@@ -120,8 +120,8 @@ class JavaBB {
         precompileAll();
         if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling all files..."); }
         compileAndWriteAll(compDir, outDir);
-        writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
-        writeTo(Extensions.operAdd(outDir, "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
+        writeTo(Extensions.operAdd(Extensions.operAdd("", outDir), "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
+        writeTo(Extensions.operAdd(Extensions.operAdd("", outDir), "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
         if (LangUtil.isTruthy(!LangUtil.isTruthy(watch))) {
             if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nDone."); }
             return;
@@ -137,32 +137,14 @@ class JavaBB {
                         var kind = Extensions.operAdd("", event.kind());
                         var context = event.context();
                         LangUtil.println(Extensions.operAdd(Extensions.operAdd(kind, ": "), context));
-                        if (LangUtil.isTruthy(Extensions.operIn(event.kind(), LangUtil.listOf(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY)))) {
-                            extensionsRes = ExtensionsCode.get();
-                            var barePath = Extensions.operAdd("", (((Path) context)));
-                            var barePathNoExt = Extensions.operGetIndex(barePath.split("\\."), 0);
-                            var name = new File(barePath).getName();
-                            var fromPath = Extensions.operAdd(Extensions.operAdd(compDir, "/"), barePath);
-                            var toPath = Extensions.operAdd(Extensions.operAdd(outDir, "/"), barePath);
-                            var className = Extensions.operGetIndex(name.split("\\."), 0);
-                            var code = readFile(fromPath);
-                            if (LangUtil.isTruthy(name.endsWith(".jbb"))) {
-                                code = Precompiler.precompileFile(className, code);
-                                code = Precompiler.applyRegexRules(code, "jbb");
-                                var res = Compiler.compileFile(className, code);
-                                if (LangUtil.isTruthy(Extensions.operIn("Extensions", res.classes))) {
-                                    Extensions.operGetIndex(extensionsRes.classes, "Extensions").code = Extensions.operAdd(Extensions.operGetIndex(extensionsRes.classes, "Extensions").code, (Extensions.operGetIndex(res.classes, "Extensions").code));
-                                    res.classes.remove("Extensions");
-                                    extensionsRes.startTemplate = Extensions.operAdd(extensionsRes.startTemplate, (res.startTemplate));
-                                }
-                                code = res.getCompiledCode(className);
-                                code = Precompiler.applyRegexRules(code, "java");
-                                toPath = Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(outDir, "/"), barePathNoExt), ".java");
-                                writeTo(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", compDir), "/.jbbmap/"), barePathNoExt), ".json"), res.getLineMapJSON());
-                            }
-                            writeTo(toPath, code);
-                            writeTo(Extensions.operAdd(outDir, "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
-                        }
+                        extensionsRes = ExtensionsCode.get();
+                        langUtilRes = LangUtilCode.get();
+                        readAllToMap(compDir);
+                        precompileAll();
+                        compileAndWriteAll(compDir, outDir);
+                        writeTo(Extensions.operAdd(Extensions.operAdd("", outDir), "/Extensions.java"), extensionsRes.getCompiledCode("Extensions"));
+                        writeTo(Extensions.operAdd(Extensions.operAdd("", outDir), "/LangUtil.java"), langUtilRes.getCompiledCode("LangUtil"));
+                        if (LangUtil.isTruthy(verbose)) { LangUtil.println("Recompiled all"); }
                     }
                     if (LangUtil.isTruthy(!LangUtil.isTruthy(key.reset()))) { break; }
                 }

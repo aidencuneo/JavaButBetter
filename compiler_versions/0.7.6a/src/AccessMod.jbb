@@ -1,0 +1,7 @@
+class null
+public enum AccessMod
+    NONE,
+    DEFAULT,
+    PUBLIC,
+    PRIVATE,
+    PROTECTED,

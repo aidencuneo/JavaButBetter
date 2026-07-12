@@ -262,7 +262,7 @@ public class Compiler {
         else if (LangUtil.isTruthy(!((boolean) Extensions.operEq(((f = findTokenTypeRev(tok, Token.Type.LAMBDA))), Extensions.operUnarySub(1))))) {
             out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(compileMethodDef(LangUtil.slice(tok, null, f, 1), false), " { return ("), compileExpr(LangUtil.slice(tok, Extensions.operAdd(f, 1), null, 1))), "); }")));
         }
-        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? (Extensions.operEq(endTok, Token.Type.EXPR)) : (Extensions.operEq(scope, 0)))) {
+        else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operEq(scope, 0))) ? ((LangUtil.isTruthy(Extensions.operEq(endTok, Token.Type.EXPR))) ? (Extensions.operEq(findTokenType(tok, Token.Type.ASSIGN), Extensions.operUnarySub(1))) : (Extensions.operEq(endTok, Token.Type.EXPR))) : (Extensions.operEq(scope, 0)))) {
             out = Extensions.operAdd(out, (compileMethodDef(tok)));
         }
         else if (LangUtil.isTruthy((LangUtil.isTruthy(Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2))) ? ((LangUtil.isTruthy(!LangUtil.isTruthy(indent))) ? (!LangUtil.isTruthy(scope)) : (!LangUtil.isTruthy(indent))) : (Extensions.operGe(findTokenType(tok, Token.Type.ASSIGN), 2)))) {

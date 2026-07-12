@@ -368,8 +368,8 @@ string compileStatement(ArrayList[Token] tok, string out):
         // override?, access?, typeargs?, throws?, [returntype|void], name, args?, lambda, expr
         out += compileMethodDef(tok[:f], false) + " { return (" + compileExpr(tok[f + 1:]) + "); }"
 
-    // Alternative function definition (no scope token, only works with no indentation)
-    elif scope == 0 && endTok == Token.Type.EXPR
+    // Alternative function definition (no scope token, no assignment, only works with no indentation)
+    elif scope == 0 && endTok == Token.Type.EXPR && findTokenType(tok, Token.Type.ASSIGN) == -1
         // override?, access?, typeargs?, throws?, [returntype|void], name, args
         out += compileMethodDef(tok)
 

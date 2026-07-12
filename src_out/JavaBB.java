@@ -93,7 +93,7 @@ class JavaBB {
         var argv = new ArrayList<String>();
         for (var arg : LangUtil.asIterable(args)) {
             if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-v", "--version")))) {
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd("JavaButBetter v", "0.7.5"), ""));
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd("JavaButBetter v", "0.7.6a"), ""));
                 LangUtil.exit();
             }
             else if (LangUtil.isTruthy(Extensions.operIn(arg, LangUtil.listOf("-V", "--verbose")))) {
@@ -108,7 +108,7 @@ class JavaBB {
         }
         var compDir = LangUtil.isTruthy(argv) ? (Extensions.operGetIndex(argv, 0)) : ("src");
         var outDir = LangUtil.isTruthy(Extensions.operGt(Extensions.len(argv), 1)) ? (Extensions.operGetIndex(argv, 1)) : (Extensions.operAdd(compDir, "_out"));
-        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.5"), " ---")); }
+        if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd("--- JavaButBetter v", "0.7.6a"), " ---")); }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Compiling directory \"", compDir), "\" to \""), outDir), "\"")); }
         if (LangUtil.isTruthy(!LangUtil.isTruthy(new File(outDir).exists()))) { new File(outDir).mkdirs(); }
         if (LangUtil.isTruthy(verbose)) { LangUtil.println("\nCompiling Builtins (Extensions, LangUtil)..."); }
@@ -136,6 +136,7 @@ class JavaBB {
                     for (var event : LangUtil.asIterable(key.pollEvents())) {
                         var kind = Extensions.operAdd("", event.kind());
                         var context = event.context();
+                        if (LangUtil.isTruthy((Extensions.operAdd("", (((Path) context)))).endsWith(".jbbmap"))) { continue; }
                         LangUtil.println(Extensions.operAdd(Extensions.operAdd(kind, ": "), context));
                         extensionsRes = ExtensionsCode.get();
                         langUtilRes = LangUtilCode.get();

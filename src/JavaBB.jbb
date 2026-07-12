@@ -173,6 +173,9 @@ main:
                     kind = "" + event.kind()
                     context = event.context()
 
+                    // Skip jbbmap folder
+                    next if ("" + (context as Path)).endsWith(".jbbmap")
+
                     println kind + ": " + context
 
                     // Recompile all files

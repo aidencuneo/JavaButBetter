@@ -12,7 +12,6 @@ public class Class {
         this.name = name;
     }
     public String toString() {
-        if (LangUtil.isTruthy(code.isBlank())) { return ""; }
         var accessModStr = MethodAccess.accessModToString(access);
         accessModStr = Extensions.operAdd(accessModStr, (LangUtil.isTruthy(accessModStr) ? (" ") : ("")));
         var extendsStr = LangUtil.isTruthy(extendsType) ? (Extensions.operAdd(" extends ", extendsType)) : ("");

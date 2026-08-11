@@ -1,0 +1,90 @@
+import org.bukkit.*
+
+public class Combat1 implements Listener
+
+method:
+    ...
+
+public class Combat2 inherits Something
+
+method2:
+    println 'huh'
+    println 'huh again'
+
+public class Combat3
+
+method3:
+    'idk'
+
+public class Nothing
+...
+
+// import org.bukkit.*
+// import org.bukkit.damage.*
+// import org.bukkit.entity.*
+// import org.bukkit.event.*
+// import org.bukkit.event.entity.*
+// import org.bukkit.event.server.*
+// import org.bukkit.event.player.*
+// import org.bukkit.inventory.*
+
+// import com.google.common.collect.Iterables
+
+// import net.md_5.bungee.api.ChatMessageType
+// import net.md_5.bungee.api.chat.*
+
+// import aidenbc.AidenUtil.PlayerUtil
+
+// public class Combat implements Listener
+
+// sendDeathLocation(Player pl):
+//     loc = Util.locToString(pl$location)
+//     msg = TextComponent(f"{C_GOLD}You died {C_RESET}at [{C_AQUA}{loc}{C_RESET}] in {C_GREEN}{pl$world$key}")
+
+//     msg$hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ComponentBuilder(f"Click to copy \"{loc}\"").create())
+//     msg$clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, loc)
+//     pl.spigot().sendMessage(msg)
+
+// event PlayerDeath:
+//     victim = e$entity$player
+//     killer = e$entity$killer
+//     victimTeam = Teams.getTeam(victim)
+
+//     // Drop player head
+//     skull = PlayerUtil.getPlayerHead(victim)
+//     e$entity$world.dropItemNaturally(victim$location, skull)
+
+//     // Set custom death message
+//     symbol = "÷"; // Blue face
+
+//     if killer
+//         symbol = "≤" // Sword
+//         Sounds.playTo(killer, Sound.ENTITY_ARROW_HIT_PLAYER)
+//     elif e$damageSource$damageType in [DamageType.EXPLOSION, DamageType.PLAYER_EXPLOSION]
+//         symbol = "≈"; // Car crash
+
+//     msg = f"{symbol} {C_RED}{e$deathMessage}"
+//     e$deathMessage = ""
+
+//     // Send message to one team or both (depending on island borders)
+//     if Border$islandBorderUp
+//         Teams.sendTo(msg, victimTeam)
+//     else
+//         Main.broadcast(msg)
+
+//     // Tell victim coordinates of death
+//     sendDeathLocation(victim)
+
+// event EntityDamageByEntity playerDmgPlayer:
+//     if !(e$damager instof Player) or !(e$entity instof Player)
+//         return
+
+//     damager = e$damager as Player
+//     victim = e$entity as Player
+
+//     // damagerTeam = Teams.getTeam(damager)
+//     // victimTeam = Teams.getTeam(victim)
+//     // sameTeam = damagerTeam == victimTeam
+
+//     health = roundstr((victim$health - e$finalDamage) / 2, 1)
+//     damager << f"{C_RED}{victim$displayName} is on {C_GOLD}{health}{C_RED} hearts"

@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.*;
 
 public class CompResult {
-    public HashMap<String, Class> classes;
+    public LinkedHashMap<String, Class> classes;
     public String startTemplate;
     public String endTemplate;
-    public HashMap<Integer, Integer> lineMap;
-    public CompResult(HashMap<String, Class> classes, String startTemplate, String endTemplate, HashMap<Integer, Integer> lineMap) {
+    public LinkedHashMap<Integer, Integer> lineMap;
+    public CompResult(LinkedHashMap<String, Class> classes, String startTemplate, String endTemplate, LinkedHashMap<Integer, Integer> lineMap) {
         this.classes = classes;
         this.startTemplate = startTemplate;
         this.endTemplate = endTemplate;

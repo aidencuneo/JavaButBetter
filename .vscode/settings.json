@@ -6,5 +6,7 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true
     },
-    "hide-files.files": []
+    "hide-files.files": [],
+    "jbb-lint.jbbPath": "src_jbb",
+    "jbb-lint.javaPath": "src_jbb_out"
 }

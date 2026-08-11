@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Compiler {
     public static String mainClassName = "";
@@ -7,10 +8,10 @@ public class Compiler {
     public static String startTemplate = "";
     public static String endTemplate = "";
     public static String packagePath = "";
-    public static HashMap<String, Class> classes = (new HashMap<>(Map.ofEntries()));
+    public static LinkedHashMap<String, Class> classes = new LinkedHashMap<>();
     public static HashMap<String, Alias> aliases = (new HashMap<>(Map.ofEntries()));
     public static HashMap<String, Integer> locals = (new HashMap<>(Map.ofEntries()));
-    public static HashMap<Integer, Integer> lineMap = (new HashMap<>(Map.ofEntries()));
+    public static LinkedHashMap<Integer, Integer> lineMap = new LinkedHashMap<>();
     public static int nextTempVar = 0;
     public static int indent = 0;
     public static int scope = 0;
@@ -20,10 +21,10 @@ public class Compiler {
         currentClass = className;
         startTemplate = "import java.io.*;\nimport java.util.*;\n";
         endTemplate = "";
-        classes = (new HashMap<>(Map.ofEntries()));
+        classes = new LinkedHashMap<>();
         aliases = (new HashMap<>(Map.ofEntries()));
         locals = (new HashMap<>(Map.ofEntries()));
-        lineMap = (new HashMap<>(Map.ofEntries()));
+        lineMap = new LinkedHashMap<>();
         nextTempVar = 0;
         defaultStatic = false;
         var lines = Tokeniser.splitFile(code);
@@ -32,8 +33,6 @@ public class Compiler {
         for (var i : LangUtil.asIterable(Extensions.len(lines))) {
             var cl = getOrCreateClass(currentClass);
             var tok = Tokeniser.tokLine(Extensions.operGetIndex(lines, i), true);
-            var javaLine = ((int) cl.code.lines().count());
-            Extensions.operSetIndex(lineMap, i, javaLine);
             if (LangUtil.isTruthy(!LangUtil.isTruthy(tok))) { continue; }
             indent = Extensions.len(Extensions.operGetIndex(tok, 0).value);
             tok.remove(0);
@@ -53,6 +52,18 @@ public class Compiler {
             var out = compileStatement(tok, cl.code);
             cl = getOrCreateClass(currentClass);
             cl.code = Extensions.operAdd(out, "\n");
+            if (LangUtil.isTruthy(Extensions.operEq(className, "Combat"))) {
+                var j = Extensions.operAdd(i, 1);
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", j), ":\n"), Extensions.operGetIndex(lines, i)), "\n"), new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)), ""));
+                var javaLine = ((int) Extensions.operAdd(cl.code.lines().count(), 1));
+                Extensions.operSetIndex(lineMap, Extensions.operAdd(i, 1), javaLine);
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             lastIndent = indent;
             lastScope = scope;
         }

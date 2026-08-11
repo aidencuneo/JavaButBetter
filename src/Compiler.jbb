@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 public static class Compiler
 
 // Definitions
@@ -9,10 +11,10 @@ string currentClass = ""
 string startTemplate = ""
 string endTemplate = ""
 string packagePath = ""
-HashMap[string, Class] classes = {}
+LinkedHashMap[string, Class] classes = LinkedHashMap[.]()
 HashMap[string, Alias] aliases = {}
 HashMap[string, Int] locals = {} // name -> scope
-HashMap[Int, Int] lineMap = {}
+LinkedHashMap[Int, Int] lineMap = LinkedHashMap[.]()
 
 int nextTempVar = 0
 int indent = 0
@@ -27,10 +29,10 @@ CompResult compileFile(string className, string code):
     endTemplate = ""
 
     // Reset class data
-    classes = {}
+    classes = LinkedHashMap[.]()
     aliases = {}
     locals = {}
-    lineMap = {}
+    lineMap = LinkedHashMap[.]()
     // aliases.put("len", new Alias(Tokeniser.tokLine("LangUtil.len")))
 
     nextTempVar = 0
@@ -46,10 +48,6 @@ CompResult compileFile(string className, string code):
 
         // if currentClass != "LangUtil" && currentClass != "Extensions"
         //     println tok
-
-        // Record which line in JBB matches which line in Java
-        javaLine = cl.code.lines().count() as int
-        lineMap[i] = javaLine
 
         // Nothing in the line?
         next if !tok
@@ -83,6 +81,18 @@ CompResult compileFile(string className, string code):
         out = compileStatement(tok, cl.code)
         cl = getOrCreateClass(currentClass)
         cl.code = out + "\n"
+
+        // Record which line in JBB matches which line in Java
+        if className == 'Combat'
+            j = i + 1
+            println f"{j}:\n{lines[i]}\n{CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)}"
+            javaLine = cl.code.lines().count() + 1 as int
+            lineMap[i + 1] = javaLine
+
+            try
+                TimeUnit.SECONDS.sleep(2)
+            catch InterruptedException e
+                Thread.currentThread().interrupt()
 
         lastIndent = indent
         lastScope = scope

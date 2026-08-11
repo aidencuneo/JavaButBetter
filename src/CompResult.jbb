@@ -1,13 +1,13 @@
-HashMap[string, Class] classes
+LinkedHashMap[string, Class] classes
 string startTemplate
 string endTemplate
-HashMap[Int, Int] lineMap
+LinkedHashMap[Int, Int] lineMap
 
 CompResult(
-    HashMap[string, Class] classes,
+    LinkedHashMap[string, Class] classes,
     string startTemplate,
     string endTemplate,
-    HashMap[Int, Int] lineMap,
+    LinkedHashMap[Int, Int] lineMap,
 ):
     this.classes = classes
     this.startTemplate = startTemplate

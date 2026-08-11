@@ -1,9 +1,13 @@
+- Fix line map
+    - Use compresult, but strip all whitespace and '}'
+    - Find some way to not write the default class to the file?
+    - Remove offset from compresult, because
+        imports should line up according to the rule above
+    - jbbLine  = i + 1
+    - javaLine = num of lines in compresult after trimming
 - Add global aliases
 - Allow primitive types inside type arguments
     - HashMap[string, int] instead of HashMap[String, Int]
-- Create line map for each JBB file
-    - json file at ".jbbmap/File.json" containing something like:
-    - {0: 3, 1: 4, 2: 5, 3: 7, 4: 8}
 - Add global regex and regex keys
 - Add global imports (adds imports to every file)
 - Add modules that you can import

@@ -52,10 +52,14 @@ public class StringParser {
     }
     public static String trimComma(String str) {
         while (LangUtil.isTruthy(str.trim().endsWith(","))) { str = LangUtil.slice(str.trim(), null, Extensions.operUnarySub(1), 1); }
-        return str;
+        return str.trim();
     }
     public static String capitalise(String str) {
         return Extensions.operAdd(Character.toUpperCase(Extensions.operGetIndex(str, 0)), LangUtil.slice(str, 1, null, 1));
+    }
+    public static String trimEndScopeTokens(String str) {
+        while (LangUtil.isTruthy(str.strip().endsWith("}"))) { str = LangUtil.slice(str.strip(), null, Extensions.operUnarySub(1), 1); }
+        return str.strip();
     }
 }
 

@@ -3,6 +3,7 @@ import org.bukkit.*
 public class Combat1 implements Listener
 
 method:
+    f"{i + 1}"
     ...
 
 public class Combat2 inherits Something

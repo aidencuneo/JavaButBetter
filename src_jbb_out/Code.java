@@ -20,7 +20,7 @@ public class Code {
         var a = 5;
         var b = 7;
         var ccc = Extensions.operAdd(a, b);
-        LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Hello, world! I'm {}", a), " + "), b), ". "), ccc), "!"));
+        LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("Hello, world! I'm {}", (a)), " + "), (b)), ". "), (ccc)), "!"));
         LangUtil.println(Extensions.operShl(Extensions.operShl("aiden", "blishen"), "cuneo"));
     }
 }

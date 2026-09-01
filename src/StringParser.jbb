@@ -57,7 +57,11 @@ bool isPascalCase(string str):
 
 string trimComma(string str):
     str = str.trim()[:-1] while str.trim().endsWith(",")
-    ret str
+    ret str.trim()
 
 string capitalise(string str):
     ret Char.toUpperCase(str[0]) + str[1:]
+
+string trimEndScopeTokens(string str):
+    str = str.strip()[:-1] while str.strip().endsWith("}")
+    ret str.strip()

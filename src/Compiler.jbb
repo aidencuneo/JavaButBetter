@@ -85,9 +85,11 @@ CompResult compileFile(string className, string code):
         // Record which line in JBB matches which line in Java
         if className == 'Combat'
             j = i + 1
-            println f"{j}:\n{lines[i]}\n{CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)}"
-            javaLine = cl.code.lines().count() + 1 as int
+            compRes = CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)
+            compRes = StringParser.trimEndScopeTokens(compRes)
+            javaLine = compRes.lines().count() + 1 as int
             lineMap[i + 1] = javaLine
+            println f"{j}:{javaLine}\n{lines[i]}\n{compRes}<end>"
 
             try
                 TimeUnit.SECONDS.sleep(2)
@@ -1168,7 +1170,7 @@ string compileExpr(ArrayList[Token] tok, bool nested):
                     if insertBuffer == "{}"
                         buffer += "{}"
                     elif insertBuffer
-                        buffer += quote + " + " + insertBuffer + " + " + quote
+                        buffer += quote + " + (" + insertBuffer + ") + " + quote
                     insertBuffer = ""
 
         buffer += quote

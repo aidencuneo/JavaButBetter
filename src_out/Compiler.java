@@ -54,9 +54,11 @@ public class Compiler {
             cl.code = Extensions.operAdd(out, "\n");
             if (LangUtil.isTruthy(Extensions.operEq(className, "Combat"))) {
                 var j = Extensions.operAdd(i, 1);
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", j), ":\n"), Extensions.operGetIndex(lines, i)), "\n"), new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)), ""));
-                var javaLine = ((int) Extensions.operAdd(cl.code.lines().count(), 1));
+                var compRes = new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName);
+                compRes = StringParser.trimEndScopeTokens(compRes);
+                var javaLine = ((int) Extensions.operAdd(compRes.lines().count(), 1));
                 Extensions.operSetIndex(lineMap, Extensions.operAdd(i, 1), javaLine);
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", j), ":"), javaLine), "\n"), Extensions.operGetIndex(lines, i)), "\n"), compRes), "<end>"));
                 try {
                     TimeUnit.SECONDS.sleep(2);
                 }
@@ -847,7 +849,7 @@ public class Compiler {
                             buffer = Extensions.operAdd(buffer, ("{}"));
                         }
                         else if (LangUtil.isTruthy(insertBuffer)) {
-                            buffer = Extensions.operAdd(buffer, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(quote, " + "), insertBuffer), " + "), quote)));
+                            buffer = Extensions.operAdd(buffer, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(quote, " + ("), insertBuffer), ") + "), quote)));
                         }
                         insertBuffer = "";
                     }

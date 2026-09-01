@@ -42,11 +42,12 @@ string getCompiledCode(string mainClassName):
 
 string getLineMapJSON:
     // Get offset from start template
-    offset = startTemplate.lines().count() + 1
+    // offset = startTemplate.lines().count() + 1
     out = "{"
 
     for jbbLine in lineMap
-        javaLine = offset + lineMap[jbbLine]
+        // javaLine = offset + lineMap[jbbLine]
+        javaLine = lineMap[jbbLine]
         out += f"\"{jbbLine}\": {javaLine}, "
 
     out = out[:-2] while out.endsWith(", ")

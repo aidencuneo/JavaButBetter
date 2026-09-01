@@ -56,8 +56,8 @@ public class Compiler {
                 var j = Extensions.operAdd(i, 1);
                 var compRes = new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName);
                 compRes = StringParser.trimEndScopeTokens(compRes);
-                var javaLine = ((int) Extensions.operAdd(compRes.lines().count(), 1));
-                Extensions.operSetIndex(lineMap, Extensions.operAdd(i, 1), javaLine);
+                var javaLine = ((int) Extensions.operSub(compRes.lines().count(), 1));
+                Extensions.operSetIndex(lineMap, i, javaLine);
                 LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", j), ":"), javaLine), "\n"), Extensions.operGetIndex(lines, i)), "\n"), compRes), "<end>"));
                 try {
                     TimeUnit.SECONDS.sleep(2);

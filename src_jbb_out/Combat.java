@@ -7,7 +7,7 @@ public class Combat {
 }
 public class Combat1 implements Listener {
     public void method() {
-        Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", i), 1), "");
+        Extensions.operAdd(Extensions.operAdd("", (Extensions.operAdd(i, 1))), "");
         
     }
 }

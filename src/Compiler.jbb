@@ -87,8 +87,8 @@ CompResult compileFile(string className, string code):
             j = i + 1
             compRes = CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName)
             compRes = StringParser.trimEndScopeTokens(compRes)
-            javaLine = compRes.lines().count() + 1 as int
-            lineMap[i + 1] = javaLine
+            javaLine = compRes.lines().count() - 1 as int
+            lineMap[i] = javaLine
             println f"{j}:{javaLine}\n{lines[i]}\n{compRes}<end>"
 
             try

@@ -36,10 +36,9 @@ public class CompResult {
         return Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(packageStr, startTemplate), "\n"), out), endTemplate);
     }
     public String getLineMapJSON() {
-        var offset = Extensions.operAdd(startTemplate.lines().count(), 1);
         var out = "{";
         for (var jbbLine : LangUtil.asIterable(lineMap)) {
-            var javaLine = Extensions.operAdd(offset, Extensions.operGetIndex(lineMap, jbbLine));
+            var javaLine = Extensions.operGetIndex(lineMap, jbbLine);
             out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("\"", jbbLine), "\": "), javaLine), ", ")));
         }
         while (LangUtil.isTruthy(out.endsWith(", "))) { out = LangUtil.slice(out, null, Extensions.operUnarySub(2), 1); }

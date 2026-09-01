@@ -1,12 +1,12 @@
 import java.io.*;
 import java.util.*;
-import org.bukkit.*;
 
 public class Combat {
     
 }
 public class Combat1 implements Listener {
     public void method() {
+        var i = 10;
         Extensions.operAdd(Extensions.operAdd("", (Extensions.operAdd(i, 1))), "");
         
     }
@@ -17,12 +17,12 @@ public class Combat2 {
         LangUtil.println("huh again");
     }
 }
-public class Combat3 {
+class Combat3 {
     public void method3() {
         "idk";
     }
 }
-public class Nothing {
+class Nothing {
     
 }
 

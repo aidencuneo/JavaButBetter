@@ -52,20 +52,10 @@ public class Compiler {
             var out = compileStatement(tok, cl.code);
             cl = getOrCreateClass(currentClass);
             cl.code = Extensions.operAdd(out, "\n");
-            if (LangUtil.isTruthy(Extensions.operEq(className, "Combat"))) {
-                var j = Extensions.operAdd(i, 1);
-                var compRes = new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName);
-                compRes = StringParser.trimEndScopeTokens(compRes);
-                var javaLine = ((int) Extensions.operSub(compRes.lines().count(), 1));
-                Extensions.operSetIndex(lineMap, i, javaLine);
-                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("", j), ":"), javaLine), "\n"), Extensions.operGetIndex(lines, i)), "\n"), compRes), "<end>"));
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                }
-                catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+            var compRes = new CompResult(classes, startTemplate, endTemplate, lineMap).getCompiledCode(mainClassName);
+            compRes = StringParser.trimEndScopeTokens(compRes);
+            var javaLine = ((int) Extensions.operSub(compRes.lines().count(), 1));
+            Extensions.operSetIndex(lineMap, i, javaLine);
             lastIndent = indent;
             lastScope = scope;
         }

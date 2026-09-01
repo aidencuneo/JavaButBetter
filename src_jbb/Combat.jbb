@@ -1,8 +1,9 @@
-import org.bukkit.*
+// import org.bukkit.*
 
 public class Combat1 implements Listener
 
 method:
+    i = 10
     f"{i + 1}"
     ...
 
@@ -12,12 +13,12 @@ method2:
     println 'huh'
     println 'huh again'
 
-public class Combat3
+class Combat3
 
 method3:
     'idk'
 
-public class Nothing
+class Nothing
 ...
 
 // import org.bukkit.*

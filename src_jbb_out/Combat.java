@@ -1,9 +1,6 @@
 import java.io.*;
 import java.util.*;
 
-public class Combat {
-    
-}
 public class Combat1 implements Listener {
     public void method() {
         var i = 10;
@@ -21,8 +18,5 @@ class Combat3 {
     public void method3() {
         "idk";
     }
-}
-class Nothing {
-    
 }
 

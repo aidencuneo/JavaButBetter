@@ -1,10 +1,3 @@
-- Fix line map
-    - Use compresult, but strip all whitespace and '}'
-    - Find some way to not write the default class to the file?
-    - Remove offset from compresult, because
-        imports should line up according to the rule above
-    - jbbLine  = i + 1
-    - javaLine = num of lines in compresult after trimming
 - Add global aliases
 - Allow primitive types inside type arguments
     - HashMap[string, int] instead of HashMap[String, Int]
@@ -23,6 +16,13 @@
 
 
 Done:
+- Fix line map
+    - Use compresult, but strip all whitespace and '}'
+    - Find some way to not write the default class to the file?
+    - Remove offset from compresult, because
+        imports should line up according to the rule above
+    - jbbLine  = i + 1
+    - javaLine = num of lines in compresult after trimming
 - Add x instof Type
 - Don't compile files if they have no class code
 - Compile all files in file watcher rather than just one

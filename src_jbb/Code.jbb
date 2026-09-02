@@ -1,17 +1,21 @@
-class null
-public enum AccessMod
-    NONE,
-    DEFAULT,
-    PUBLIC,
-    PRIVATE,
-    PROTECTED,
-
 // static class Extensions
 // double ***(double a, int b):
 //     a **= a for b
 //     ret a
 
-// public static class Code
+public static class Code
+
+HashMap[String, Int] hs = {}
+HashMap[string, int] hs2 = {}
+HashMap[string, int] hs3 = {}
+HashMap[bool, bool] hs4 = {}
+HashMap[ArrayList[bool], HashMap[double, float]] hs5 = {}
+
+string s = ""
+int i = 0
+float f = 0f
+bool b = false
+double d = 0.0
 
 // int i = 0
 // string var = "something123"
@@ -19,24 +23,24 @@ public enum AccessMod
 // string setVar(string value) => var = value
 // bool something(x, y) => x instof y
 
-// main:
-//     println {
-//         5: {"a": 1, "b": 2, "c": 3},
-//         10: {"z": 3, "y": 2, "x": 1},
-//     }[5]
+main:
+    println {
+        5: {"a": 1, "b": 2, "c": 3},
+        10: {"z": 3, "y": 2, "x": 1},
+    }[5]
 
-//     dict = {"a": 1, "b": 2, "c": 3}
-//     println dict
-//     dict["d"] = 4
-//     println dict["d"]
-//     println dict
+    dict = {"a": 1, "b": 2, "c": 3}
+    println dict
+    dict["d"] = 4
+    println dict["d"]
+    println dict
 
-//     c = [1, 2, 3]
-//     c[0] = 5
-//     println c
+    c = [1, 2, 3]
+    c[0] = 5
+    println c
 
-//     a = 5
-//     b = 7
-//     ccc = a + b
-//     println f"Hello, world! I'm {{}}{a}{} + {b}. {ccc}{}!"
-//     println "aiden" << "blishen" << f"cuneo"
+    a = 5
+    b = 7
+    ccc = a + b
+    println f"Hello, world! I'm {{}}{a}{} + {b}. {ccc}{}!"
+    println "aiden" << "blishen" << f"cuneo"

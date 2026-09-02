@@ -1355,8 +1355,21 @@ string compileTypeArgs(ArrayList[Token] tok):
 
             // Compile remaining tokens as an expression
             out += compileExpr(buffer) + typeArgs + ", "
+            println "<" + buffer + "::" + typeArgs + "::" + out + ">......."
             buffer.clear()
         else
+            // Perform conversions from primitives to classes (Java primitives to Java classes)
+            // For: int, float, double, short, long, char, byte, bool
+            t.value = "Integer"   if t.value == "int"
+            t.value = "Float"     if t.value == "float"
+            t.value = "Double"    if t.value == "double"
+            t.value = "Short"     if t.value == "short"
+            t.value = "Long"      if t.value == "long"
+            t.value = "Character" if t.value == "char"
+            t.value = "Byte"      if t.value == "byte"
+            t.value = "Boolean"   if t.value == "boolean"
+            // TODO: Convert above to if, elif, elif, ... (?) - or dict
+
             buffer.add(t)
 
     ret "<" + StringParser.trimComma(out) + ">"

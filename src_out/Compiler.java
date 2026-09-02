@@ -986,9 +986,19 @@ public class Compiler {
                     buffer = LangUtil.slice(buffer, null, Extensions.operUnarySub(1), 1);
                 }
                 out = Extensions.operAdd(out, (Extensions.operAdd(Extensions.operAdd(compileExpr(buffer), typeArgs), ", ")));
+                LangUtil.println(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd(Extensions.operAdd("<", buffer), "::"), typeArgs), "::"), out), ">......."));
                 buffer.clear();
             }
             else {
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "int"))) { t = Token.fromString("Integer"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "float"))) { t = Token.fromString("Float"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "double"))) { t = Token.fromString("Double"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "short"))) { t = Token.fromString("Short"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "long"))) { t = Token.fromString("Long"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "char"))) { t = Token.fromString("Character"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "byte"))) { t = Token.fromString("Byte"); }
+                if (LangUtil.isTruthy(Extensions.operEq(t.value, "boolean"))) { t = Token.fromString("Boolean"); }
+                if (LangUtil.isTruthy(Extensions.operIn(t.value.toLowerCase(), LangUtil.listOf("boolean", "bool")))) { LangUtil.println(t); }
                 buffer.add(t);
             }
         }

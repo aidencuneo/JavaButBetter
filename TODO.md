@@ -1,13 +1,11 @@
-- Add global aliases
-- Allow primitive types inside type arguments
-    - HashMap[string, int] instead of HashMap[String, Int]
-- Add global regex and regex keys
 - Add global imports (adds imports to every file)
+- Make sure Extensions and LangUtil work from other packages
+- Add global aliases
+- Add global regex and regex keys (?)
 - Add modules that you can import
     - import jbb.requests.*
     - res = JavaBB.class.getClassLoader().getResource("lib/requests.jbb")
     - path = Paths.get(res.toURI())
-- Make sure Extensions and LangUtil work from other packages
 - Add extension methods to String class
     - split, join, capitalise (capitalize), title, upper, lower
     - basically every method in python strings
@@ -16,6 +14,8 @@
 
 
 Done:
+- Allow primitive types inside type arguments
+    - HashMap[string, int] instead of HashMap[String, Int]
 - Fix line map
     - Use compresult, but strip all whitespace and '}'
     - Find some way to not write the default class to the file?
